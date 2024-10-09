@@ -27,5 +27,18 @@ useHead({
 </script>
 
 <template>
-  <NuxtPage></NuxtPage>
+  <div>
+    <ul>
+      <li>
+        <NuxtLink to="/">landing</NuxtLink>
+      </li>
+      <li>
+        <NuxtLink to="/signup">Sign up</NuxtLink>
+      </li>
+      <li>
+        <NuxtLink to="/login">Login</NuxtLink>
+      </li>
+    </ul>
+  </div>
+  <NuxtPage />
 </template>
