@@ -2,13 +2,11 @@
 const username = ref("");
 const password = ref("");
 
-async function submitLogin() {
-  
-}
+async function submitRegister() {}
 </script>
 
 <template>
   <input type="text" v-model="username" /><br />
   <input type="text" v-model="password" /><br />
-  <button @click="submitLogin">login</button>
+  <button @click="submitRegister">login</button>
 </template>
