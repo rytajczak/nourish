@@ -1,15 +1,9 @@
 <script setup lang="ts">
-const username = ref("");
-const password = ref("");
-
-async function submitRegister() {}
+const { signIn, session } = useAuth();
 </script>
 
 <template>
   <h1>sign up</h1>
-  <label for="email">email:</label><br />
-  <input type="text" v-model="username" /><br />
-  <label for="password">password:</label><br />
-  <input type="text" v-model="password" /><br />
-  <button @click="submitRegister">Sign Up</button>
+  <button @click="signIn(`credentials`)">sign up</button>
+  <div>{{ session?.user }}</div>
 </template>
