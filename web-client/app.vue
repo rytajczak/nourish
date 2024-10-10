@@ -38,6 +38,9 @@ useHead({
       <li>
         <NuxtLink to="/login">Login</NuxtLink>
       </li>
+      <li>
+        <NuxtLink to="/home">Home</NuxtLink>
+      </li>
     </ul>
   </div>
   <NuxtPage />
