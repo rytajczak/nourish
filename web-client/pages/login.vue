@@ -3,6 +3,11 @@ const { signIn, session } = useAuth();
 
 const email = ref("");
 const password = ref("");
+
+async function handleGoogleLogin() {
+  await signIn(`google`);
+  await navigateTo("/home");
+}
 </script>
 
 <template>
@@ -13,5 +18,5 @@ const password = ref("");
   <input type="text" v-model="password" /><br />
   <button @click="signIn(`credentials`, { email, password })">login</button>
   <div>or</div>
-  <button @click="signIn(`google`)">login with oauth (google)</button>
+  <button @click="handleGoogleLogin">login with oauth (google)</button>
 </template>
