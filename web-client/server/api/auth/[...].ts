@@ -16,7 +16,7 @@ export const authOptions: AuthConfig = {
       },
       authorize: async (Credentials) => {
         console.log(Credentials);
-        // TODO: think harder on what this should return
+        // TODO: think harder on what this should return (I dislike credential auth)
         return { email: "ryantratajczak@gmail.com" };
       },
     }),
