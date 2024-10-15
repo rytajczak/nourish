@@ -3,7 +3,7 @@ package main
 import "context"
 
 type Service interface {
-	SearchRecipesByName(context.Context)
+	SearchRecipesByIngredient(context.Context)
 	CreateNewRecipe(context.Context)
 	UpdateRecipe(context.Context)
 }
@@ -14,7 +14,7 @@ func NewRecipeService() Service {
 	return &RecipeService{}
 }
 
-func (s *RecipeService) SearchRecipesByName(context.Context) {
+func (s *RecipeService) SearchRecipesByIngredient(context.Context) {
 
 }
 
