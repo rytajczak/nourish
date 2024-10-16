@@ -21,7 +21,7 @@ type RecipeService struct {
 }
 
 func (r *RecipeService) GetRandomRecipes(context.Context) map[string]interface{} {
-	req, _ := http.NewRequest("GET", r.url+"/recipes/random?number=10", nil)
+	req, _ := http.NewRequest("GET", r.url+"/recipes/random?number=1", nil)
 	req.Header.Add("x-rapidapi-key", os.Getenv("RAPIDAPI_KEY"))
 	req.Header.Add("x-rapidapi-host", os.Getenv("RAPIDAPI_HOST"))
 
