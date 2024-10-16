@@ -1,7 +1,17 @@
 package main
 
+import (
+	"os"
+
+	"github.com/joho/godotenv"
+)
+
 func main() {
-	svc := NewRecipeService()
-	apiServer := NewApiServer(svc)
-	apiServer.Start(":8080")
+	godotenv.Load()
+
+	url := os.Getenv("RAPIDAPI_URL")
+
+	svc := NewRecipeService(url)
+	api := NewApiServer(svc)
+	api.Start(":8080")
 }
