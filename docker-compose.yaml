@@ -4,6 +4,9 @@ services:
       context: ./packages/recipe
     ports:
       - "8080:8080"
+    env_file:
+      - "./packages/recipe/.env"
+
     networks:
       - go-app-network
 
