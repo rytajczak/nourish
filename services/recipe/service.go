@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 )
 
 type Service interface {
-	SearchRecipes(context.Context) *[]Recipe
+	SearchRecipes(string, context.Context) []Recipe
 	GetRecipeById(context.Context)
 	CreateCustomRecipe(context.Context)
 }
@@ -19,8 +20,8 @@ type RecipeService struct {
 	client *http.Client
 }
 
-func (r *RecipeService) SearchRecipes(context.Context) *[]Recipe {
-	url := "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?query=chicken&instructionsRequired=false&fillIngredients=false&addRecipeInformation=false&addRecipeInstructions=false&addRecipeNutrition=false&ignorePantry=true&offset=0&number=10"
+func (r *RecipeService) SearchRecipes(query string, ctx context.Context) []Recipe {
+	url := fmt.Sprintf("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?query=%s&instructionsRequired=false&fillIngredients=false&addRecipeInformation=false&addRecipeInstructions=false&addRecipeNutrition=false&ignorePantry=true&offset=0&number=10", query)
 
 	req, _ := http.NewRequest("GET", url, nil)
 
@@ -38,7 +39,7 @@ func (r *RecipeService) SearchRecipes(context.Context) *[]Recipe {
 		log.Fatal("couldn't unmarshal results")
 	}
 
-	return &response.Recipes
+	return response.Recipes
 }
 
 func (r *RecipeService) GetRecipeById(context.Context) {
