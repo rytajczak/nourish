@@ -3,16 +3,15 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"io"
 	"log"
 	"net/http"
-	"os"
 	"time"
 )
 
 type Service interface {
-	GetRandomRecipes(context.Context) map[string]interface{}
-	SearchRecipes(context.Context) map[string]interface{}
+	SearchRecipes(context.Context) *[]Recipe
+	GetRecipeById(context.Context)
+	CreateCustomRecipe(context.Context)
 }
 
 type RecipeService struct {
@@ -20,29 +19,33 @@ type RecipeService struct {
 	client *http.Client
 }
 
-func (r *RecipeService) GetRandomRecipes(context.Context) map[string]interface{} {
-	req, _ := http.NewRequest("GET", r.url+"/recipes/random?number=1", nil)
-	req.Header.Add("x-rapidapi-key", os.Getenv("RAPIDAPI_KEY"))
-	req.Header.Add("x-rapidapi-host", os.Getenv("RAPIDAPI_HOST"))
+func (r *RecipeService) SearchRecipes(context.Context) *[]Recipe {
+	url := "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?query=chicken&instructionsRequired=false&fillIngredients=false&addRecipeInformation=false&addRecipeInstructions=false&addRecipeNutrition=false&ignorePantry=true&offset=0&number=10"
+
+	req, _ := http.NewRequest("GET", url, nil)
+
+	req.Header.Add("x-rapidapi-key", "54749c10eamsh09c102a879618cdp1a0440jsn8aa999a1f52c")
+	req.Header.Add("x-rapidapi-host", "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com")
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		println(err.Error())
-		return nil
+		log.Fatal(err.Error())
 	}
 	defer res.Body.Close()
 
-	body, _ := io.ReadAll(res.Body)
-
-	var result map[string]interface{}
-	if err := json.Unmarshal(body, &result); err != nil {
-		log.Fatal("failed to read json")
+	var response Response
+	if err := json.NewDecoder(res.Body).Decode(&response); err != nil {
+		log.Fatal("couldn't unmarshal results")
 	}
 
-	return result
+	return &response.Recipes
 }
 
-func (r *RecipeService) SearchRecipes(context.Context) map[string]interface{} {
+func (r *RecipeService) GetRecipeById(context.Context) {
+	panic("unimplemented")
+}
+
+func (r *RecipeService) CreateCustomRecipe(context.Context) {
 	panic("unimplemented")
 }
 

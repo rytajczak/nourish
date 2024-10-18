@@ -23,10 +23,10 @@ func (s *ApiServer) Start(listenAddr string) error {
 		json.NewEncoder(w).Encode(map[string]any{"msg": "ok"})
 	})
 
-	http.HandleFunc("/recipes", func(w http.ResponseWriter, r *http.Request) {
-		data := s.svc.GetRandomRecipes(context.Background())
+	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(data)
+		recipes := s.svc.SearchRecipes(context.Background())
+		json.NewEncoder(w).Encode(recipes)
 	})
 
 	log.Printf("listening on %s", listenAddr)

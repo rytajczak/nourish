@@ -1,11 +1,9 @@
 services:
   recipe-api:
     build:
-      context: ./packages/recipe
+      context: ./services/recipe
     ports:
       - "8080:8080"
-    env_file:
-      - "./packages/recipe/.env"
 
     networks:
       - go-app-network
