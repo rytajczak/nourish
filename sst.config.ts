@@ -8,7 +8,5 @@ export default $config({
       home: "aws",
     };
   },
-  async run() {
-    await import("./infra/webclient");
-  },
+  async run() {},
 });

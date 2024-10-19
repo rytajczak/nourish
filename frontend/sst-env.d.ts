@@ -5,9 +5,5 @@ import "sst"
 export {}
 declare module "sst" {
   export interface Resource {
-    "webclient": {
-      "type": "sst.aws.Nuxt"
-      "url": string
-    }
   }
 }
