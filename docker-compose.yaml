@@ -1,0 +1,11 @@
+services:
+  recipe-api:
+    build:
+      context: ./services/recipe
+  recipe-cache:
+    image: redis:latest
+  user-api:
+    build:
+      context: ./services/user
+  user-database:
+    image: postgres:latest
