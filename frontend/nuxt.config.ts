@@ -4,6 +4,8 @@ export default defineNuxtConfig({
   modules: [
     "@nuxtjs/tailwindcss",
     "@nuxt/image",
+    "@vueuse/nuxt",
+    "nuxt-auth-utils",
   ],
   nitro: {
     preset: "aws-lambda",
