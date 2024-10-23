@@ -16,7 +16,7 @@ down:
 .PHONY: clean
 clean:
 	docker system prune --volumes -f
-	docker-compose down --volumes
+	docker-compose down --volumes --remove-orphans
 
 .PHONY: reset
 reset: down clean
