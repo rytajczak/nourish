@@ -1,5 +1,6 @@
 <script setup lang="ts">
-navigateTo('/dashboard')
+const { loggedIn } = useUserSession();
+navigateTo("/dashboard");
 </script>
 
 <template>landing</template>
