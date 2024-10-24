@@ -29,8 +29,10 @@ func (s *PostgresStore) CreateUser(details *SignUpDetails) (*Profile, error) {
 		return nil, fmt.Errorf("failed to insert into auth: %s", err.Error())
 	}
 
-	query := `INSERT INTO profile (id, username, first_name, last_name, diet)
-						VALUES ($1, $2, $3, $4, $5)`
+	query := `
+	  INSERT INTO profile (id, username, first_name, last_name, diet)
+		VALUES ($1, $2, $3, $4, $5)
+		`
 
 	_, err := tx.Exec(query, id, details.Username, details.FirstName, details.LastName, details.Diet)
 	if err != nil {
@@ -63,19 +65,37 @@ func (s *PostgresStore) CreateUser(details *SignUpDetails) (*Profile, error) {
 func (s *PostgresStore) GetProfileByID(id string) (*Profile, error) {
 	var profile Profile
 
+	// Query for the profile details
 	query := `
-		SELECT 
-				p.id, p.username, p.first_name, p.last_name, p.diet,
-				COALESCE(ARRAY_AGG(i.name::text), '{}') AS intolerances
+		SELECT p.id, p.username, p.first_name, p.last_name, p.diet
 		FROM profile p
-		LEFT JOIN profile_intolerance pi ON p.id = pi.profile_id
-		LEFT JOIN intolerance i ON pi.intolerance_id = i.id
-		WHERE p.id = $1
-		GROUP BY p.id;
+		WHERE p.id = $1;
     `
+
 	err := s.db.Get(&profile, query, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get profile: %w", err)
+	}
+
+	profile.Intolerances = []string{}
+	print(profile.Intolerances)
+
+	query = `
+		SELECT i.name
+		FROM intolerance i
+		JOIN profile_intolerance pi ON i.id = pi.intolerance_id
+		WHERE pi.profile_id = $1;
+    `
+
+	var intolerances []string
+	if err := s.db.Select(&intolerances, query, id); err != nil {
+		return nil, fmt.Errorf("failed to get intolerances: %w", err)
+	}
+
+	if intolerances == nil {
+		profile.Intolerances = []string{}
+	} else {
+		profile.Intolerances = intolerances
 	}
 
 	return &profile, nil
