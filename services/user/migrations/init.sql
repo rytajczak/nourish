@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TABLE auth (
     id VARCHAR PRIMARY KEY,
     email VARCHAR NOT NULL,
@@ -18,7 +20,7 @@ CREATE TABLE profile (
     CONSTRAINT fk_auth FOREIGN KEY (id) REFERENCES auth(id) ON DELETE CASCADE
 );
 
-CREATE TABLE intolerence (
+CREATE TABLE intolerance (
     id VARCHAR PRIMARY KEY,
     name VARCHAR NOT NULL
 );
@@ -31,12 +33,12 @@ CREATE TABLE liked_recipe (
     modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE profile_intolerence (
+CREATE TABLE profile_intolerance (
     profile_id VARCHAR,
-    intolerence_id VARCHAR,
-    PRIMARY KEY (profile_id, intolerence_id),
+    intolerance_id VARCHAR,
+    PRIMARY KEY (profile_id, intolerance_id),
     CONSTRAINT fk_profile FOREIGN KEY (profile_id) REFERENCES profile(id) ON DELETE CASCADE,
-    CONSTRAINT fk_intolerence FOREIGN KEY (intolerence_id) REFERENCES intolerence(id) ON DELETE CASCADE
+    CONSTRAINT fk_intolerance FOREIGN KEY (intolerance_id) REFERENCES intolerance(id) ON DELETE CASCADE
 );
 
 CREATE TABLE profile_liked_recipe (
@@ -46,6 +48,21 @@ CREATE TABLE profile_liked_recipe (
     CONSTRAINT fk_profile FOREIGN KEY (profile_id) REFERENCES profile(id) ON DELETE CASCADE,
     CONSTRAINT fk_liked_recipe FOREIGN KEY (liked_recipe_id) REFERENCES liked_recipe(id) ON DELETE CASCADE
 );
+
+-- (these were pulled from spoonacular api)
+INSERT INTO intolerance (id, name) VALUES 
+    (uuid_generate_v4(), 'dairy'),
+    (uuid_generate_v4(), 'egg'),
+    (uuid_generate_v4(), 'gluten'),
+    (uuid_generate_v4(), 'grain'),
+    (uuid_generate_v4(), 'peanut'),
+    (uuid_generate_v4(), 'seafood'),
+    (uuid_generate_v4(), 'sesame'),
+    (uuid_generate_v4(), 'shellfish'),
+    (uuid_generate_v4(), 'soy'),
+    (uuid_generate_v4(), 'sulfite'),
+    (uuid_generate_v4(), 'tree nut'),
+    (uuid_generate_v4(), 'wheat');
 
 -- modifed trigger
 CREATE OR REPLACE FUNCTION update_modified_at_column()
