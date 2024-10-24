@@ -14,5 +14,5 @@ func main() {
 
 	svc := NewRecipeService(url)
 	api := NewApiServer(svc)
-	log.Fatal(api.Start(":3000").Error())
+	log.Fatal(api.Start(":8080").Error())
 }
