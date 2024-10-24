@@ -43,7 +43,22 @@ func (s *ApiServer) Start(listenAddr string) error {
 		WriteJSON(w, http.StatusOK, profile)
 	})
 
-	http.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {})
+	http.HandleFunc("/profile/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+
+		switch r.Method {
+		case "GET":
+			profile, err := s.store.GetProfileByID(id)
+			if err != nil {
+				WriteJSON(w, http.StatusNotFound, map[string]string{"error": err.Error()})
+				return
+			}
+			WriteJSON(w, http.StatusOK, profile)
+			break
+		case "DELETE":
+			s.store.DeleteUser(id)
+		}
+	})
 
 	log.Printf("listening on %s", listenAddr)
 	return http.ListenAndServe(listenAddr, nil)

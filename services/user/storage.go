@@ -45,17 +45,12 @@ func (s *PostgresStore) CreateUser(details *SignUpDetails) (*Profile, error) {
 	}
 	log.Printf("created user '%s'", details.Username)
 
-	var createdProfile Profile
-	if err := s.db.Get(&createdProfile, "SELECT * FROM profile WHERE id=$1", id); err != nil {
-		return nil, err
-	}
-
-	return &createdProfile, nil
+	return s.GetProfileByID(id)
 }
 
 func (s *PostgresStore) GetProfileByID(id string) (*Profile, error) {
 	var createdProfile Profile
-	if err := s.db.Get(&createdProfile, "SELECT * FROM profile WHERE id=$1", id); err != nil {
+	if err := s.db.Get(&createdProfile, "SELECT id, username, first_name, last_name, diet FROM profile WHERE id=$1", id); err != nil {
 		return nil, err
 	}
 
