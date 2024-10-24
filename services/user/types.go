@@ -14,7 +14,7 @@ type SignUpDetails struct {
 type Profile struct {
 	ID        string `json:"id"`
 	Username  string `json:"username"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
+	FirstName string `json:"firstName" db:"first_name"`
+	LastName  string `json:"lastName" db:"last_name"`
 	Diet      string `json:"diet"`
 }

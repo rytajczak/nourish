@@ -23,16 +23,28 @@ func WriteJSON(w http.ResponseWriter, status int, v any) error {
 }
 
 func (s *ApiServer) Start(listenAddr string) error {
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
-		WriteJSON(w, http.StatusOK, map[string]any{"msg": "ok"})
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		WriteJSON(w, http.StatusOK, map[string]string{"msg": "ok"})
 	})
 
-	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		WriteJSON(w, http.StatusOK, map[string]any{"msg": "ok"})
+	http.HandleFunc("/user/signup", func(w http.ResponseWriter, r *http.Request) {
+		var d SignUpDetails
+		if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
+			WriteJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+			return
+		}
+
+		profile, err := s.store.CreateUser(&d)
+		if err != nil {
+			WriteJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+			return
+		}
+
+		WriteJSON(w, http.StatusOK, profile)
 	})
 
-	log.Printf("listening on port %s", listenAddr)
-	return http.ListenAndServe(listenAddr, mux)
+	http.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {})
+
+	log.Printf("listening on %s", listenAddr)
+	return http.ListenAndServe(listenAddr, nil)
 }
