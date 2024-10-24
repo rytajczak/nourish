@@ -19,4 +19,4 @@ clean:
 	docker-compose down --volumes --remove-orphans
 
 .PHONY: reset
-reset: down clean
+reset: down clean all
