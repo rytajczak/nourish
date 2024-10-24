@@ -56,7 +56,12 @@ func (s *ApiServer) Start(listenAddr string) error {
 			WriteJSON(w, http.StatusOK, profile)
 			break
 		case "DELETE":
-			s.store.DeleteUser(id)
+			if err := s.store.DeleteUser(id); err != nil {
+				WriteJSON(w, http.StatusOK, map[string]string{"error": err.Error()})
+				return
+			}
+			WriteJSON(w, http.StatusOK, map[string]string{"msg": "user successfully deleted"})
+			break
 		}
 	})
 

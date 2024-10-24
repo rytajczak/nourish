@@ -21,7 +21,6 @@ type PostgresStore struct {
 }
 
 func (s *PostgresStore) CreateUser(details *SignUpDetails) (*Profile, error) {
-	log.Print(details)
 	id := uuid.New().String()
 
 	tx := s.db.MustBegin()
@@ -39,22 +38,47 @@ func (s *PostgresStore) CreateUser(details *SignUpDetails) (*Profile, error) {
 		return nil, err
 	}
 
+	for _, intolerance := range details.Intolerances {
+		_, err := tx.Exec(`
+			INSERT INTO profile_intolerance (profile_id, intolerance_id)
+			SELECT $1, i.id
+			FROM intolerance i
+			WHERE i.name = $2
+		`, id, intolerance)
+		if err != nil {
+			tx.Rollback()
+			return nil, fmt.Errorf("failed to insert intolerance: %w", err)
+		}
+	}
+
 	if err := tx.Commit(); err != nil {
 		tx.Rollback()
 		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
-	log.Printf("created user '%s'", details.Username)
 
+	log.Printf("created user '%s'", details.Username)
 	return s.GetProfileByID(id)
 }
 
 func (s *PostgresStore) GetProfileByID(id string) (*Profile, error) {
-	var createdProfile Profile
-	if err := s.db.Get(&createdProfile, "SELECT id, username, first_name, last_name, diet FROM profile WHERE id=$1", id); err != nil {
-		return nil, err
+	var profile Profile
+
+	query := `
+		SELECT 
+				p.id, p.username, p.first_name, p.last_name, p.diet,
+				COALESCE(ARRAY_AGG(i.name::text), '{}') AS intolerances
+		FROM profile p
+		LEFT JOIN profile_intolerance pi ON p.id = pi.profile_id
+		LEFT JOIN intolerance i ON pi.intolerance_id = i.id
+		WHERE p.id = $1
+		GROUP BY p.id;
+    `
+	err := s.db.Get(&profile, query, id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get profile: %w", err)
 	}
 
-	return &createdProfile, nil
+	return &profile, nil
 }
 
 func (s *PostgresStore) UpdateProfile(profile *Profile) error {
@@ -62,6 +86,18 @@ func (s *PostgresStore) UpdateProfile(profile *Profile) error {
 }
 
 func (s *PostgresStore) DeleteUser(id string) error {
+	tx := s.db.MustBegin()
+
+	_, err := tx.Exec("DELETE FROM auth WHERE id = $1", id)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to delete user: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
 	return nil
 }
 
