@@ -78,7 +78,6 @@ func (s *PostgresStore) GetProfileByID(id string) (*Profile, error) {
 	}
 
 	profile.Intolerances = []string{}
-	print(profile.Intolerances)
 
 	query = `
 		SELECT i.name
