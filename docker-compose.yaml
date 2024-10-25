@@ -13,26 +13,32 @@ services:
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - bridge
 
   frontend:
     build: ./packages/frontend
+    networks:
+      - bridge
+
+  user-service:
+    build: ./packages/user
+    networks:
+      - bridge
+
+  user-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: user
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./packages/user/migrations:/docker-entrypoint-initdb.d
     ports:
-      - "3000:3000"
-
-  # user-service:
-  #   build: ./services/user
-
-  # user-db:
-  #   image: postgres:latest
-  #   environment:
-  #     POSTGRES_DB: user
-  #     POSTGRES_USER: user
-  #     POSTGRES_PASSWORD: password
-  #   volumes:
-  #     - ./services/user/migrations:/docker-entrypoint-initdb.d
-  #   ports:
-  #     - "5432:5432"
+      - "5432:5432"
+    networks:
+      - bridge
 
 networks:
-  web:
-    external: true
+  bridge:
+    driver: bridge

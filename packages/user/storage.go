@@ -120,7 +120,7 @@ func (s *PostgresStore) DeleteUser(id string) error {
 }
 
 func NewPostgresStore() (*PostgresStore, error) {
-	db, err := sqlx.Connect("postgres", "user=user dbname=user password=password sslmode=disable")
+	db, err := sqlx.Connect("postgres", "user=user dbname=user host=user-db password=password sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
