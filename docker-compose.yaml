@@ -1,14 +1,37 @@
 services:
-  user-db:
-    image: postgres:latest
-    environment:
-      POSTGRES_DB: user
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-    volumes:
-      - ./services/user/migrations:/docker-entrypoint-initdb.d
+  traefik:
+    image: "traefik:v3.1"
+    container_name: "traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.web.address=:80"
     ports:
-      - "5432:5432"
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  frontend:
+    build: ./packages/frontend
+    ports:
+      - "3000:3000"
+
+  # user-service:
+  #   build: ./services/user
+
+  # user-db:
+  #   image: postgres:latest
+  #   environment:
+  #     POSTGRES_DB: user
+  #     POSTGRES_USER: user
+  #     POSTGRES_PASSWORD: password
+  #   volumes:
+  #     - ./services/user/migrations:/docker-entrypoint-initdb.d
+  #   ports:
+  #     - "5432:5432"
 
 networks:
   web:

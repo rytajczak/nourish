@@ -50,7 +50,6 @@
         >
           <li>
             <NuxtLink to="/dashboard" class="p-4">dashboard</NuxtLink>
-            <NuxtLink class="p-4">search recipes</NuxtLink>
             <NuxtLink to="/profile" class="p-4">my profile</NuxtLink>
           </li>
         </ul>

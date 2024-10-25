@@ -65,7 +65,6 @@ func (s *PostgresStore) CreateUser(details *SignUpDetails) (*Profile, error) {
 func (s *PostgresStore) GetProfileByID(id string) (*Profile, error) {
 	var profile Profile
 
-	// Query for the profile details
 	query := `
 		SELECT p.id, p.username, p.first_name, p.last_name, p.diet
 		FROM profile p

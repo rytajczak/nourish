@@ -14,5 +14,5 @@ func main() {
 	log.Println("successfully connected to database")
 
 	api := NewApiServer(store)
-	log.Fatal(api.Start(":8080").Error())
+	log.Fatal(api.Start(":8082").Error())
 }

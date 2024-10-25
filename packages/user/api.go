@@ -43,7 +43,7 @@ func (s *ApiServer) Start(listenAddr string) error {
 		WriteJSON(w, http.StatusOK, profile)
 	})
 
-	http.HandleFunc("/profile/{id}", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/user/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
 
 		switch r.Method {

@@ -7,7 +7,7 @@ const query = ref("");
 const previousQuery = ref("");
 
 const { data, status, execute } = await useFetch<any[]>(
-  `http://localhost:8080/search`,
+  `http://localhost:8081/search`,
   {
     query: { query },
     watch: false,
