@@ -26,8 +26,24 @@ services:
     networks:
       - bridge
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.5
+    environment:
+      DB_VENDOR: postgres
+      DB_ADDR: user-db
+      DB_DATABASE: user
+      DB_USER: user
+      DB_PASSWORD: password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8081:8080"
+    command: start-dev
+    depends_on:
+      - user-db
+
   user-db:
-    image: postgres:latest
+    image: postgres:15
     environment:
       POSTGRES_DB: user
       POSTGRES_USER: user
