@@ -1,6 +1,7 @@
 <script setup lang="ts">
-const email = ref("");
-const password = ref("");
+definePageMeta({
+  layout: false,
+});
 </script>
 
 <template>
