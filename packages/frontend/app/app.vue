@@ -1,11 +1,5 @@
 <template>
-  <Navbar />
-  <NuxtPage />
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
-
-<style>
-body,
-html {
-  color: #1e1e1e;
-}
-</style>
