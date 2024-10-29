@@ -1,14 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: "2024-04-03",
+  modules: ["nuxt-auth-utils"],
   devtools: { enabled: true },
-  modules: ["@sidebase/nuxt-auth"],
-  auth: {
-    provider: {
-      type: "authjs",
-      trustHost: false,
-      defaultProvider: "google",
-      addDefaultCallbackUrl: true,
-    },
-  },
+  future: { compatibilityVersion: 4 },
+  compatibilityDate: "2024-04-03",
 });
