@@ -1,12 +1,14 @@
+// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
-  future: {
-    compatibilityVersion: 4,
-  },
   devtools: { enabled: true },
-  modules: ["@nuxtjs/tailwindcss", "shadcn-nuxt"],
-  shadcn: {
-    prefix: "",
-    componentDir: "./app/components/ui",
+  modules: ["@sidebase/nuxt-auth"],
+  auth: {
+    provider: {
+      type: "authjs",
+      trustHost: false,
+      defaultProvider: "google",
+      addDefaultCallbackUrl: true,
+    },
   },
 });
