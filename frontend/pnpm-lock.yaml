@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@nuxt/icon':
-        specifier: ^1.6.1
-        version: 1.6.1(magicast@0.3.5)(rollup@4.24.2)(vite@5.4.10(@types/node@22.8.2)(lightningcss@1.27.0)(terser@5.36.0))(vue@3.5.12(typescript@5.6.3))
       '@nuxt/ui':
         specifier: 3.0.0-alpha.7
         version: 3.0.0-alpha.7(embla-carousel@8.3.0)(ioredis@5.4.1)(magicast@0.3.5)(rollup@4.24.2)(typescript@5.6.3)(vite@5.4.10(@types/node@22.8.2)(lightningcss@1.27.0)(terser@5.36.0))(vue@3.5.12(typescript@5.6.3))
