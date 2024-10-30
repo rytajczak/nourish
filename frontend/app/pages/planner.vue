@@ -1,12 +1,6 @@
-<script setup lang="ts">
-definePageMeta({
-  middleware: "auth",
-});
-</script>
-
 <template>
   <ClientOnly>
-    <div class="flex">
+    <div class="mt-4 flex">
       <UCard>
         <template #header>Monday</template>
         put meal stuff here
