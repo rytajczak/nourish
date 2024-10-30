@@ -2,12 +2,11 @@
 definePageMeta({
   middleware: "auth",
 });
-const { loggedIn, user, session, fetch, clear } = useUserSession();
 </script>
 
 <template>
   <ClientOnly>
-    <UContainer class="flex">
+    <div class="flex">
       <UCard>
         <template #header>Monday</template>
         put meal stuff here
@@ -57,6 +56,6 @@ const { loggedIn, user, session, fetch, clear } = useUserSession();
           <UButton color="neutral">Edit</UButton>
         </template>
       </UCard>
-    </UContainer>
+    </div>
   </ClientOnly>
 </template>
