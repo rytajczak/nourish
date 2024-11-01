@@ -13,11 +13,11 @@ CREATE TABLE IF NOT EXISTS "auth" (
 CREATE TABLE IF NOT EXISTS "profile" (
 	"id" uuid PRIMARY KEY NOT NULL,
 	"username" varchar(50) NOT NULL,
-	"spoonacular_password" varchar(100),
-	"hash" varchar(100),
-	"picture" varchar(100),
 	"first_name" varchar(50) NOT NULL,
 	"last_name" varchar(50),
+	"picture" varchar(100),
+	"spoonacular_password" varchar(100),
+	"hash" varchar(100),
 	"diet" varchar(100),
 	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP,
 	"modified_at" timestamp DEFAULT CURRENT_TIMESTAMP

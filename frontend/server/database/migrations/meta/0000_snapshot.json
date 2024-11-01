@@ -68,24 +68,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "spoonacular_password": {
-          "name": "spoonacular_password",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "hash": {
-          "name": "hash",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "picture": {
-          "name": "picture",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": false
-        },
         "first_name": {
           "name": "first_name",
           "type": "varchar(50)",
@@ -95,6 +77,24 @@
         "last_name": {
           "name": "last_name",
           "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "picture": {
+          "name": "picture",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spoonacular_password": {
+          "name": "spoonacular_password",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hash": {
+          "name": "hash",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": false
         },

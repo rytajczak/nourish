@@ -4,7 +4,7 @@ const { clear } = useUserSession();
 
 <template>
   <aside
-    class="fixed top-0 left-0 block h-screen w-64 -translate-x-full border-r-[1px] bg-[#181818] transition-transform md:translate-x-0"
+    class="fixed top-0 left-0 block h-screen w-64 -translate-x-full border-r-[1px] transition-transform md:translate-x-0 dark:bg-[#181818]"
   >
     <div class="flex flex-col">
       <div class="h-20 border-b-[1px]">
@@ -87,9 +87,3 @@ const { clear } = useUserSession();
     </div>
   </aside>
 </template>
-
-<style scoped>
-* {
-  border-color: #242424;
-}
-</style>

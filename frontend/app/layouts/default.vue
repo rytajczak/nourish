@@ -1,3 +1,7 @@
+<script setup lang="ts">
+const { user } = useUserSession();
+</script>
+
 <template>
   <Sidebar />
   <div class="md:pl-64">
@@ -16,26 +20,36 @@
             size="lg"
             variant="link"
           ></UButton>
-          <UButton
-            color="neutral"
-            icon="solar:settings-outline"
-            size="lg"
-            variant="link"
-          ></UButton>
+          <UPopover>
+            <UButton
+              color="neutral"
+              icon="solar:settings-outline"
+              size="lg"
+              variant="link"
+            ></UButton>
+            <template #content></template>
+          </UPopover>
+          <UPopover>
+            <UButton
+              color="neutral"
+              icon="solar:sun-2-outline"
+              size="lg"
+              variant="link"
+            ></UButton>
+            <template #content>
+              <UCard>
+                <URadioGroup
+                  legend="theme"
+                  v-model="$colorMode.preference"
+                  :items="['system', 'dark', 'light', 'sepia']"
+                ></URadioGroup>
+              </UCard>
+            </template>
+          </UPopover>
         </div>
-        <UAvatar
-          size="lg"
-          src="https://github.com/benjamincanac.png"
-          class="ms-4"
-        ></UAvatar>
+        <UAvatar size="lg" :src="user?.picture" class="ms-4"></UAvatar>
       </div>
     </div>
     <slot></slot>
   </div>
 </template>
-
-<style scoped>
-* {
-  border-color: #242424;
-}
-</style>
