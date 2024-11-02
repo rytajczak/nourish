@@ -1,36 +1,53 @@
-import { pgTable, uuid, varchar, timestamp, foreignKey, primaryKey } from "drizzle-orm/pg-core"
+import { pgTable, unique, uuid, varchar, timestamp, foreignKey, primaryKey } from "drizzle-orm/pg-core"
   import { sql } from "drizzle-orm"
 
 
 
 
-export const auth = pgTable("auth", {
+export const users = pgTable("users", {
 	id: uuid().primaryKey().notNull(),
 	email: varchar({ length: 255 }).notNull(),
+	username: varchar({ length: 50 }).notNull(),
+	firstName: varchar("first_name", { length: 50 }),
+	lastName: varchar("last_name", { length: 50 }),
 	provider: varchar({ length: 50 }),
-	name: varchar({ length: 100 }),
 	createdAt: timestamp("created_at", { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
-	lastSignInAt: timestamp("last_sign_in_at", { mode: 'string' }),
+	lastSignInAt: timestamp("last_sign_in_at", { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
+},
+(table) => {
+	return {
+		usersEmailKey: unique("users_email_key").on(table.email),
+	}
+});
+
+export const security = pgTable("security", {
+	userId: uuid("user_id").primaryKey().notNull(),
+	spoonacularHash: varchar("spoonacular_hash", { length: 100 }),
+	spoonacularPassword: varchar("spoonacular_password", { length: 100 }),
+},
+(table) => {
+	return {
+		securityUserIdFkey: foreignKey({
+			columns: [table.userId],
+			foreignColumns: [users.id],
+			name: "security_user_id_fkey"
+		}).onDelete("cascade"),
+	}
 });
 
 export const profile = pgTable("profile", {
-	id: uuid().primaryKey().notNull(),
-	username: varchar({ length: 50 }).notNull(),
-	firstName: varchar("first_name", { length: 50 }).notNull(),
-	lastName: varchar("last_name", { length: 50 }),
+	userId: uuid("user_id").primaryKey().notNull(),
 	picture: varchar({ length: 100 }),
-	spoonacularPassword: varchar("spoonacular_password", { length: 100 }),
-	hash: varchar({ length: 100 }),
 	diet: varchar({ length: 100 }),
 	createdAt: timestamp("created_at", { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
 	modifiedAt: timestamp("modified_at", { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
 },
 (table) => {
 	return {
-		profileIdFkey: foreignKey({
-			columns: [table.id],
-			foreignColumns: [auth.id],
-			name: "profile_id_fkey"
+		profileUserIdFkey: foreignKey({
+			columns: [table.userId],
+			foreignColumns: [users.id],
+			name: "profile_user_id_fkey"
 		}).onDelete("cascade"),
 	}
 });
@@ -38,6 +55,11 @@ export const profile = pgTable("profile", {
 export const intolerance = pgTable("intolerance", {
 	id: uuid().primaryKey().notNull(),
 	name: varchar({ length: 100 }).notNull(),
+},
+(table) => {
+	return {
+		intoleranceNameKey: unique("intolerance_name_key").on(table.name),
+	}
 });
 
 export const likedRecipe = pgTable("liked_recipe", {
@@ -56,7 +78,7 @@ export const profileIntolerance = pgTable("profile_intolerance", {
 	return {
 		profileIntoleranceProfileIdFkey: foreignKey({
 			columns: [table.profileId],
-			foreignColumns: [profile.id],
+			foreignColumns: [profile.userId],
 			name: "profile_intolerance_profile_id_fkey"
 		}).onDelete("cascade"),
 		profileIntoleranceIntoleranceIdFkey: foreignKey({
@@ -76,7 +98,7 @@ export const profileLikedRecipe = pgTable("profile_liked_recipe", {
 	return {
 		profileLikedRecipeProfileIdFkey: foreignKey({
 			columns: [table.profileId],
-			foreignColumns: [profile.id],
+			foreignColumns: [profile.userId],
 			name: "profile_liked_recipe_profile_id_fkey"
 		}).onDelete("cascade"),
 		profileLikedRecipeLikedRecipeIdFkey: foreignKey({

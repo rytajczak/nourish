@@ -1,23 +1,28 @@
 -- Current sql file was generated after introspecting the database
 -- If you want to run this migration please uncomment this code before executing migrations
 /*
-CREATE TABLE IF NOT EXISTS "auth" (
+CREATE TABLE IF NOT EXISTS "users" (
 	"id" uuid PRIMARY KEY NOT NULL,
 	"email" varchar(255) NOT NULL,
+	"username" varchar(50) NOT NULL,
+	"first_name" varchar(50),
+	"last_name" varchar(50),
 	"provider" varchar(50),
-	"name" varchar(100),
 	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP,
-	"last_sign_in_at" timestamp
+	"last_sign_in_at" timestamp DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT "users_email_key" UNIQUE("email"),
+	CONSTRAINT "users_username_key" UNIQUE("username")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "security" (
+	"user_id" uuid PRIMARY KEY NOT NULL,
+	"spoonacular_hash" varchar(100),
+	"spoonacular_password" varchar(100)
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "profile" (
-	"id" uuid PRIMARY KEY NOT NULL,
-	"username" varchar(50) NOT NULL,
-	"first_name" varchar(50) NOT NULL,
-	"last_name" varchar(50),
+	"user_id" uuid PRIMARY KEY NOT NULL,
 	"picture" varchar(100),
-	"spoonacular_password" varchar(100),
-	"hash" varchar(100),
 	"diet" varchar(100),
 	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP,
 	"modified_at" timestamp DEFAULT CURRENT_TIMESTAMP
@@ -25,7 +30,8 @@ CREATE TABLE IF NOT EXISTS "profile" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "intolerance" (
 	"id" uuid PRIMARY KEY NOT NULL,
-	"name" varchar(100) NOT NULL
+	"name" varchar(100) NOT NULL,
+	CONSTRAINT "intolerance_name_key" UNIQUE("name")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "liked_recipe" (
@@ -49,13 +55,19 @@ CREATE TABLE IF NOT EXISTS "profile_liked_recipe" (
 );
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "profile" ADD CONSTRAINT "profile_id_fkey" FOREIGN KEY ("id") REFERENCES "public"."auth"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "security" ADD CONSTRAINT "security_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "profile_intolerance" ADD CONSTRAINT "profile_intolerance_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "profile" ADD CONSTRAINT "profile_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "profile_intolerance" ADD CONSTRAINT "profile_intolerance_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("user_id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -67,7 +79,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "profile_liked_recipe" ADD CONSTRAINT "profile_liked_recipe_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "profile_liked_recipe" ADD CONSTRAINT "profile_liked_recipe_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("user_id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
