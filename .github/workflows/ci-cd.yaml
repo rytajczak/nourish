@@ -24,6 +24,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker images
-          run: |
-            docker-compose build
-            docker-compose push
+        run: |
+          docker-compose build  # Build all services
+          docker-compose push   # Push all images
