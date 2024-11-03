@@ -1,13 +1,13 @@
-import axios from "axios";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 
 export default defineOAuthGoogleEventHandler({
   async onSuccess(event, { user }) {
+    console.log(user);
     const result = await useDB()
       .select()
-      .from(tables.auth)
-      .where(eq(tables.auth.email, user.email))
+      .from(tables.users)
+      .where(eq(tables.users.email, user.email))
       .limit(1)
       .execute();
 
@@ -17,43 +17,34 @@ export default defineOAuthGoogleEventHandler({
       return sendRedirect(event, "/planner");
     }
 
-    const authResult = await useDB()
-      .insert(tables.auth)
+    const createdUser = await useDB()
+      .insert(tables.users)
       .values({
         id: uuidv4(),
         email: user.email,
+        username: user.name,
         provider: "google",
       })
-      .returning({ insertedId: tables.auth.id });
+      .returning({ insertedId: tables.users.id });
 
-    const headers = {
-      "x-rapidapi-key": process.env.RAPIDAPI_KEY!,
-      "x-rapidapi-host": process.env.RAPIDAPI_HOST!,
-      "Content-Type": "application/json",
-    };
-
-    const res = await axios.post(
+    const res = await $fetch<Record<string, any>>(
       `https://${process.env.RAPIDAPI_HOST}/users/connect`,
       {
-        username: user.name,
-        firstName: user.given_name,
-        lastName: user.family_name,
-        email: user.email,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-rapidapi-key": process.env.RAPIDAPI_KEY!,
+          "x-rapidapi-host": process.env.RAPIDAPI_HOST!,
+        },
+        body: {
+          username: user.name,
+          firstName: user.given_name,
+          lastName: user.family_name,
+        },
       },
-      { headers },
     );
 
-    await useDB().insert(tables.profile).values({
-      id: authResult[0].insertedId,
-      username: res.data.username,
-      firstName: user.given_name,
-      lastName: user.family_name,
-      spoonacularPassword: res.data.spoonacularPassword,
-      hash: res.data.hash,
-      picture: user.picture,
-    });
-
-    user.id = authResult[0].insertedId;
+    user.id = createdUser[0].insertedId;
     await setUserSession(event, { user });
     return sendRedirect(event, "/planner");
   },
