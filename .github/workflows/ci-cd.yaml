@@ -13,23 +13,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Log in to GitHub Package Registry
-        uses: docker/login-action@v2
+      - name: Deploy to DigitalOcean VPS
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GH_TOKEN }}
-
-      - name: Install Docker Compose
-        run: |
-          DOCKER_COMPOSE_VERSION=1.29.2
-          curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          chmod +x /usr/local/bin/docker-compose
-
-      - name: Build and push Docker images
-        run: |
-          docker-compose build  # Build all services
-          docker-compose push   # Push all images
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_NAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd ~/capstone || exit 1
+            git pull || exit 1
+            make clean || exit 1
+            make all || exit 1
