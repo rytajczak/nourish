@@ -1,4 +1,4 @@
-FROM node:23.1.0
+FROM node:23-alpine as build
 
 WORKDIR /app/
 
@@ -12,4 +12,10 @@ COPY . /app/
 
 RUN pnpm build
 
-CMD ["node", ".output/server/index.mjs"] 
+FROM node:23-alpine as prod
+
+WORKDIR /app
+
+COPY --from=build /app/.output /app/.output
+
+CMD ["node", ".output/server/index.mjs"]

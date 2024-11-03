@@ -1,3 +1,9 @@
+<script setup lang="ts">
+definePageMeta({
+  middleware: "auth",
+});
+</script>
+
 <template>
   <h1>this page might not be used too much</h1>
   <p>
