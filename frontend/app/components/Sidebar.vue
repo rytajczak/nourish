@@ -55,8 +55,8 @@ const { clear } = useUserSession();
           color="neutral"
           variant="ghost"
           to="/profile"
-          icon="solar:medal-ribbon-star-outline"
-          >My Plan</UButton
+          icon="solar:user-circle-outline"
+          >Profile</UButton
         >
         <UButton
           size="lg"
