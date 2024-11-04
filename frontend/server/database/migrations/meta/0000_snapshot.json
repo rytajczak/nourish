@@ -26,18 +26,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "first_name": {
-          "name": "first_name",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "last_name": {
-          "name": "last_name",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false
-        },
         "provider": {
           "name": "provider",
           "type": "varchar(50)",
@@ -69,13 +57,6 @@
           ],
           "nullsNotDistinct": false,
           "name": "users_email_key"
-        },
-        "users_username_key": {
-          "columns": [
-            "username"
-          ],
-          "nullsNotDistinct": false,
-          "name": "users_username_key"
         }
       },
       "checkConstraints": {}
@@ -89,6 +70,12 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true
+        },
+        "spoonacular_username": {
+          "name": "spoonacular_username",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
         },
         "spoonacular_hash": {
           "name": "spoonacular_hash",

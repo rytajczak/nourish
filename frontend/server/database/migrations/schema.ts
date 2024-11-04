@@ -8,8 +8,6 @@ export const users = pgTable("users", {
 	id: uuid().primaryKey().notNull(),
 	email: varchar({ length: 255 }).notNull(),
 	username: varchar({ length: 50 }).notNull(),
-	firstName: varchar("first_name", { length: 50 }),
-	lastName: varchar("last_name", { length: 50 }),
 	provider: varchar({ length: 50 }),
 	createdAt: timestamp("created_at", { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
 	lastSignInAt: timestamp("last_sign_in_at", { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
@@ -22,6 +20,7 @@ export const users = pgTable("users", {
 
 export const security = pgTable("security", {
 	userId: uuid("user_id").primaryKey().notNull(),
+	spoonacularUsername: varchar("spoonacular_username", { length: 100 }),
 	spoonacularHash: varchar("spoonacular_hash", { length: 100 }),
 	spoonacularPassword: varchar("spoonacular_password", { length: 100 }),
 },
