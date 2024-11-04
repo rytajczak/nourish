@@ -10,22 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      - name: Add SSH Key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.VPS_SSH_KEY }}
-          known_hosts: rrat-vps
+      - name: Log in to GitHub Docker Registry
+        run: echo "${ secrets.GH_TOKEN }" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Deploy to DigitalOcean VPS
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_IP }}
-          username: ${{ secrets.VPS_NAME }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            cd ~/capstone || exit 1
-            git pull || exit 1
-            make reset || exit 1
+      - name: Build and Push Images
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ github.sha }} .
+          docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ github.sha }}
