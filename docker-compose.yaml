@@ -17,7 +17,7 @@ services:
       - bridge
 
   frontend:
-    build: ./frontend
+    image: "ghcr.io/rytajczak/nourish-frontend:latest"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
