@@ -13,6 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Add SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.VPS_SSH_KEY }}
+
       - name: Deploy to DigitalOcean VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -22,5 +27,4 @@ jobs:
           script: |
             cd ~/capstone || exit 1
             git pull || exit 1
-            make clean || exit 1
-            make all || exit 1
+            make reset || exit 1
