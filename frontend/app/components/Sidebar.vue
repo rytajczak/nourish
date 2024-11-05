@@ -4,7 +4,7 @@ const { clear } = useUserSession();
 
 <template>
   <aside
-    class="fixed top-0 left-0 block h-screen w-64 -translate-x-full border-r-[1px] transition-transform md:translate-x-0 dark:bg-[#181818]"
+    class="fixed top-0 left-0 block h-screen w-64 -translate-x-full border-r-[1px] transition-transform md:translate-x-0"
   >
     <div class="flex flex-col">
       <div class="h-20 border-b-[1px]">
@@ -14,7 +14,7 @@ const { clear } = useUserSession();
       </div>
       <div class="flex flex-col px-6 py-4">
         <UButton
-          color="neutral"
+          color="primary"
           variant="subtle"
           icon="solar:add-circle-bold"
           class="items-center rounded-lg px-6 py-3"

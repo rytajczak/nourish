@@ -4,12 +4,7 @@ const { user } = useUserSession();
 
 <template>
   <div class="flex h-20 items-center justify-between border-b-[1px] px-8">
-    <UInput
-      color="neutral"
-      size="xl"
-      icon="i-heroicons-magnifying-glass"
-      placeholder="What would you like to cook?"
-    />
+    <RecipeSearch />
     <div class="flex items-center">
       <div class="border-r pr-2">
         <UButton
@@ -46,7 +41,7 @@ const { user } = useUserSession();
         </UPopover>
       </div>
       <ULink to="/profile">
-        <UAvatar size="lg" :src="user.picture" class="ms-4"></UAvatar>
+        <!-- <UAvatar size="lg" :src="user.picture" class="ms-4"></UAvatar> -->
       </ULink>
     </div>
   </div>

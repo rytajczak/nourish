@@ -1,32 +1,36 @@
 services:
-  traefik:
-    image: "traefik:v3.1"
-    container_name: "traefik"
+  reverse-proxy:
+    image: traefik:v3.1
     command:
-      - "--configFile=/etc/traefik/traefik.yaml"
-      - "--log.level=DEBUG"
       - "--api.insecure=true"
-      - "--providers.docker=true"
+      - "--providers.docker"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--entrypoints.websecure.address=:443"
     ports:
       - "80:80"
       - "443:443"
       - "8080:8080"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - bridge
 
+  # watchtower:
+  #   image: containrrr/watchtower
+  #   command:
+  #     - "--label-enable"
+  #     - "--interval 30"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - /root/.docker/config.json:/config.json
+
   frontend:
-    build: ./frontend
+    image: ghcr.io/rytajczak/nourish-frontend:latest
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+      - "com.centurylinklabs.watchtower.enable=true"
     env_file:
       - ./frontend/.env
     networks:
