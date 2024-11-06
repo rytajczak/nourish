@@ -30,7 +30,6 @@ const findNutrient = (nutrients: any[], name: string): Macro => {
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
-  console.log(query);
   const res = await $fetch<Record<string, any>>(
     "http://localhost:8080/search",
     {
