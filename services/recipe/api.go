@@ -31,7 +31,7 @@ func (s *ApiServer) Start(listenAddr string) error {
 	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
 		params := r.URL.Query()
 		query := params.Get("query")
-		log.Printf("new search for: %s", query)
+		log.Printf("processing search for '%s'", query)
 		recipes := s.svc.SearchRecipes(query, context.Background())
 		WriteJSON(w, 200, recipes)
 	})

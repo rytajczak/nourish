@@ -10,9 +10,10 @@ import (
 func main() {
 	godotenv.Load()
 
-	url := os.Getenv("RAPIDAPI_URL")
+	host := os.Getenv("API_HOST")
+	key := os.Getenv("API_KEY")
 
-	svc := NewRecipeService(url)
+	svc := NewRecipeService(host, key)
 	api := NewApiServer(svc)
-	log.Fatal(api.Start(":8081").Error())
+	log.Fatal(api.Start(":8080").Error())
 }
