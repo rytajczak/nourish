@@ -4,29 +4,48 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"time"
 )
 
 type Service interface {
-	SearchRecipes(string, context.Context) []Recipe
-	GetRecipeById(context.Context)
+	SearchRecipes(string, context.Context) map[string]any
+	GetRecipeById(int, context.Context) map[string]any
 	CreateCustomRecipe(context.Context)
 }
 
 type RecipeService struct {
 	url    string
+	host   string
+	key    string
 	client *http.Client
 }
 
-func (r *RecipeService) SearchRecipes(query string, ctx context.Context) []Recipe {
-	url := fmt.Sprintf("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?query=%s&instructionsRequired=false&fillIngredients=false&addRecipeInformation=false&addRecipeInstructions=false&addRecipeNutrition=false&ignorePantry=true&offset=0&number=10", query)
+func (r *RecipeService) newRequest(method, endpoint string, body io.Reader) (*http.Request, error) {
+	url := fmt.Sprintf("%s%s", r.url, endpoint)
+	req, err := http.NewRequest(method, url, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("x-rapidapi-key", r.key)
+	req.Header.Add("x-rapidapi-host", r.host)
+	return req, nil
+}
 
-	req, _ := http.NewRequest("GET", url, nil)
+func (r *RecipeService) SearchRecipes(query string, ctx context.Context) map[string]any {
+	req, err := r.newRequest("GET", "/recipes/complexSearch", nil)
+	if err != nil {
+		log.Fatal("failed to attach headers")
+	}
 
-	req.Header.Add("x-rapidapi-key", "54749c10eamsh09c102a879618cdp1a0440jsn8aa999a1f52c")
-	req.Header.Add("x-rapidapi-host", "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com")
+	q := req.URL.Query()
+	q.Add("query", query)
+	q.Add("addRecipeNutrition", "true")
+	q.Add("instructionsRequired", "true")
+	q.Add("number", "30")
+	req.URL.RawQuery = q.Encode()
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -34,25 +53,48 @@ func (r *RecipeService) SearchRecipes(query string, ctx context.Context) []Recip
 	}
 	defer res.Body.Close()
 
-	var response Response
+	var response map[string]any
 	if err := json.NewDecoder(res.Body).Decode(&response); err != nil {
 		log.Fatal("couldn't unmarshal results")
 	}
 
-	return response.Recipes
+	return response
 }
 
-func (r *RecipeService) GetRecipeById(context.Context) {
-	panic("unimplemented")
+func (r *RecipeService) GetRecipeById(id int, ctx context.Context) map[string]any {
+	url := fmt.Sprintf("/recipes/%d/information", id)
+	fmt.Println(url)
+
+	req, err := r.newRequest("GET", url, nil)
+	if err != nil {
+		log.Fatal("failed to attach headers")
+	}
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer res.Body.Close()
+
+	var response map[string]any
+	if err := json.NewDecoder(res.Body).Decode(&response); err != nil {
+		log.Fatal("couldn't unmarshal results")
+	}
+
+	return response
 }
 
 func (r *RecipeService) CreateCustomRecipe(context.Context) {
 	panic("unimplemented")
 }
 
-func NewRecipeService(url string) Service {
+func NewRecipeService(host string, key string) Service {
+	url := fmt.Sprintf("https://%s", host)
+
 	return &RecipeService{
 		url:    url,
+		host:   host,
+		key:    key,
 		client: &http.Client{Timeout: 10 * time.Second},
 	}
 }

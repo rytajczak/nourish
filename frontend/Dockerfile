@@ -1,4 +1,4 @@
-FROM node:23-alpine as build
+FROM node:22-alpine as build
 
 WORKDIR /app/
 
@@ -12,7 +12,7 @@ COPY . /app/
 
 RUN pnpm build
 
-FROM node:23-alpine as prod
+FROM node:22-alpine as prod
 
 WORKDIR /app
 

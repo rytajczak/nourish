@@ -5,17 +5,15 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"id" uuid PRIMARY KEY NOT NULL,
 	"email" varchar(255) NOT NULL,
 	"username" varchar(50) NOT NULL,
-	"first_name" varchar(50),
-	"last_name" varchar(50),
 	"provider" varchar(50),
 	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP,
 	"last_sign_in_at" timestamp DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT "users_email_key" UNIQUE("email"),
-	CONSTRAINT "users_username_key" UNIQUE("username")
+	CONSTRAINT "users_email_key" UNIQUE("email")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "security" (
 	"user_id" uuid PRIMARY KEY NOT NULL,
+	"spoonacular_username" varchar(100),
 	"spoonacular_hash" varchar(100),
 	"spoonacular_password" varchar(100)
 );

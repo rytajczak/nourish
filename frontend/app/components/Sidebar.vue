@@ -4,20 +4,23 @@ const { clear } = useUserSession();
 
 <template>
   <aside
-    class="fixed top-0 left-0 block h-screen w-64 -translate-x-full border-r-[1px] transition-transform md:translate-x-0 dark:bg-[#181818]"
+    class="fixed top-0 left-0 block h-screen w-64 -translate-x-full border-r-[1px] transition-transform md:translate-x-0"
   >
     <div class="flex flex-col">
       <div class="h-20 border-b-[1px]">
-        <NuxtLink to="/" class="block px-6 py-[24px] text-2xl font-semibold">
+        <NuxtLink
+          to="/"
+          class="flex items-center px-6 py-[24px] text-2xl font-bold"
+        >
+          <Icon name="lucide:leaf" class="mr-2 text-green-600"></Icon>
           Nourish
         </NuxtLink>
       </div>
       <div class="flex flex-col px-6 py-4">
         <UButton
-          color="neutral"
-          variant="subtle"
+          variant="solid"
           icon="solar:add-circle-bold"
-          class="items-center rounded-lg px-6 py-3"
+          class="items-center rounded-lg bg-green-600 px-6 py-3"
           >Add a Recipe</UButton
         >
         <span class="ms-3 mt-8 mb-2 text-sm text-gray-700 dark:text-gray-400"
@@ -35,7 +38,7 @@ const { clear } = useUserSession();
           size="lg"
           color="neutral"
           variant="ghost"
-          to="/saved-recipes"
+          to="/recipes/saved"
           icon="solar:bookmark-outline"
           >Saved Recipes</UButton
         >
@@ -55,22 +58,14 @@ const { clear } = useUserSession();
           color="neutral"
           variant="ghost"
           to="/profile"
-          icon="solar:medal-ribbon-star-outline"
-          >My Plan</UButton
+          icon="solar:user-circle-outline"
+          >Profile</UButton
         >
         <UButton
           size="lg"
           color="neutral"
           variant="ghost"
-          to="/favorites"
-          icon="solar:chef-hat-heart-outline"
-          >My Favorites</UButton
-        >
-        <UButton
-          size="lg"
-          color="neutral"
-          variant="ghost"
-          to="/custom-recipes"
+          to="/recipes/custom"
           icon="solar:document-text-outline"
           >My Recipes</UButton
         >
