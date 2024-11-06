@@ -1,16 +1,13 @@
 <script setup lang="ts">
 const route = useRoute();
-const query = ref("");
+const searchString = ref("");
+const query = useState("query", () => "");
 
 async function search() {
-  navigateTo(`/search-recipes?query=${query.value}`);
+  query.value = searchString.value;
+  navigateTo(`/recipes/search?query=${query.value}`);
+  searchString.value = "";
 }
-watch(
-  () => route.path,
-  () => {
-    query.value = "";
-  },
-);
 </script>
 
 <template>
@@ -19,7 +16,7 @@ watch(
     size="xl"
     icon="i-heroicons-magnifying-glass"
     placeholder="Search Recipes"
-    v-model="query"
+    v-model="searchString"
     @keydown.enter="search"
   >
   </UInput>

@@ -1,16 +1,15 @@
 <script setup lang="ts">
-const route = useRoute();
-const query = ref(route.query.query);
+const query = useState("query");
 
 const { data, status, execute } = await useFetch("/api/recipes/search", {
   lazy: true,
+  watch: false,
   query: { query },
 });
 
 watch(
-  () => route.query.query,
-  (newQuery) => {
-    query.value = newQuery;
+  () => query.value,
+  () => {
     execute();
   },
 );
@@ -19,15 +18,13 @@ watch(
 <template>
   <div class="mx-8 mt-6">
     <div class="flex items-center">
-      <h1 class="text-3xl font-semibold">
-        Results for '{{ route.query.query }}'
-      </h1>
+      <h1 class="text-3xl font-semibold">Results for '{{ query }}'</h1>
       <USeparator orientation="vertical" class="h-8 px-4" />
       <span v-if="status === 'success'" class="text-blue-500 dark:text-blue-400"
         >{{ data?.totalResults }} recipes</span
       >
       <USkeleton v-if="status === 'pending'" class="h-6 w-24"></USkeleton>
-      <span v-if="status === 'error'" class="text-red-400"
+      <span v-if="status === 'error'" class="text-red-500 dark:text-red-400"
         >Failed to get recipes</span
       >
     </div>
