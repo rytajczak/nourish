@@ -1,7 +1,11 @@
 <script setup lang="ts">
+const { loggedIn } = useUserSession();
 definePageMeta({
   layout: false,
 });
+if (loggedIn.value) {
+  navigateTo("/planner");
+}
 </script>
 
 <template>
