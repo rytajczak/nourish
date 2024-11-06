@@ -1,6 +1,8 @@
 ## Capstone
 
-![Logo](public/logo.png)
+<p align="center">
+  <img src="/public/logo.png" alt="logo" width="383"/>
+</p>
 
 **URL:** _not public yet_
 
