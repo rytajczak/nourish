@@ -8,16 +8,19 @@ const { clear } = useUserSession();
   >
     <div class="flex flex-col">
       <div class="h-20 border-b-[1px]">
-        <NuxtLink to="/" class="block px-6 py-[24px] text-2xl font-semibold">
+        <NuxtLink
+          to="/"
+          class="flex items-center px-6 py-[24px] text-2xl font-bold"
+        >
+          <Icon name="lucide:leaf" class="mr-2 text-green-600"></Icon>
           Nourish
         </NuxtLink>
       </div>
       <div class="flex flex-col px-6 py-4">
         <UButton
-          color="primary"
-          variant="subtle"
+          variant="solid"
           icon="solar:add-circle-bold"
-          class="items-center rounded-lg px-6 py-3"
+          class="items-center rounded-lg bg-green-600 px-6 py-3"
           >Add a Recipe</UButton
         >
         <span class="ms-3 mt-8 mb-2 text-sm text-gray-700 dark:text-gray-400"

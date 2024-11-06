@@ -1,9 +1,9 @@
 <script setup lang="ts">
-const route = useRoute();
 const searchString = ref("");
 const query = useState("query", () => "");
 
 async function search() {
+  if (!searchString.value) return;
   query.value = searchString.value;
   navigateTo(`/recipes/search?query=${query.value}`);
   searchString.value = "";
