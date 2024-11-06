@@ -15,7 +15,7 @@ export type RecipePreview = {
 };
 
 type Resp = {
-  offset: number;
+  offset: string;
   number: number;
   recipePreviews: RecipePreview[];
   totalResults: number;
@@ -29,9 +29,16 @@ const findNutrient = (nutrients: any[], name: string): Macro => {
 };
 
 export default defineEventHandler(async (event) => {
-  const res = await searchRecipes(event, "chicken");
+  const query = getQuery(event);
+  console.log(query);
+  const res = await $fetch<Record<string, any>>(
+    "http://localhost:8080/search",
+    {
+      query: { query: query.query },
+    },
+  );
 
-  const recipePreviews = res.results.map((recipe) => ({
+  const recipePreviews = res.results.map((recipe: any) => ({
     id: recipe.id,
     title: recipe.title,
     image: recipe.image,
@@ -48,8 +55,6 @@ export default defineEventHandler(async (event) => {
     recipePreviews,
     totalResults: res.totalResults,
   };
-
-  console.log(result.recipePreviews[0]);
 
   return result;
 });
