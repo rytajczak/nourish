@@ -12,7 +12,7 @@ import (
 
 type Service interface {
 	SearchRecipes(string, context.Context) map[string]any
-	GetRecipeById(int, context.Context)
+	GetRecipeById(int, context.Context) map[string]any
 	CreateCustomRecipe(context.Context)
 }
 
@@ -61,8 +61,27 @@ func (r *RecipeService) SearchRecipes(query string, ctx context.Context) map[str
 	return response
 }
 
-func (r *RecipeService) GetRecipeById(id int, ctx context.Context) {
-	panic("unimplemented")
+func (r *RecipeService) GetRecipeById(id int, ctx context.Context) map[string]any {
+	url := fmt.Sprintf("/recipes/%d/information", id)
+	fmt.Println(url)
+
+	req, err := r.newRequest("GET", url, nil)
+	if err != nil {
+		log.Fatal("failed to attach headers")
+	}
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer res.Body.Close()
+
+	var response map[string]any
+	if err := json.NewDecoder(res.Body).Decode(&response); err != nil {
+		log.Fatal("couldn't unmarshal results")
+	}
+
+	return response
 }
 
 func (r *RecipeService) CreateCustomRecipe(context.Context) {
