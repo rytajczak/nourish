@@ -1,6 +1,5 @@
 ## Nourish
 
-**Project Name:** Help Me Meal Prep
 **URL:** *not public yet*
 
 #### Overview
@@ -17,6 +16,8 @@ Nourish is a full-featured meal planning web application designed to streamline 
 - User Authentication: Secure login with Google OAuth.
 
 #### Technology Stack
+
+![Architecture Diagram](public/architecture.png)
 
 - **Frontend:** Nuxt.js with Tailwind CSS for styling.
 - **Backend:** Nuxt Nitro server, structured as a monolith but with some functionality separated for clarity.
