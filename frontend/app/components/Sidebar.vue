@@ -35,7 +35,7 @@ const { clear } = useUserSession();
           size="lg"
           color="neutral"
           variant="ghost"
-          to="/saved-recipes"
+          to="/recipes/saved"
           icon="solar:bookmark-outline"
           >Saved Recipes</UButton
         >
@@ -62,7 +62,7 @@ const { clear } = useUserSession();
           size="lg"
           color="neutral"
           variant="ghost"
-          to="/custom-recipes"
+          to="/recipes/custom"
           icon="solar:document-text-outline"
           >My Recipes</UButton
         >
