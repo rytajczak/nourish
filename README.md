@@ -1,6 +1,8 @@
-## Nourish
+## Capstone
 
-**URL:** *not public yet*
+![Logo](public/logo.png)
+
+**URL:** _not public yet_
 
 #### Overview
 
