@@ -26,7 +26,10 @@ watch(
       <span v-if="status === 'success'" class="text-blue-500 dark:text-blue-400"
         >{{ data?.totalResults }} recipes</span
       >
-      <USkeleton v-else class="h-6 w-24"></USkeleton>
+      <USkeleton v-if="status === 'pending'" class="h-6 w-24"></USkeleton>
+      <span v-if="status === 'error'" class="text-red-400"
+        >Failed to get recipes</span
+      >
     </div>
     <div class="mt-8 grid gap-8 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
       <RecipeCard
@@ -35,7 +38,7 @@ watch(
         v-bind="preview"
       ></RecipeCard>
       <UCard
-        v-else
+        v-if="status === 'pending'"
         v-for="i in 30"
         :ui="{
           body: 'p-0 sm:p-0',
