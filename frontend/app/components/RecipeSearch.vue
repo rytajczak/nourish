@@ -15,7 +15,7 @@ async function search() {
     color="neutral"
     size="xl"
     icon="i-heroicons-magnifying-glass"
-    placeholder="Search Recipes"
+    placeholder="What would you like to cook?"
     v-model="searchString"
     @keydown.enter="search"
   >

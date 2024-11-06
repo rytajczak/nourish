@@ -7,12 +7,9 @@ const { data, status, execute } = await useFetch("/api/recipes/search", {
   query: { query },
 });
 
-watch(
-  () => query.value,
-  () => {
-    execute();
-  },
-);
+watch(query, () => {
+  execute();
+});
 </script>
 
 <template>
