@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { data } = useFetch("/api/recipes");
+const { data } = useFetch("/api/recipes/search");
 </script>
 
 <template>
@@ -11,7 +11,7 @@ const { data } = useFetch("/api/recipes");
         >{{ data?.recipePreviews.length }} recipes</span
       >
     </div>
-    <div class="mt-8 grid gap-8 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
+    <div class="mt-8 grid gap-8 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
       <RecipeCard
         v-for="preview in data?.recipePreviews"
         v-bind="preview"

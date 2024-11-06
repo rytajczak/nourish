@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { RecipePreview } from "~~/server/api/recipes/index.get";
+import type { RecipePreview } from "~~/server/api/recipes/search/index.get";
 const props = defineProps<RecipePreview>();
 </script>
 
@@ -9,7 +9,11 @@ const props = defineProps<RecipePreview>();
     class="max-w-72 bg-[#f5f5f5] shadow-xl dark:bg-[#262626]"
   >
     <div class="relative">
-      <img :src="props.image" alt="" class="rounded-t-lg" />
+      <NuxtImg
+        :src="props.image"
+        class="max-h-48 w-full rounded-t-lg"
+        placeholder
+      />
       <UCard
         :ui="{ body: 'py-1 px-2 sm:py-1 sm:px-2' }"
         class="absolute bottom-0 left-0 mb-2 ml-6"

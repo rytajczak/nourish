@@ -1,13 +1,16 @@
 <script setup lang="ts">
-const {
-  data: recipePreviews,
-  status,
-  execute,
-} = useFetch("/api/recipes", {
-  immediate: false,
-  watch: false,
-});
-const searchString = ref("");
+const route = useRoute();
+const query = ref("");
+
+async function search() {
+  navigateTo(`/search-recipes?query=${query.value}`);
+}
+watch(
+  () => route.path,
+  () => {
+    query.value = "";
+  },
+);
 </script>
 
 <template>
@@ -16,24 +19,8 @@ const searchString = ref("");
     size="xl"
     icon="i-heroicons-magnifying-glass"
     placeholder="Search Recipes"
-    v-model="searchString"
+    v-model="query"
+    @keydown.enter="search"
   >
-    <template #trailing>
-      <UModal
-        :title="`${recipePreviews?.totalResults} results for '${searchString}'`"
-      >
-        <UButton
-          @click="execute()"
-          :disabled="searchString.length < 1 || status === 'pending'"
-          variant="subtle"
-          size="sm"
-          >Search</UButton
-        >
-        <template #body>
-          <div v-if="status === 'success'"></div>
-          <div v-else>pending</div>
-        </template>
-      </UModal>
-    </template>
   </UInput>
 </template>

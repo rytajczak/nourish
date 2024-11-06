@@ -62,14 +62,6 @@ const { clear } = useUserSession();
           size="lg"
           color="neutral"
           variant="ghost"
-          to="/favorites"
-          icon="solar:chef-hat-heart-outline"
-          >My Favorites</UButton
-        >
-        <UButton
-          size="lg"
-          color="neutral"
-          variant="ghost"
           to="/custom-recipes"
           icon="solar:document-text-outline"
           >My Recipes</UButton
