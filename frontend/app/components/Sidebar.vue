@@ -18,9 +18,10 @@ const { clear } = useUserSession();
       </div>
       <div class="flex flex-col px-6 py-4">
         <UButton
-          variant="solid"
+          color="neutral"
+          variant="subtle"
           icon="solar:add-circle-bold"
-          class="items-center rounded-lg bg-green-600 px-6 py-3"
+          class="items-center rounded-lg px-6 py-3"
           >Add a Recipe</UButton
         >
         <span class="ms-3 mt-8 mb-2 text-sm text-gray-700 dark:text-gray-400"
