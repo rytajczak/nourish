@@ -63,7 +63,6 @@ func (r *RecipeService) SearchRecipes(query string, ctx context.Context) map[str
 
 func (r *RecipeService) GetRecipeById(id int, ctx context.Context) map[string]any {
 	url := fmt.Sprintf("/recipes/%d/information", id)
-	fmt.Println(url)
 
 	req, err := r.newRequest("GET", url, nil)
 	if err != nil {
