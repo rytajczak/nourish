@@ -1,10 +1,8 @@
 export default defineNuxtConfig({
-  modules: [
-    "nuxt-auth-utils",
-    "@nuxt/ui",
-    "@vueuse/nuxt",
-    "@nuxt/image",
-  ],
+  modules: ["nuxt-auth-utils", "@nuxt/ui", "@vueuse/nuxt", "@nuxt/image"],
+
+  app: { pageTransition: { name: "page", mode: "out-in" } },
+
   css: ["./app/assets/global.css"],
   devtools: { enabled: true },
   future: { compatibilityVersion: 4 },

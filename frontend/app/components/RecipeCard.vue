@@ -7,6 +7,7 @@ const props = defineProps<RecipePreview>();
   <UCard
     :ui="{ body: 'p-0 sm:p-0' }"
     class="max-w-72 bg-[#f5f5f5] shadow-xl dark:bg-[#262626]"
+    @click="navigateTo(`/recipes/${props.id}`)"
   >
     <div class="relative">
       <NuxtImg

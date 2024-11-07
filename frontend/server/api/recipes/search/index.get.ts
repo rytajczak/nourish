@@ -28,32 +28,41 @@ const findNutrient = (nutrients: any[], name: string): Macro => {
     : { amount: 0, unit: "" };
 };
 
-export default defineEventHandler(async (event) => {
-  const query = getQuery(event);
-  const res = await $fetch<Record<string, any>>(
-    "http://localhost:8080/search",
-    {
-      query: { query: query.query },
+export default defineCachedEventHandler(
+  async (event) => {
+    const query = getQuery(event);
+    const res = await $fetch<Record<string, any>>(
+      "http://localhost:8080/search",
+      {
+        query: { query: query.query },
+      },
+    );
+
+    const recipePreviews = res.results.map((recipe: any) => ({
+      id: recipe.id,
+      title: recipe.title,
+      image: recipe.image,
+      calories: findNutrient(recipe.nutrition.nutrients, "Calories"),
+      protein: findNutrient(recipe.nutrition.nutrients, "Protein"),
+      fat: findNutrient(recipe.nutrition.nutrients, "Fat"),
+      carbs: findNutrient(recipe.nutrition.nutrients, "Carbohydrates"),
+      readyInMinutes: recipe.readyInMinutes,
+    }));
+
+    const result: Resp = {
+      offset: res.offset,
+      number: res.number,
+      recipePreviews,
+      totalResults: res.totalResults,
+    };
+
+    return result;
+  },
+  {
+    maxAge: 60 * 60,
+    staleMaxAge: 60 * 60,
+    getKey(event) {
+      return event.path;
     },
-  );
-
-  const recipePreviews = res.results.map((recipe: any) => ({
-    id: recipe.id,
-    title: recipe.title,
-    image: recipe.image,
-    calories: findNutrient(recipe.nutrition.nutrients, "Calories"),
-    protein: findNutrient(recipe.nutrition.nutrients, "Protein"),
-    fat: findNutrient(recipe.nutrition.nutrients, "Fat"),
-    carbs: findNutrient(recipe.nutrition.nutrients, "Carbohydrates"),
-    readyInMinutes: recipe.readyInMinutes,
-  }));
-
-  const result: Resp = {
-    offset: res.offset,
-    number: res.number,
-    recipePreviews,
-    totalResults: res.totalResults,
-  };
-
-  return result;
-});
+  },
+);
