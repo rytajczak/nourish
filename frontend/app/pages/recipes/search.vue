@@ -1,4 +1,8 @@
 <script setup lang="ts">
+definePageMeta({
+  middleware: "queryprotection",
+});
+
 const query = useState("query");
 
 const { data, status, execute } = await useFetch("/api/recipes/search", {
