@@ -8,7 +8,9 @@ const { data, status, execute } = await useFetch("/api/recipes/search", {
 });
 
 watch(query, () => {
-  execute();
+  if (query.value !== "") {
+    execute();
+  }
 });
 </script>
 
@@ -29,11 +31,13 @@ watch(query, () => {
       <RecipeCard
         v-if="status === 'success'"
         v-for="preview in data?.recipePreviews"
+        :key="preview.id"
         v-bind="preview"
       ></RecipeCard>
       <UCard
         v-if="status === 'pending'"
         v-for="i in 30"
+        :key="i"
         :ui="{
           body: 'p-0 sm:p-0',
         }"

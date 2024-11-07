@@ -1,19 +1,23 @@
 <script setup lang="ts">
 import type { RecipePreview } from "~~/server/api/recipes/search/index.get";
+
 const props = defineProps<RecipePreview>();
+
+const { isSaved, toggleSave } = useRecipes();
+const saved = computed(() => isSaved(props.id));
 </script>
 
 <template>
   <UCard
     :ui="{ body: 'p-0 sm:p-0' }"
     class="max-w-72 bg-[#f5f5f5] shadow-xl dark:bg-[#262626]"
-    @click="navigateTo(`/recipes/${props.id}`)"
   >
     <div class="relative">
       <NuxtImg
         :src="props.image"
         class="max-h-48 w-full rounded-t-lg"
         placeholder
+        @click="navigateTo(`/recipes/${props.id}`)"
       />
       <UCard
         :ui="{ body: 'py-1 px-2 sm:py-1 sm:px-2' }"
@@ -32,10 +36,12 @@ const props = defineProps<RecipePreview>();
         }}</span>
         <div>
           <UButton
+            color="secondary"
             class="px-0 pt-1 pb-0"
-            size="lg"
+            size="xl"
             variant="link"
-            icon="solar:bookmark-outline"
+            :icon="saved ? 'solar:bookmark-bold' : 'solar:bookmark-outline'"
+            @click="toggleSave(props.id)"
           />
         </div>
       </div>
