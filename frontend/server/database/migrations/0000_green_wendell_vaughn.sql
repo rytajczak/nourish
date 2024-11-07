@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS "intolerance" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "saved_recipe" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" integer PRIMARY KEY NOT NULL,
 	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP,
 	"modified_at" timestamp DEFAULT CURRENT_TIMESTAMP
 );
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS "profile_intolerance" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "profile_saved_recipe" (
 	"profile_id" uuid NOT NULL,
-	"saved_recipe_id" uuid NOT NULL,
+	"saved_recipe_id" integer NOT NULL,
 	CONSTRAINT "profile_saved_recipe_pkey" PRIMARY KEY("profile_id","saved_recipe_id")
 );
 --> statement-breakpoint

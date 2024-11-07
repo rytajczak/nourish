@@ -206,7 +206,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "integer",
           "primaryKey": true,
           "notNull": true
         },
@@ -303,7 +303,7 @@
         },
         "saved_recipe_id": {
           "name": "saved_recipe_id",
-          "type": "uuid",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         }

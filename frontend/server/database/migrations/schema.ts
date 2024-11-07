@@ -1,4 +1,4 @@
-import { pgTable, unique, uuid, varchar, timestamp, foreignKey, primaryKey } from "drizzle-orm/pg-core"
+import { pgTable, unique, uuid, varchar, timestamp, foreignKey, integer, primaryKey } from "drizzle-orm/pg-core"
   import { sql } from "drizzle-orm"
 
 
@@ -62,7 +62,7 @@ export const intolerance = pgTable("intolerance", {
 });
 
 export const savedRecipe = pgTable("saved_recipe", {
-	id: uuid().primaryKey().notNull(),
+	id: integer().primaryKey().notNull(),
 	createdAt: timestamp("created_at", { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
 	modifiedAt: timestamp("modified_at", { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
 });
@@ -89,7 +89,7 @@ export const profileIntolerance = pgTable("profile_intolerance", {
 
 export const profileSavedRecipe = pgTable("profile_saved_recipe", {
 	profileId: uuid("profile_id").notNull(),
-	savedRecipeId: uuid("saved_recipe_id").notNull(),
+	savedRecipeId: integer("saved_recipe_id").notNull(),
 },
 (table) => {
 	return {
