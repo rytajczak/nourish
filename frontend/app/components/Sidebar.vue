@@ -9,7 +9,7 @@ const { clear } = useUserSession();
     <div class="flex flex-col">
       <div class="h-20 border-b-[1px]">
         <NuxtLink
-          to="/"
+          to="/planner"
           class="flex items-center px-6 py-[24px] text-2xl font-bold"
         >
           <Icon name="lucide:leaf" class="mr-2 text-green-600"></Icon>

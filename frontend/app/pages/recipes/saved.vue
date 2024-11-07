@@ -10,11 +10,11 @@ const { savedRecipes } = useRecipes();
       <span class="text-blue-500 dark:text-blue-400">recipes found</span>
     </div>
     <div class="mt-8 grid gap-8 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
-      <span>{{ savedRecipes }}</span>
-      <!-- <RecipeCard
-        v-for="preview in data?.recipePreviews"
-        v-bind="preview"
-      ></RecipeCard> -->
+      <RecipeCard
+        v-for="recipe in savedRecipes"
+        :key="recipe.id"
+        v-bind="recipe"
+      ></RecipeCard>
     </div>
   </div>
 </template>

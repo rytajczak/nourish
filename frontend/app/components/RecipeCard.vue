@@ -41,7 +41,7 @@ const saved = computed(() => isSaved(props.id));
             size="xl"
             variant="link"
             :icon="saved ? 'solar:bookmark-bold' : 'solar:bookmark-outline'"
-            @click="toggleSave(props.id)"
+            @click="toggleSave(props)"
           />
         </div>
       </div>
