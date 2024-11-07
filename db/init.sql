@@ -28,7 +28,7 @@ CREATE TABLE intolerance (
 );
 
 CREATE TABLE saved_recipe (
-    id UUID PRIMARY KEY,
+    id int PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -41,6 +41,6 @@ CREATE TABLE profile_intolerance (
 
 CREATE TABLE profile_saved_recipe (
     profile_id UUID REFERENCES profile(user_id) ON DELETE CASCADE,
-    saved_recipe_id UUID REFERENCES saved_recipe(id) ON DELETE CASCADE,
+    saved_recipe_id int REFERENCES saved_recipe(id) ON DELETE CASCADE,
     PRIMARY KEY (profile_id, saved_recipe_id)
 );
