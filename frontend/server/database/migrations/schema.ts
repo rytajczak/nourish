@@ -61,10 +61,8 @@ export const intolerance = pgTable("intolerance", {
 	}
 });
 
-export const likedRecipe = pgTable("liked_recipe", {
+export const savedRecipe = pgTable("saved_recipe", {
 	id: uuid().primaryKey().notNull(),
-	title: varchar({ length: 255 }).notNull(),
-	image: varchar({ length: 255 }),
 	createdAt: timestamp("created_at", { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
 	modifiedAt: timestamp("modified_at", { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
 });
@@ -89,22 +87,22 @@ export const profileIntolerance = pgTable("profile_intolerance", {
 	}
 });
 
-export const profileLikedRecipe = pgTable("profile_liked_recipe", {
+export const profileSavedRecipe = pgTable("profile_saved_recipe", {
 	profileId: uuid("profile_id").notNull(),
-	likedRecipeId: uuid("liked_recipe_id").notNull(),
+	savedRecipeId: uuid("saved_recipe_id").notNull(),
 },
 (table) => {
 	return {
-		profileLikedRecipeProfileIdFkey: foreignKey({
+		profileSavedRecipeProfileIdFkey: foreignKey({
 			columns: [table.profileId],
 			foreignColumns: [profile.userId],
-			name: "profile_liked_recipe_profile_id_fkey"
+			name: "profile_saved_recipe_profile_id_fkey"
 		}).onDelete("cascade"),
-		profileLikedRecipeLikedRecipeIdFkey: foreignKey({
-			columns: [table.likedRecipeId],
-			foreignColumns: [likedRecipe.id],
-			name: "profile_liked_recipe_liked_recipe_id_fkey"
+		profileSavedRecipeSavedRecipeIdFkey: foreignKey({
+			columns: [table.savedRecipeId],
+			foreignColumns: [savedRecipe.id],
+			name: "profile_saved_recipe_saved_recipe_id_fkey"
 		}).onDelete("cascade"),
-		profileLikedRecipePkey: primaryKey({ columns: [table.profileId, table.likedRecipeId], name: "profile_liked_recipe_pkey"}),
+		profileSavedRecipePkey: primaryKey({ columns: [table.profileId, table.savedRecipeId], name: "profile_saved_recipe_pkey"}),
 	}
 });

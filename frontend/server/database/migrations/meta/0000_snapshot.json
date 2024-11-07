@@ -200,8 +200,8 @@
       },
       "checkConstraints": {}
     },
-    "public.liked_recipe": {
-      "name": "liked_recipe",
+    "public.saved_recipe": {
+      "name": "saved_recipe",
       "schema": "",
       "columns": {
         "id": {
@@ -209,18 +209,6 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true
-        },
-        "title": {
-          "name": "title",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "image": {
-          "name": "image",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -303,8 +291,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "public.profile_liked_recipe": {
-      "name": "profile_liked_recipe",
+    "public.profile_saved_recipe": {
+      "name": "profile_saved_recipe",
       "schema": "",
       "columns": {
         "profile_id": {
@@ -313,8 +301,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "liked_recipe_id": {
-          "name": "liked_recipe_id",
+        "saved_recipe_id": {
+          "name": "saved_recipe_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -322,9 +310,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "profile_liked_recipe_profile_id_fkey": {
-          "name": "profile_liked_recipe_profile_id_fkey",
-          "tableFrom": "profile_liked_recipe",
+        "profile_saved_recipe_profile_id_fkey": {
+          "name": "profile_saved_recipe_profile_id_fkey",
+          "tableFrom": "profile_saved_recipe",
           "tableTo": "profile",
           "schemaTo": "public",
           "columnsFrom": [
@@ -336,13 +324,13 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "profile_liked_recipe_liked_recipe_id_fkey": {
-          "name": "profile_liked_recipe_liked_recipe_id_fkey",
-          "tableFrom": "profile_liked_recipe",
-          "tableTo": "liked_recipe",
+        "profile_saved_recipe_saved_recipe_id_fkey": {
+          "name": "profile_saved_recipe_saved_recipe_id_fkey",
+          "tableFrom": "profile_saved_recipe",
+          "tableTo": "saved_recipe",
           "schemaTo": "public",
           "columnsFrom": [
-            "liked_recipe_id"
+            "saved_recipe_id"
           ],
           "columnsTo": [
             "id"
@@ -352,11 +340,11 @@
         }
       },
       "compositePrimaryKeys": {
-        "profile_liked_recipe_pkey": {
-          "name": "profile_liked_recipe_pkey",
+        "profile_saved_recipe_pkey": {
+          "name": "profile_saved_recipe_pkey",
           "columns": [
             "profile_id",
-            "liked_recipe_id"
+            "saved_recipe_id"
           ]
         }
       },

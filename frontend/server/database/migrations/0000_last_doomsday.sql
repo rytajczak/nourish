@@ -32,10 +32,8 @@ CREATE TABLE IF NOT EXISTS "intolerance" (
 	CONSTRAINT "intolerance_name_key" UNIQUE("name")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "liked_recipe" (
+CREATE TABLE IF NOT EXISTS "saved_recipe" (
 	"id" uuid PRIMARY KEY NOT NULL,
-	"title" varchar(255) NOT NULL,
-	"image" varchar(255),
 	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP,
 	"modified_at" timestamp DEFAULT CURRENT_TIMESTAMP
 );
@@ -46,10 +44,10 @@ CREATE TABLE IF NOT EXISTS "profile_intolerance" (
 	CONSTRAINT "profile_intolerance_pkey" PRIMARY KEY("profile_id","intolerance_id")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "profile_liked_recipe" (
+CREATE TABLE IF NOT EXISTS "profile_saved_recipe" (
 	"profile_id" uuid NOT NULL,
-	"liked_recipe_id" uuid NOT NULL,
-	CONSTRAINT "profile_liked_recipe_pkey" PRIMARY KEY("profile_id","liked_recipe_id")
+	"saved_recipe_id" uuid NOT NULL,
+	CONSTRAINT "profile_saved_recipe_pkey" PRIMARY KEY("profile_id","saved_recipe_id")
 );
 --> statement-breakpoint
 DO $$ BEGIN
@@ -77,13 +75,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "profile_liked_recipe" ADD CONSTRAINT "profile_liked_recipe_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("user_id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "profile_saved_recipe" ADD CONSTRAINT "profile_saved_recipe_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("user_id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "profile_liked_recipe" ADD CONSTRAINT "profile_liked_recipe_liked_recipe_id_fkey" FOREIGN KEY ("liked_recipe_id") REFERENCES "public"."liked_recipe"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "profile_saved_recipe" ADD CONSTRAINT "profile_saved_recipe_saved_recipe_id_fkey" FOREIGN KEY ("saved_recipe_id") REFERENCES "public"."saved_recipe"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { users, security, profile, profileIntolerance, intolerance, profileLikedRecipe, likedRecipe } from "./schema";
+import { users, security, profile, profileIntolerance, intolerance, profileSavedRecipe, savedRecipe } from "./schema";
 
 export const securityRelations = relations(security, ({one}) => ({
 	user: one(users, {
@@ -19,7 +19,7 @@ export const profileRelations = relations(profile, ({one, many}) => ({
 		references: [users.id]
 	}),
 	profileIntolerances: many(profileIntolerance),
-	profileLikedRecipes: many(profileLikedRecipe),
+	profileSavedRecipes: many(profileSavedRecipe),
 }));
 
 export const profileIntoleranceRelations = relations(profileIntolerance, ({one}) => ({
@@ -37,17 +37,17 @@ export const intoleranceRelations = relations(intolerance, ({many}) => ({
 	profileIntolerances: many(profileIntolerance),
 }));
 
-export const profileLikedRecipeRelations = relations(profileLikedRecipe, ({one}) => ({
+export const profileSavedRecipeRelations = relations(profileSavedRecipe, ({one}) => ({
 	profile: one(profile, {
-		fields: [profileLikedRecipe.profileId],
+		fields: [profileSavedRecipe.profileId],
 		references: [profile.userId]
 	}),
-	likedRecipe: one(likedRecipe, {
-		fields: [profileLikedRecipe.likedRecipeId],
-		references: [likedRecipe.id]
+	savedRecipe: one(savedRecipe, {
+		fields: [profileSavedRecipe.savedRecipeId],
+		references: [savedRecipe.id]
 	}),
 }));
 
-export const likedRecipeRelations = relations(likedRecipe, ({many}) => ({
-	profileLikedRecipes: many(profileLikedRecipe),
+export const savedRecipeRelations = relations(savedRecipe, ({many}) => ({
+	profileSavedRecipes: many(profileSavedRecipe),
 }));
