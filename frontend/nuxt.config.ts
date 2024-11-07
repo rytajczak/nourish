@@ -1,5 +1,11 @@
 export default defineNuxtConfig({
-  modules: ["nuxt-auth-utils", "@nuxt/ui", "@vueuse/nuxt", "@nuxt/image"],
+  modules: [
+    "nuxt-auth-utils",
+    "@nuxt/ui",
+    "@vueuse/nuxt",
+    "@nuxt/image",
+    "@pinia/nuxt",
+  ],
 
   app: { pageTransition: { name: "page", mode: "out-in" } },
 
