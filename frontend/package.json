@@ -2,12 +2,14 @@
   "name": "nuxt-app",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@9.12.1+sha512.e5a7e52a4183a02d5931057f7a0dbff9d5e9ce3161e33fa68ae392125b79282a8a8a470a51dfc8a0ed86221442eb2fb57019b0990ed24fab519bf0e1bc5ccfc4",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "db:pull": "rm -rf ./server/database && drizzle-kit pull",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
@@ -25,16 +27,16 @@
     "uuid": "^11.0.2",
     "vue": "latest"
   },
-  "packageManager": "pnpm@9.12.1+sha512.e5a7e52a4183a02d5931057f7a0dbff9d5e9ce3161e33fa68ae392125b79282a8a8a470a51dfc8a0ed86221442eb2fb57019b0990ed24fab519bf0e1bc5ccfc4",
   "devDependencies": {
     "@iconify-json/solar": "^1.2.1",
     "@tailwindcss/line-clamp": "^0.4.4",
     "@types/pg": "^8.11.10",
     "@vueuse/core": "^11.2.0",
     "@vueuse/nuxt": "^11.2.0",
-    "drizzle-kit": "^0.26.2",
+    "drizzle-kit": "^0.28.0",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
+    "tsx": "^4.19.2",
     "typescript": "^5.6.3"
   }
 }
