@@ -2,12 +2,16 @@
 definePageMeta({
   middleware: "auth",
 });
+const { profile } = useUserStore();
 
-const { user } = useUserSession();
-// const { data: profile } = await useFetch(`/api/profiles/${user.id}`);
+useSeoMeta({
+  title: `${profile?.displayName} | Profile`,
+});
 </script>
 
 <template>
-  <pre>user: {{ user }}</pre>
-  <!-- <pre>data: {{ profile }}</pre> -->
+  <div>
+    <NuxtImg :src="profile?.picture ?? ''" />
+    <pre>{{ profile }}</pre>
+  </div>
 </template>
