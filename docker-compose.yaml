@@ -34,7 +34,7 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     volumes:
-      - ./db/users.sql:/docker-entrypoint-initdb.d/users.sql
+      - ./services/user/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     ports:
       - "5432:5432"
     networks:

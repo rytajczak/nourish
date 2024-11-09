@@ -26,30 +26,30 @@ watch(query, () => {
       <span v-if="status === 'success'" class="text-blue-500 dark:text-blue-400"
         >{{ data?.totalResults }} recipes</span
       >
-      <USkeleton v-if="status === 'pending'" class="h-6 w-24"></USkeleton>
+      <USkeleton v-if="status === 'pending'" class="h-6 w-24" />
       <span v-if="status === 'error'" class="text-red-500 dark:text-red-400"
         >Failed to get recipes</span
       >
     </div>
     <div class="mt-8 grid gap-8 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
       <RecipeCard
-        v-if="status === 'success'"
         v-for="preview in data?.recipePreviews"
+        v-if="status === 'success'"
         :key="preview.id"
         v-bind="preview"
-      ></RecipeCard>
+      />
       <UCard
-        v-if="status === 'pending'"
         v-for="i in 30"
+        v-if="status === 'pending'"
         :key="i"
         :ui="{
           body: 'p-0 sm:p-0',
         }"
       >
-        <USkeleton class="h-48 w-full max-w-72"></USkeleton>
+        <USkeleton class="h-48 w-full max-w-72" />
         <template #footer>
-          <USkeleton class="h-6 w-24"></USkeleton>
-          <USkeleton class="mt-2 h-6 w-14"></USkeleton>
+          <USkeleton 4lass="h-6 w-24" />
+          <USkeleton class="mt-2 h-6 w-14" />
         </template>
       </UCard>
     </div>

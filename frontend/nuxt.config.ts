@@ -1,13 +1,14 @@
 export default defineNuxtConfig({
   modules: [
+    "@nuxt/eslint",
     "nuxt-auth-utils",
     "@nuxt/ui",
     "@vueuse/nuxt",
     "@nuxt/image",
     "@pinia/nuxt",
     "pinia-plugin-persistedstate/nuxt",
-    "@nuxt/eslint",
   ],
+  ssr: false,
 
   app: { pageTransition: { name: "page", mode: "out-in" } },
 

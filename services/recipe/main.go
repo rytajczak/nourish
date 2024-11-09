@@ -10,10 +10,7 @@ import (
 func main() {
 	godotenv.Load()
 
-	host := os.Getenv("API_HOST")
-	key := os.Getenv("API_KEY")
-
-	svc := NewRecipeService(host, key)
+	svc := NewRecipeService(os.Getenv("API_HOST"), os.Getenv("API_KEY"))
 	api := NewApiServer(svc)
 	log.Fatal(api.Start(":8080").Error())
 }

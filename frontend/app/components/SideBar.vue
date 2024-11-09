@@ -9,7 +9,7 @@ function handleLogout() {
 
 <template>
   <aside
-    class="fixed top-0 left-0 block h-screen w-64 -translate-x-full border-r-[1px] transition-transform md:translate-x-0"
+    class="fixed top-0 left-0 z-50 block h-screen w-64 -translate-x-full border-r-[1px] bg-[#ffffff] transition-transform md:translate-x-0 dark:bg-[#171717]"
   >
     <div class="flex flex-col">
       <div class="h-20 border-b-[1px]">
@@ -17,7 +17,7 @@ function handleLogout() {
           to="/planner"
           class="flex items-center px-6 py-[24px] text-2xl font-bold"
         >
-          <Icon name="lucide:leaf" class="mr-2 text-green-600"></Icon>
+          <Icon name="lucide:leaf" class="mr-2 text-green-600" />
           Nourish
         </NuxtLink>
       </div>
@@ -76,11 +76,11 @@ function handleLogout() {
           >My Recipes</UButton
         >
         <UButton
-          @click="handleLogout"
           size="lg"
           color="neutral"
           variant="ghost"
           icon="solar:logout-2-outline"
+          @click="handleLogout"
           >Log Out</UButton
         >
       </div>

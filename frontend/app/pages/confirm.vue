@@ -8,13 +8,11 @@ const { user } = useUserSession();
 const { setUser } = useUserStore();
 
 const { data } = await useFetch(`/api/users/${user.value?.id}`, {
-  server: false,
   lazy: true,
 });
 
 watch(data, () => {
   if (data.value?.profile && user.value?.id == data.value?.profile.userId) {
-    console.log("not today Jake");
     setUser(data.value);
     return navigateTo("/planner");
   }

@@ -5,10 +5,14 @@ export const useUserStore = defineStore(
     const intolerances = ref<string[]>([]);
     const savedRecipes = ref<any[]>([]);
 
-    const setUser = (user: any) => {
+    const setUser = (user: {
+      profile: Profile;
+      intolerances: string[];
+      savedRecipes: any[];
+    }) => {
       profile.value = user.profile;
-      intolerances.value = user.intolerances;
-      savedRecipes.value = user.savedRecipes;
+      intolerances.value = user.intolerances ?? [];
+      savedRecipes.value = user.savedRecipes ?? [];
     };
 
     const logOut = () => {

@@ -1,5 +1,8 @@
 import { createUserSecurities, getIdFromEmail } from "~~/server/utils/users";
 
+/**
+ * @description Handles the Google OAuth login and redirects to the planner page.
+ */
 export default defineOAuthGoogleEventHandler({
   async onSuccess(event, { user }) {
     let userId = await getIdFromEmail(user.email);
@@ -12,11 +15,12 @@ export default defineOAuthGoogleEventHandler({
         user.family_name,
       );
       await createUserSecurities(userId, spoonacularCreds);
-      await createUserProfile(userId, user.picture, "");
+      await createUserProfile(userId, user.name, user.picture, "");
     }
 
     user.id = userId;
     await setUserSession(event, { user });
-    return sendRedirect(event, "/planner");
+
+    return sendRedirect(event, "/confirm");
   },
 });
