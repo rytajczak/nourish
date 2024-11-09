@@ -1,3 +1,10 @@
+<script setup lang="ts">
+useHead({
+  htmlAttrs: { lang: "en" },
+  link: [{ rel: "icon", type: "image/png", href: "../public/favicon.ico" }],
+});
+</script>
+
 <template>
   <div>
     <NuxtRouteAnnouncer />
