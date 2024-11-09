@@ -5,6 +5,7 @@ export default defineNuxtConfig({
     "@vueuse/nuxt",
     "@nuxt/image",
     "@pinia/nuxt",
+    "@nuxt/eslint",
   ],
 
   app: { pageTransition: { name: "page", mode: "out-in" } },
