@@ -4,7 +4,7 @@
 CREATE TABLE IF NOT EXISTS "users" (
 	"id" uuid PRIMARY KEY NOT NULL,
 	"email" varchar(255) NOT NULL,
-	"username" varchar(50) NOT NULL,
+	"display_name" varchar(50),
 	"provider" varchar(50),
 	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP,
 	"last_sign_in_at" timestamp DEFAULT CURRENT_TIMESTAMP,
@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS "security" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "profile" (
 	"user_id" uuid PRIMARY KEY NOT NULL,
+	"username" varchar(50) NOT NULL,
 	"picture" varchar(100),
 	"diet" varchar(100),
 	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP,

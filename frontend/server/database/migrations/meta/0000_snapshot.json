@@ -20,11 +20,11 @@
           "primaryKey": false,
           "notNull": true
         },
-        "username": {
-          "name": "username",
+        "display_name": {
+          "name": "display_name",
           "type": "varchar(50)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "provider": {
           "name": "provider",
@@ -59,7 +59,9 @@
           "name": "users_email_key"
         }
       },
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
     },
     "public.security": {
       "name": "security",
@@ -109,7 +111,9 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
     },
     "public.profile": {
       "name": "profile",
@@ -119,6 +123,12 @@
           "name": "user_id",
           "type": "uuid",
           "primaryKey": true,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "varchar(50)",
+          "primaryKey": false,
           "notNull": true
         },
         "picture": {
@@ -167,7 +177,9 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
     },
     "public.intolerance": {
       "name": "intolerance",
@@ -198,7 +210,9 @@
           "name": "intolerance_name_key"
         }
       },
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
     },
     "public.saved_recipe": {
       "name": "saved_recipe",
@@ -229,7 +243,9 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
     },
     "public.profile_intolerance": {
       "name": "profile_intolerance",
@@ -289,7 +305,9 @@
         }
       },
       "uniqueConstraints": {},
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
     },
     "public.profile_saved_recipe": {
       "name": "profile_saved_recipe",
@@ -349,12 +367,16 @@
         }
       },
       "uniqueConstraints": {},
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
     }
   },
   "enums": {},
   "schemas": {},
   "sequences": {},
+  "roles": {},
+  "policies": {},
   "views": {},
   "_meta": {
     "schemas": {},
