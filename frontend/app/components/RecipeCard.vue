@@ -1,10 +1,6 @@
 <script setup lang="ts">
-import type { RecipePreview } from "~~/server/api/recipes/search/index.get";
-
-const props = defineProps<RecipePreview>();
-
-const { isSaved, toggleSave } = useRecipes();
-const saved = computed(() => isSaved(props.id));
+// import type { RecipePreview } from "~~/server/api/recipes/search/index.get";
+// const props = defineProps<RecipePreview>();
 </script>
 
 <template>
