@@ -1,7 +1,7 @@
 CREATE TABLE users (
     id UUID PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
-    username VARCHAR(50) NOT NULL,
+    display_name VARCHAR(50),
     provider VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_sign_in_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -16,6 +16,7 @@ CREATE TABLE security (
 
 CREATE TABLE profile (
     user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    username VARCHAR(50) NOT NULL,
     picture VARCHAR(100),
     diet VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
