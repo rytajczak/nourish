@@ -1,5 +1,10 @@
 <script setup lang="ts">
 const { clear } = useUserSession();
+
+function handleLogout() {
+  clear();
+  navigateTo("/");
+}
 </script>
 
 <template>
@@ -71,11 +76,10 @@ const { clear } = useUserSession();
           >My Recipes</UButton
         >
         <UButton
-          @click="clear"
+          @click="handleLogout"
           size="lg"
           color="neutral"
           variant="ghost"
-          to="/"
           icon="solar:logout-2-outline"
           >Log Out</UButton
         >
