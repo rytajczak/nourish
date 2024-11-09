@@ -1,6 +1,10 @@
-export default defineNuxtRouteMiddleware((to, from) => {
-  const { loggedIn } = useUserSession();
+export default defineNuxtRouteMiddleware(() => {
+  const { loggedIn, clear } = useUserSession();
+  const { logOut } = useUserStore();
+
   if (!loggedIn.value) {
+    logOut();
+    clear();
     return navigateTo("/");
   }
 });
