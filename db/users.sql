@@ -45,3 +45,16 @@ CREATE TABLE profile_saved_recipe (
     saved_recipe_id int REFERENCES saved_recipe(id) ON DELETE CASCADE,
     PRIMARY KEY (profile_id, saved_recipe_id)
 );
+
+INSERT INTO intolerance (id, name) VALUES
+  (gen_random_uuid(), 'dairy'),
+  (gen_random_uuid(), 'egg'),
+  (gen_random_uuid(), 'gluten'),
+  (gen_random_uuid(), 'peanut'),
+  (gen_random_uuid(), 'sesame'),
+  (gen_random_uuid(), 'seafood'),
+  (gen_random_uuid(), 'shellfish'),
+  (gen_random_uuid(), 'soy'),
+  (gen_random_uuid(), 'sulfite'),
+  (gen_random_uuid(), 'tree nut'),
+  (gen_random_uuid(), 'wheat');
