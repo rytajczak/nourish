@@ -11,6 +11,9 @@ type ConnResp = {
   hash: string;
 };
 
+/**
+ * @description Connects a user to their Spoonacular account.
+ */
 export const connectUser = async (
   username: string,
   firstName: string,

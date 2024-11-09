@@ -26,7 +26,7 @@ export const getIdFromEmail = async (email: string): Promise<string> => {
  */
 export const createNewUser = async (
   email: string,
-  username: string,
+  displayName: string,
   provider: string,
 ): Promise<string> => {
   const result = await useDB()
@@ -34,7 +34,7 @@ export const createNewUser = async (
     .values({
       id: uuidv4(),
       email,
-      username,
+      displayName,
       provider,
     })
     .returning({ insertedId: tables.users.id });
@@ -72,12 +72,85 @@ export const createUserSecurities = async (
  */
 export const createUserProfile = async (
   userId: string,
+  username: string,
   picture: string,
   diet: string,
 ) => {
   await useDB().insert(tables.profile).values({
     userId,
+    username,
     picture,
     diet,
   });
+};
+
+/**
+ * Get the user's profile
+ * @param userId id of the user to get the profile for
+ * @returns the user's profile
+ */
+export const getUserProfile = async (
+  userId: string,
+): Promise<Profile | null> => {
+  const result = await useDB()
+    .select()
+    .from(tables.profile)
+    .where(eq(tables.profile.userId, userId))
+    .limit(1)
+    .execute();
+
+  return result[0];
+};
+
+/**
+ * Save a recipe to the user's profile
+ * @param userId id of the user to save the recipe to
+ * @param recipeId id of the recipe to save
+ */
+export const saveRecipeToProfile = async (userId: string, recipeId: number) => {
+  const existingRecipe = await useDB()
+    .select()
+    .from(tables.profileSavedRecipe)
+    .where(
+      and(
+        eq(tables.profileSavedRecipe.profileId, userId),
+        eq(tables.profileSavedRecipe.savedRecipeId, recipeId),
+      ),
+    )
+    .limit(1)
+    .execute();
+
+  if (existingRecipe.length > 0) return;
+  const existingSavedRecipe = await useDB()
+    .select()
+    .from(tables.savedRecipe)
+    .where(eq(tables.savedRecipe.id, recipeId))
+    .limit(1)
+    .execute();
+
+  if (existingSavedRecipe.length === 0) {
+    await useDB().insert(tables.savedRecipe).values({
+      id: recipeId,
+    });
+  }
+
+  await useDB().insert(tables.profileSavedRecipe).values({
+    profileId: userId,
+    savedRecipeId: recipeId,
+  });
+};
+
+/**
+ * Get the saved recipes for a user
+ * @param userId id of the user to get the saved recipes for
+ * @returns an array of the ids of the saved recipes
+ */
+export const getSavedRecipes = async (userId: string) => {
+  const result = await useDB()
+    .select()
+    .from(tables.profileSavedRecipe)
+    .where(eq(tables.profileSavedRecipe.profileId, userId))
+    .execute();
+
+  return result.map((recipe) => recipe.savedRecipeId);
 };
