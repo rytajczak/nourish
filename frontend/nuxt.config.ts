@@ -5,6 +5,7 @@ export default defineNuxtConfig({
     "@vueuse/nuxt",
     "@nuxt/image",
     "@pinia/nuxt",
+    "pinia-plugin-persistedstate/nuxt",
     "@nuxt/eslint",
   ],
 
