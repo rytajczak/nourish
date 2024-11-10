@@ -1,26 +1,25 @@
-import { createUserSecurities, getIdFromEmail } from "~~/server/utils/users";
+interface ExistingUserResponse {
+  id: string;
+  username: string;
+  email: string;
+  provider: string;
+  picture: string;
+  diet: string;
+  createdAt: string;
+  modifiedAt: string;
+}
 
 /**
  * @description Handles the Google OAuth login and redirects to the planner page.
  */
 export default defineOAuthGoogleEventHandler({
-  async onSuccess(event, { user }) {
-    let userId = await getIdFromEmail(user.email);
-
-    if (!userId) {
-      userId = await createNewUser(user.email, user.name, "google");
-      const spoonacularCreds = await connectUser(
-        user.name,
-        user.given_name,
-        user.family_name,
-      );
-      await createUserSecurities(userId, spoonacularCreds);
-      await createUserProfile(userId, user.name, user.picture, "");
-    }
-
-    user.id = userId;
+  async onSuccess(event, { user, tokens }) {
+    setCookie(event, "id-token", tokens.id_token, {
+      httpOnly: true,
+      path: "/",
+      maxAge: tokens.expires_in,
+    });
     await setUserSession(event, { user });
-
     return sendRedirect(event, "/confirm");
   },
 });
