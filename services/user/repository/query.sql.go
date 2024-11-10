@@ -11,108 +11,413 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createProfile = `-- name: CreateProfile :one
-INSERT INTO profile (user_id, username, picture, diet)
-VALUES ($1, $2, $3, $4)
-RETURNING user_id, username, picture, diet
+const addDislikedIngredient = `-- name: AddDislikedIngredient :one
+WITH inserted_ingredient AS (
+    INSERT INTO disliked_ingredient (id, name)
+    VALUES (DEFAULT, $1)
+    ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
+    RETURNING id
+)
+INSERT INTO users_disliked_ingredient (user_id, ingredient_id)
+SELECT $2, id FROM inserted_ingredient
+RETURNING user_id, ingredient_id
 `
 
-type CreateProfileParams struct {
-	UserID   pgtype.UUID
-	Username string
-	Picture  pgtype.Text
-	Diet     pgtype.Text
+type AddDislikedIngredientParams struct {
+	Name   string
+	UserID pgtype.UUID
 }
 
-func (q *Queries) CreateProfile(ctx context.Context, arg CreateProfileParams) (Profile, error) {
-	row := q.db.QueryRow(ctx, createProfile,
-		arg.UserID,
-		arg.Username,
-		arg.Picture,
-		arg.Diet,
-	)
-	var i Profile
-	err := row.Scan(
-		&i.UserID,
-		&i.Username,
-		&i.Picture,
-		&i.Diet,
-	)
+func (q *Queries) AddDislikedIngredient(ctx context.Context, arg AddDislikedIngredientParams) (UsersDislikedIngredient, error) {
+	row := q.db.QueryRow(ctx, addDislikedIngredient, arg.Name, arg.UserID)
+	var i UsersDislikedIngredient
+	err := row.Scan(&i.UserID, &i.IngredientID)
 	return i, err
 }
 
-const createSecurity = `-- name: CreateSecurity :one
-INSERT INTO security (user_id, spoonacular_username, spoonacular_hash, spoonacular_password)
-VALUES ($1, $2, $3, $4)
-RETURNING user_id, spoonacular_username, spoonacular_hash, spoonacular_password
+const addLikedRecipe = `-- name: AddLikedRecipe :one
+WITH inserted_recipe AS (
+    INSERT INTO liked_recipe (spoon_id, title, image, calories, protein, carbs, fat)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    RETURNING id
+)
+INSERT INTO users_liked_recipe (user_id, recipe_id)
+SELECT $8, id FROM inserted_recipe
+RETURNING user_id, recipe_id
 `
 
-type CreateSecurityParams struct {
-	UserID              pgtype.UUID
-	SpoonacularUsername pgtype.Text
-	SpoonacularHash     pgtype.Text
-	SpoonacularPassword pgtype.Text
+type AddLikedRecipeParams struct {
+	SpoonID  pgtype.Int4
+	Title    string
+	Image    pgtype.Text
+	Calories pgtype.Int4
+	Protein  pgtype.Int4
+	Carbs    pgtype.Int4
+	Fat      pgtype.Int4
+	UserID   pgtype.UUID
 }
 
-func (q *Queries) CreateSecurity(ctx context.Context, arg CreateSecurityParams) (Security, error) {
-	row := q.db.QueryRow(ctx, createSecurity,
+func (q *Queries) AddLikedRecipe(ctx context.Context, arg AddLikedRecipeParams) (UsersLikedRecipe, error) {
+	row := q.db.QueryRow(ctx, addLikedRecipe,
+		arg.SpoonID,
+		arg.Title,
+		arg.Image,
+		arg.Calories,
+		arg.Protein,
+		arg.Carbs,
+		arg.Fat,
 		arg.UserID,
-		arg.SpoonacularUsername,
-		arg.SpoonacularHash,
-		arg.SpoonacularPassword,
 	)
-	var i Security
+	var i UsersLikedRecipe
+	err := row.Scan(&i.UserID, &i.RecipeID)
+	return i, err
+}
+
+const addUserIntolerance = `-- name: AddUserIntolerance :exec
+INSERT INTO users_intolerance (user_id, intolerance_id)
+VALUES ($1, $2)
+ON CONFLICT DO NOTHING
+`
+
+type AddUserIntoleranceParams struct {
+	UserID        pgtype.UUID
+	IntoleranceID pgtype.UUID
+}
+
+func (q *Queries) AddUserIntolerance(ctx context.Context, arg AddUserIntoleranceParams) error {
+	_, err := q.db.Exec(ctx, addUserIntolerance, arg.UserID, arg.IntoleranceID)
+	return err
+}
+
+const createSpoonCredential = `-- name: CreateSpoonCredential :one
+INSERT INTO spoon_credential (user_id, username, password, hash)
+VALUES ($1, $2, $3, $4)
+RETURNING user_id, username, password, hash
+`
+
+type CreateSpoonCredentialParams struct {
+	UserID   pgtype.UUID
+	Username string
+	Password string
+	Hash     string
+}
+
+func (q *Queries) CreateSpoonCredential(ctx context.Context, arg CreateSpoonCredentialParams) (SpoonCredential, error) {
+	row := q.db.QueryRow(ctx, createSpoonCredential,
+		arg.UserID,
+		arg.Username,
+		arg.Password,
+		arg.Hash,
+	)
+	var i SpoonCredential
 	err := row.Scan(
 		&i.UserID,
-		&i.SpoonacularUsername,
-		&i.SpoonacularHash,
-		&i.SpoonacularPassword,
+		&i.Username,
+		&i.Password,
+		&i.Hash,
 	)
 	return i, err
 }
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, display_name, email, provider, created_at, last_sign_in_at)
-VALUES (uuid_generate_v4(), $1, $2, $3, now(), now())
-RETURNING id, display_name, email, provider, created_at, last_sign_in_at
+INSERT INTO users (username, email, provider, picture)
+VALUES ($1, $2, $3, $4)
+RETURNING id, username, email, provider, picture, diet, created_at, modified_at
 `
 
 type CreateUserParams struct {
-	DisplayName string
-	Email       string
-	Provider    string
+	Username string
+	Email    string
+	Provider string
+	Picture  pgtype.Text
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, createUser, arg.DisplayName, arg.Email, arg.Provider)
+	row := q.db.QueryRow(ctx, createUser,
+		arg.Username,
+		arg.Email,
+		arg.Provider,
+		arg.Picture,
+	)
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.DisplayName,
+		&i.Username,
 		&i.Email,
 		&i.Provider,
+		&i.Picture,
+		&i.Diet,
 		&i.CreatedAt,
-		&i.LastSignInAt,
+		&i.ModifiedAt,
 	)
 	return i, err
 }
 
-const getUser = `-- name: GetUser :one
-SELECT id, display_name, email, provider, created_at, last_sign_in_at
-FROM users
-WHERE id = $1
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, username, email, provider, picture, diet, created_at, modified_at FROM users WHERE email = $1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id pgtype.UUID) (User, error) {
-	row := q.db.QueryRow(ctx, getUser, id)
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.DisplayName,
+		&i.Username,
 		&i.Email,
 		&i.Provider,
+		&i.Picture,
+		&i.Diet,
 		&i.CreatedAt,
-		&i.LastSignInAt,
+		&i.ModifiedAt,
+	)
+	return i, err
+}
+
+const getUserById = `-- name: GetUserById :one
+SELECT id, username, email, provider, picture, diet, created_at, modified_at FROM users WHERE id = $1
+`
+
+func (q *Queries) GetUserById(ctx context.Context, id pgtype.UUID) (User, error) {
+	row := q.db.QueryRow(ctx, getUserById, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Provider,
+		&i.Picture,
+		&i.Diet,
+		&i.CreatedAt,
+		&i.ModifiedAt,
+	)
+	return i, err
+}
+
+const getUserDislikedIngredients = `-- name: GetUserDislikedIngredients :many
+SELECT di.name
+FROM users_disliked_ingredient udi
+JOIN disliked_ingredient di ON di.id = udi.ingredient_id
+WHERE udi.user_id = $1
+`
+
+func (q *Queries) GetUserDislikedIngredients(ctx context.Context, userID pgtype.UUID) ([]string, error) {
+	rows, err := q.db.Query(ctx, getUserDislikedIngredients, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var name string
+		if err := rows.Scan(&name); err != nil {
+			return nil, err
+		}
+		items = append(items, name)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUserIntolerances = `-- name: GetUserIntolerances :many
+SELECT i.name
+FROM users_intolerance ui
+JOIN intolerance i ON i.id = ui.intolerance_id
+WHERE ui.user_id = $1
+`
+
+func (q *Queries) GetUserIntolerances(ctx context.Context, userID pgtype.UUID) ([]string, error) {
+	rows, err := q.db.Query(ctx, getUserIntolerances, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var name string
+		if err := rows.Scan(&name); err != nil {
+			return nil, err
+		}
+		items = append(items, name)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUserLikedRecipes = `-- name: GetUserLikedRecipes :many
+SELECT lr.id, lr.spoon_id, lr.title, lr.image, lr.calories, lr.protein, lr.carbs, lr.fat
+FROM users_liked_recipe ulr
+JOIN liked_recipe lr ON lr.id = ulr.recipe_id
+WHERE ulr.user_id = $1
+`
+
+func (q *Queries) GetUserLikedRecipes(ctx context.Context, userID pgtype.UUID) ([]LikedRecipe, error) {
+	rows, err := q.db.Query(ctx, getUserLikedRecipes, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []LikedRecipe
+	for rows.Next() {
+		var i LikedRecipe
+		if err := rows.Scan(
+			&i.ID,
+			&i.SpoonID,
+			&i.Title,
+			&i.Image,
+			&i.Calories,
+			&i.Protein,
+			&i.Carbs,
+			&i.Fat,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUserWithPreferences = `-- name: GetUserWithPreferences :one
+SELECT 
+    u.id, u.username, u.email, u.provider, u.picture, u.diet, u.created_at, u.modified_at,
+    sc.username as spoon_username,
+    dg.calories,
+    dg.carbs,
+    dg.protein,
+    dg.fat,
+    ARRAY_AGG(DISTINCT i.name) as intolerances
+FROM users u
+LEFT JOIN spoon_credential sc ON u.id = sc.user_id
+LEFT JOIN daily_goal dg ON u.id = dg.user_id
+LEFT JOIN users_intolerance ui ON u.id = ui.user_id
+LEFT JOIN intolerance i ON ui.intolerance_id = i.id
+WHERE u.id = $1
+GROUP BY u.id, sc.username, dg.calories, dg.carbs, dg.protein, dg.fat
+`
+
+type GetUserWithPreferencesRow struct {
+	ID            pgtype.UUID
+	Username      string
+	Email         string
+	Provider      string
+	Picture       pgtype.Text
+	Diet          pgtype.Text
+	CreatedAt     pgtype.Timestamp
+	ModifiedAt    pgtype.Timestamp
+	SpoonUsername pgtype.Text
+	Calories      pgtype.Int4
+	Carbs         pgtype.Int4
+	Protein       pgtype.Int4
+	Fat           pgtype.Int4
+	Intolerances  interface{}
+}
+
+func (q *Queries) GetUserWithPreferences(ctx context.Context, id pgtype.UUID) (GetUserWithPreferencesRow, error) {
+	row := q.db.QueryRow(ctx, getUserWithPreferences, id)
+	var i GetUserWithPreferencesRow
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Provider,
+		&i.Picture,
+		&i.Diet,
+		&i.CreatedAt,
+		&i.ModifiedAt,
+		&i.SpoonUsername,
+		&i.Calories,
+		&i.Carbs,
+		&i.Protein,
+		&i.Fat,
+		&i.Intolerances,
+	)
+	return i, err
+}
+
+const removeUserIntolerance = `-- name: RemoveUserIntolerance :exec
+DELETE FROM users_intolerance
+WHERE user_id = $1 AND intolerance_id = $2
+`
+
+type RemoveUserIntoleranceParams struct {
+	UserID        pgtype.UUID
+	IntoleranceID pgtype.UUID
+}
+
+func (q *Queries) RemoveUserIntolerance(ctx context.Context, arg RemoveUserIntoleranceParams) error {
+	_, err := q.db.Exec(ctx, removeUserIntolerance, arg.UserID, arg.IntoleranceID)
+	return err
+}
+
+const updateDailyGoal = `-- name: UpdateDailyGoal :one
+INSERT INTO daily_goal (user_id, calories, carbs, protein, fat)
+VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT (user_id) 
+DO UPDATE SET 
+    calories = EXCLUDED.calories,
+    carbs = EXCLUDED.carbs,
+    protein = EXCLUDED.protein,
+    fat = EXCLUDED.fat
+RETURNING user_id, calories, carbs, protein, fat
+`
+
+type UpdateDailyGoalParams struct {
+	UserID   pgtype.UUID
+	Calories pgtype.Int4
+	Carbs    pgtype.Int4
+	Protein  pgtype.Int4
+	Fat      pgtype.Int4
+}
+
+func (q *Queries) UpdateDailyGoal(ctx context.Context, arg UpdateDailyGoalParams) (DailyGoal, error) {
+	row := q.db.QueryRow(ctx, updateDailyGoal,
+		arg.UserID,
+		arg.Calories,
+		arg.Carbs,
+		arg.Protein,
+		arg.Fat,
+	)
+	var i DailyGoal
+	err := row.Scan(
+		&i.UserID,
+		&i.Calories,
+		&i.Carbs,
+		&i.Protein,
+		&i.Fat,
+	)
+	return i, err
+}
+
+const updateUserDiet = `-- name: UpdateUserDiet :one
+UPDATE users 
+SET diet = $2, modified_at = CURRENT_TIMESTAMP
+WHERE id = $1
+RETURNING id, username, email, provider, picture, diet, created_at, modified_at
+`
+
+type UpdateUserDietParams struct {
+	ID   pgtype.UUID
+	Diet pgtype.Text
+}
+
+func (q *Queries) UpdateUserDiet(ctx context.Context, arg UpdateUserDietParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateUserDiet, arg.ID, arg.Diet)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Provider,
+		&i.Picture,
+		&i.Diet,
+		&i.CreatedAt,
+		&i.ModifiedAt,
 	)
 	return i, err
 }

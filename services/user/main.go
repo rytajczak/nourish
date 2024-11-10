@@ -19,12 +19,8 @@ func main() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 	defer conn.Close(ctx)
-
 	repo := repository.New(conn)
 
-	repo.CreateUser(ctx, repository.CreateUserParams{
-		DisplayName: "Ryan Ratajczak",
-		Email:       "ryan@ratajczak.com",
-		Provider:    "google",
-	})
+	api := NewApiServer(repo)
+	log.Fatal(api.Start(":8080"))
 }

@@ -8,44 +8,64 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type DailyGoal struct {
+	UserID   pgtype.UUID
+	Calories pgtype.Int4
+	Carbs    pgtype.Int4
+	Protein  pgtype.Int4
+	Fat      pgtype.Int4
+}
+
+type DislikedIngredient struct {
+	ID   int32
+	Name string
+}
+
 type Intolerance struct {
 	ID   pgtype.UUID
 	Name string
 }
 
-type Profile struct {
+type LikedRecipe struct {
+	ID       pgtype.UUID
+	SpoonID  pgtype.Int4
+	Title    string
+	Image    pgtype.Text
+	Calories pgtype.Int4
+	Protein  pgtype.Int4
+	Carbs    pgtype.Int4
+	Fat      pgtype.Int4
+}
+
+type SpoonCredential struct {
 	UserID   pgtype.UUID
 	Username string
-	Picture  pgtype.Text
-	Diet     pgtype.Text
-}
-
-type ProfileIntolerance struct {
-	ProfileID     pgtype.UUID
-	IntoleranceID pgtype.UUID
-}
-
-type ProfileSavedRecipe struct {
-	ProfileID     pgtype.UUID
-	SavedRecipeID int32
-}
-
-type SavedRecipe struct {
-	ID int32
-}
-
-type Security struct {
-	UserID              pgtype.UUID
-	SpoonacularUsername pgtype.Text
-	SpoonacularHash     pgtype.Text
-	SpoonacularPassword pgtype.Text
+	Password string
+	Hash     string
 }
 
 type User struct {
-	ID           pgtype.UUID
-	DisplayName  string
-	Email        string
-	Provider     string
-	CreatedAt    pgtype.Timestamp
-	LastSignInAt pgtype.Timestamp
+	ID         pgtype.UUID
+	Username   string
+	Email      string
+	Provider   string
+	Picture    pgtype.Text
+	Diet       pgtype.Text
+	CreatedAt  pgtype.Timestamp
+	ModifiedAt pgtype.Timestamp
+}
+
+type UsersDislikedIngredient struct {
+	UserID       pgtype.UUID
+	IngredientID int32
+}
+
+type UsersIntolerance struct {
+	UserID        pgtype.UUID
+	IntoleranceID pgtype.UUID
+}
+
+type UsersLikedRecipe struct {
+	UserID   pgtype.UUID
+	RecipeID pgtype.UUID
 }
