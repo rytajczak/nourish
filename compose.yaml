@@ -1,0 +1,41 @@
+services:
+  reverse-proxy:
+    image: "traefik:v3.1"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - bridge
+
+  user-service:
+    build:
+      context: ./services/user
+      dockerfile: Dockerfile
+
+    networks:
+      - bridge
+
+  users-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: users
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./services/user/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - bridge
+
+networks:
+  bridge:
+    driver: bridge
