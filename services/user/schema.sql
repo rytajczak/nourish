@@ -9,8 +9,6 @@ CREATE TABLE users (
     diet VARCHAR(50) DEFAULT '',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
-    CONSTRAINT diet_check CHECK (diet = '' OR diet IN ('pescetarian', 'lacto vegetarian', 'ovo vegetarian', 'vegan', 'paleo', 'primal', 'vegetarian'))
 );
 
 CREATE TABLE spoon_credential (

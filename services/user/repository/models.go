@@ -9,63 +9,63 @@ import (
 )
 
 type DailyGoal struct {
-	UserID   pgtype.UUID
-	Calories pgtype.Int4
-	Carbs    pgtype.Int4
-	Protein  pgtype.Int4
-	Fat      pgtype.Int4
+	UserID   pgtype.UUID `json:"user_id"`
+	Calories pgtype.Int4 `json:"calories"`
+	Carbs    pgtype.Int4 `json:"carbs"`
+	Protein  pgtype.Int4 `json:"protein"`
+	Fat      pgtype.Int4 `json:"fat"`
 }
 
 type DislikedIngredient struct {
-	ID   int32
-	Name string
+	ID   int32  `json:"id"`
+	Name string `json:"name"`
 }
 
 type Intolerance struct {
-	ID   pgtype.UUID
-	Name string
+	ID   pgtype.UUID `json:"id"`
+	Name string      `json:"name"`
 }
 
 type LikedRecipe struct {
-	ID       pgtype.UUID
-	SpoonID  pgtype.Int4
-	Title    string
-	Image    pgtype.Text
-	Calories pgtype.Int4
-	Protein  pgtype.Int4
-	Carbs    pgtype.Int4
-	Fat      pgtype.Int4
+	ID       pgtype.UUID `json:"id"`
+	SpoonID  pgtype.Int4 `json:"spoon_id"`
+	Title    string      `json:"title"`
+	Image    pgtype.Text `json:"image"`
+	Calories pgtype.Int4 `json:"calories"`
+	Protein  pgtype.Int4 `json:"protein"`
+	Carbs    pgtype.Int4 `json:"carbs"`
+	Fat      pgtype.Int4 `json:"fat"`
 }
 
 type SpoonCredential struct {
-	UserID   pgtype.UUID
-	Username string
-	Password string
-	Hash     string
+	UserID   pgtype.UUID `json:"user_id"`
+	Username string      `json:"username"`
+	Password string      `json:"password"`
+	Hash     string      `json:"hash"`
 }
 
 type User struct {
-	ID         pgtype.UUID
-	Username   string
-	Email      string
-	Provider   string
-	Picture    pgtype.Text
-	Diet       pgtype.Text
-	CreatedAt  pgtype.Timestamp
-	ModifiedAt pgtype.Timestamp
+	ID         pgtype.UUID      `json:"id"`
+	Username   string           `json:"username"`
+	Email      string           `json:"email"`
+	Provider   string           `json:"provider"`
+	Picture    pgtype.Text      `json:"picture"`
+	Diet       pgtype.Text      `json:"diet"`
+	CreatedAt  pgtype.Timestamp `json:"created_at"`
+	ModifiedAt pgtype.Timestamp `json:"modified_at"`
 }
 
 type UsersDislikedIngredient struct {
-	UserID       pgtype.UUID
-	IngredientID int32
+	UserID       pgtype.UUID `json:"user_id"`
+	IngredientID int32       `json:"ingredient_id"`
 }
 
 type UsersIntolerance struct {
-	UserID        pgtype.UUID
-	IntoleranceID pgtype.UUID
+	UserID        pgtype.UUID `json:"user_id"`
+	IntoleranceID pgtype.UUID `json:"intolerance_id"`
 }
 
 type UsersLikedRecipe struct {
-	UserID   pgtype.UUID
-	RecipeID pgtype.UUID
+	UserID   pgtype.UUID `json:"user_id"`
+	RecipeID pgtype.UUID `json:"recipe_id"`
 }
