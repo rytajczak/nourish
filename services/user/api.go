@@ -7,12 +7,14 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"user/repository"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"google.golang.org/api/idtoken"
 )
 
 type ApiServer struct {
@@ -64,19 +66,58 @@ func WriteJSON(w http.ResponseWriter, status int, v any) error {
 	return json.NewEncoder(w).Encode(v)
 }
 
+func (s *ApiServer) VerifyIDToken(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			WriteJSON(w, http.StatusUnauthorized, "Authorization header is required")
+			return
+		}
+
+		token := strings.TrimPrefix(authHeader, "Bearer ")
+		if token == authHeader {
+			WriteJSON(w, http.StatusUnauthorized, "Bearer token is required")
+			return
+		}
+
+		ctx := context.Background()
+		payload, err := idtoken.Validate(ctx, token, os.Getenv("GOOGLE_CLIENT_ID"))
+		if err != nil {
+			WriteJSON(w, http.StatusUnauthorized, err.Error())
+			return
+		}
+
+		fmt.Println(payload)
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (s *ApiServer) handleHealth(w http.ResponseWriter, r *http.Request) {
+	WriteJSON(w, http.StatusOK, map[string]string{"msg": "ok"})
+}
+
+// Create User
 func (s *ApiServer) handleCreateUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Starting handleCreateUser")
 	url := fmt.Sprintf("https://%s/users/connect", os.Getenv("API_HOST"))
+	fmt.Printf("Making request to URL: %s\n", url)
+
 	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
+		fmt.Printf("Failed to create request: %v\n", err)
 		WriteJSON(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	req.Header.Add("x-rapidapi-key", os.Getenv("API_KEY"))
 	req.Header.Add("x-rapidapi-host", os.Getenv("API_HOST"))
+	fmt.Printf("Added headers - Host: %s\n", os.Getenv("API_HOST"))
 
 	client := &http.Client{}
+	fmt.Println("Making HTTP request to Spoonacular")
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Printf("HTTP request failed: %v\n", err)
 		WriteJSON(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -84,26 +125,33 @@ func (s *ApiServer) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 
 	spoonResp, err := io.ReadAll(resp.Body)
 	if err != nil {
+		fmt.Printf("Failed to read response body: %v\n", err)
 		WriteJSON(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	fmt.Printf("Received response from Spoonacular: %s\n", string(spoonResp))
 
 	var spoonBody SpoonUserConnectResponse
 	if err := json.Unmarshal(spoonResp, &spoonBody); err != nil {
+		fmt.Printf("Failed to unmarshal Spoonacular response: %v\n", err)
 		WriteJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if spoonBody.Status != "success" {
+		fmt.Printf("Spoonacular returned non-success status: %s\n", spoonBody.Status)
 		WriteJSON(w, http.StatusBadRequest, spoonBody.Status)
 		return
 	}
+	fmt.Println("Successfully connected to Spoonacular")
 
 	var body CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		fmt.Printf("Failed to decode request body: %v\n", err)
 		WriteJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
+	fmt.Printf("Received user creation request for email: %s\n", body.Email)
 
 	user, err := s.queries.CreateUser(context.Background(), repository.CreateUserParams{
 		Username: body.Username,
@@ -112,9 +160,11 @@ func (s *ApiServer) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		Picture:  pgtype.Text{String: body.Picture, Valid: true},
 	})
 	if err != nil {
+		fmt.Printf("Failed to create user in database: %v\n", err)
 		WriteJSON(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	fmt.Printf("Created user with ID: %v\n", user.ID)
 
 	_, err = s.queries.CreateSpoonCredential(context.Background(), repository.CreateSpoonCredentialParams{
 		UserID:   user.ID,
@@ -123,11 +173,14 @@ func (s *ApiServer) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		Hash:     spoonBody.Hash,
 	})
 	if err != nil {
+		fmt.Printf("Failed to create Spoonacular credentials: %v\n", err)
 		WriteJSON(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	fmt.Println("Successfully created Spoonacular credentials")
 
 	WriteJSON(w, http.StatusOK, user)
+	fmt.Println("User creation completed successfully")
 }
 
 func (s *ApiServer) handleGetUser(w http.ResponseWriter, r *http.Request) {
@@ -183,18 +236,6 @@ func (s *ApiServer) handleGetUser(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, http.StatusOK, profile)
 }
 
-func (s *ApiServer) handleGetIdByEmail(w http.ResponseWriter, r *http.Request) {
-	email := r.URL.Query().Get("email")
-
-	user, err := s.queries.GetUserByEmail(context.Background(), email)
-	if err != nil {
-		WriteJSON(w, http.StatusNotFound, map[string]string{"msg": "no user found"})
-		return
-	}
-
-	WriteJSON(w, http.StatusOK, user.ID)
-}
-
 // Update User Preferences
 func (s *ApiServer) handleUpdateUserDailyGoal(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
@@ -225,18 +266,14 @@ func (s *ApiServer) handleUpdateUserDailyGoal(w http.ResponseWriter, r *http.Req
 func (s *ApiServer) Start(listenAddr string) error {
 	m := http.NewServeMux()
 
+	m.HandleFunc("GET /users/health", s.handleHealth)
+
 	// User Account Management
-	m.HandleFunc("POST /users/", s.handleCreateUser)
-	m.HandleFunc("GET /users/{id}", s.handleGetUser)
-	m.HandleFunc("GET /users/getIdByEmail", s.handleGetIdByEmail)
+	m.HandleFunc("POST /users/", s.VerifyIDToken(s.handleCreateUser))
+	m.HandleFunc("GET /users/me", s.VerifyIDToken(s.handleGetUser))
 
 	// User Preferences
-	m.HandleFunc("PUT /users/{id}/dailyGoal", s.handleUpdateUserDailyGoal)
-	// m.HandleFunc("PUT /users/{id}/intolerances", s.handleUpdateUserIntolerances)
-
-	// // User Recipes
-	// m.HandleFunc("GET /users/{id}/recipes", s.handleGetUserRecipes)
-	// m.HandleFunc("PATCH /users/{id}/recipes", s.handleUpdateUserRecipes)
+	m.HandleFunc("PUT /users/me/dailyGoal", s.VerifyIDToken(s.handleUpdateUserDailyGoal))
 
 	return http.ListenAndServe(listenAddr, m)
 }
