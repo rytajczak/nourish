@@ -13,7 +13,6 @@ import (
 type Service interface {
 	SearchRecipes(string, context.Context) map[string]any
 	GetRecipeById(int, context.Context) map[string]any
-	CreateCustomRecipe(context.Context)
 }
 
 type RecipeService struct {

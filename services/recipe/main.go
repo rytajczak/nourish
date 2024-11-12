@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -12,5 +11,5 @@ func main() {
 
 	svc := NewRecipeService(os.Getenv("API_HOST"), os.Getenv("API_KEY"))
 	api := NewApiServer(svc)
-	log.Fatal(api.Start(":8080").Error())
+	api.Start(":8082")
 }
