@@ -8,18 +8,44 @@ services:
       - "--providers.docker.exposedbydefault=false"
     ports:
       - "80:80"
-      - "443:443"
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
       - bridge
 
+  # nuxt-service:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.nuxt.rule=Host(`localhost`) && PathPrefix(`/`)"
+  #     - "traefik.http.services.nuxt.loadbalancer.server.port=3000"
+  #   networks:
+  #     - bridge
+
   user-service:
     build:
       context: ./services/user
       dockerfile: Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user.rule=Host(`api.localhost`) && PathPrefix(`/users`)"
+      - "traefik.http.services.user.loadbalancer.server.port=8081"
+      - "traefik.http.middlewares.user-strip-prefix.stripprefix.prefixes=/users"
+    networks:
+      - bridge
 
+  recipe-service:
+    build:
+      context: ./services/recipe
+      dockerfile: Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.recipe.rule=Host(`api.localhost`) && PathPrefix(`/recipes`)"
+      - "traefik.http.services.recipe.loadbalancer.server.port=8082"
+      - "traefik.http.middlewares.recipe-strip-prefix.stripprefix.prefixes=/recipes"
     networks:
       - bridge
 
