@@ -5,23 +5,23 @@ definePageMeta({
 });
 
 const { user } = useUserSession();
-const { setUser } = useUserStore();
 
 const { data } = await useFetch(`/api/users/${user.value?.id}`, {
   lazy: true,
 });
 
-watch(data, () => {
-  if (data.value?.profile && user.value?.id == data.value?.profile.userId) {
-    setUser(data.value);
-    return navigateTo("/planner");
-  }
-});
+// watch(data, () => {
+//   if (data.value?.profile && user.value?.id == data.value?.profile.userId) {
+//     setUser(data.value);
+//     return navigateTo("/planner");
+//   }
+// });
 </script>
 
 <template>
   <div>
     <DevOnly>
+      <pre>{{ user }}</pre>
       <pre>{{ data }}</pre>
     </DevOnly>
     <div class="flex h-screen w-screen items-center justify-center">

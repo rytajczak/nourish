@@ -1,10 +1,5 @@
 <script setup lang="ts">
-const { clear } = useUserSession();
-
-function handleLogout() {
-  clear();
-  navigateTo("/");
-}
+const { logOut } = useUserStore();
 </script>
 
 <template>
@@ -80,7 +75,7 @@ function handleLogout() {
           color="neutral"
           variant="ghost"
           icon="solar:logout-2-outline"
-          @click="handleLogout"
+          @click="logOut"
           >Log Out</UButton
         >
       </div>

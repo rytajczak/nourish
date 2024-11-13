@@ -6,9 +6,10 @@ export default defineAppConfig({
     },
     card: {
       slots: {
-        header: "p-3 sm:p-3",
-        body: "p-3 sm:p-3",
-        footer: "p-3 sm:p-3",
+        root: "bg-[var(--ui-bg)] ring ring-[var(--ui-border)] divide-y divide-[var(--ui-border)] rounded-[calc(var(--ui-radius)*2)] shadow-sm",
+        header: "p-4 sm:px-6",
+        body: "p-4 sm:p-6",
+        footer: "p-4 sm:px-6",
       },
     },
   },

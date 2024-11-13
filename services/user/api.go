@@ -22,8 +22,8 @@ type ApiServer struct {
 }
 
 type CreateUserRequest struct {
-	Username string `json:"username"`
 	Email    string `json:"email"`
+	Username string `json:"username"`
 	Provider string `json:"provider"`
 	Picture  string `json:"picture"`
 }
@@ -60,12 +60,14 @@ func NewApiServer(pool *pgxpool.Pool) *ApiServer {
 	}
 }
 
+// Write JSON Response
 func WriteJSON(w http.ResponseWriter, status int, v any) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	return json.NewEncoder(w).Encode(v)
 }
 
+// Verify ID Token
 func (s *ApiServer) VerifyIDToken(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
@@ -87,7 +89,7 @@ func (s *ApiServer) VerifyIDToken(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		fmt.Println(payload)
+		r.Header.Set("email", payload.Claims["email"].(string))
 
 		next.ServeHTTP(w, r)
 	})
@@ -99,22 +101,17 @@ func (s *ApiServer) handleHealth(w http.ResponseWriter, r *http.Request) {
 
 // Create User
 func (s *ApiServer) handleCreateUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Starting handleCreateUser")
 	url := fmt.Sprintf("https://%s/users/connect", os.Getenv("API_HOST"))
-	fmt.Printf("Making request to URL: %s\n", url)
 
 	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
-		fmt.Printf("Failed to create request: %v\n", err)
 		WriteJSON(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	req.Header.Add("x-rapidapi-key", os.Getenv("API_KEY"))
 	req.Header.Add("x-rapidapi-host", os.Getenv("API_HOST"))
-	fmt.Printf("Added headers - Host: %s\n", os.Getenv("API_HOST"))
 
 	client := &http.Client{}
-	fmt.Println("Making HTTP request to Spoonacular")
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Printf("HTTP request failed: %v\n", err)
@@ -125,46 +122,43 @@ func (s *ApiServer) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 
 	spoonResp, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Failed to read response body: %v\n", err)
 		WriteJSON(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	fmt.Printf("Received response from Spoonacular: %s\n", string(spoonResp))
 
 	var spoonBody SpoonUserConnectResponse
 	if err := json.Unmarshal(spoonResp, &spoonBody); err != nil {
-		fmt.Printf("Failed to unmarshal Spoonacular response: %v\n", err)
 		WriteJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if spoonBody.Status != "success" {
-		fmt.Printf("Spoonacular returned non-success status: %s\n", spoonBody.Status)
 		WriteJSON(w, http.StatusBadRequest, spoonBody.Status)
 		return
 	}
-	fmt.Println("Successfully connected to Spoonacular")
+
+	email := r.Header.Get("email")
+	if email == "" {
+		WriteJSON(w, http.StatusBadRequest, "Email is required")
+		return
+	}
 
 	var body CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		fmt.Printf("Failed to decode request body: %v\n", err)
 		WriteJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	fmt.Printf("Received user creation request for email: %s\n", body.Email)
 
 	user, err := s.queries.CreateUser(context.Background(), repository.CreateUserParams{
-		Username: body.Username,
 		Email:    body.Email,
-		Provider: body.Provider,
+		Username: body.Username,
 		Picture:  pgtype.Text{String: body.Picture, Valid: true},
+		Provider: body.Provider,
 	})
 	if err != nil {
-		fmt.Printf("Failed to create user in database: %v\n", err)
 		WriteJSON(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	fmt.Printf("Created user with ID: %v\n", user.ID)
 
 	_, err = s.queries.CreateSpoonCredential(context.Background(), repository.CreateSpoonCredentialParams{
 		UserID:   user.ID,
@@ -173,22 +167,23 @@ func (s *ApiServer) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		Hash:     spoonBody.Hash,
 	})
 	if err != nil {
-		fmt.Printf("Failed to create Spoonacular credentials: %v\n", err)
 		WriteJSON(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	fmt.Println("Successfully created Spoonacular credentials")
 
 	WriteJSON(w, http.StatusOK, user)
-	fmt.Println("User creation completed successfully")
 }
 
 func (s *ApiServer) handleGetUser(w http.ResponseWriter, r *http.Request) {
-	idStr := r.PathValue("id")
+	email := r.Header.Get("email")
+	if email == "" {
+		WriteJSON(w, http.StatusBadRequest, "Email is required")
+		return
+	}
 
-	id, err := uuid.Parse(idStr)
+	id, err := s.queries.GetUserIdByEmail(context.Background(), email)
 	if err != nil {
-		WriteJSON(w, http.StatusBadRequest, err.Error())
+		WriteJSON(w, http.StatusOK, map[string]string{"msg": "user not found"})
 		return
 	}
 
@@ -202,27 +197,27 @@ func (s *ApiServer) handleGetUser(w http.ResponseWriter, r *http.Request) {
 
 	go func() {
 		defer wg.Done()
-		profile.User, userErr = s.queries.GetUserById(ctx, pgtype.UUID{Bytes: id, Valid: true})
+		profile.User, userErr = s.queries.GetUserById(ctx, id)
 	}()
 
 	go func() {
 		defer wg.Done()
-		profile.DailyGoal, dailyGoalErr = s.queries.GetDailyGoal(ctx, pgtype.UUID{Bytes: id, Valid: true})
+		profile.DailyGoal, dailyGoalErr = s.queries.GetDailyGoal(ctx, id)
 	}()
 
 	go func() {
 		defer wg.Done()
-		profile.Intolerances, intolerancesErr = s.queries.GetIntolerances(ctx, pgtype.UUID{Bytes: id, Valid: true})
+		profile.Intolerances, intolerancesErr = s.queries.GetIntolerances(ctx, id)
 	}()
 
 	go func() {
 		defer wg.Done()
-		profile.Dislikes, dislikesErr = s.queries.GetDislikedIngredients(ctx, pgtype.UUID{Bytes: id, Valid: true})
+		profile.Dislikes, dislikesErr = s.queries.GetDislikedIngredients(ctx, id)
 	}()
 
 	go func() {
 		defer wg.Done()
-		profile.Likes, likesErr = s.queries.GetLikedRecipes(ctx, pgtype.UUID{Bytes: id, Valid: true})
+		profile.Likes, likesErr = s.queries.GetLikedRecipes(ctx, id)
 	}()
 
 	wg.Wait()
@@ -263,6 +258,7 @@ func (s *ApiServer) handleUpdateUserDailyGoal(w http.ResponseWriter, r *http.Req
 	WriteJSON(w, http.StatusOK, nil)
 }
 
+// Start API Server
 func (s *ApiServer) Start(listenAddr string) error {
 	m := http.NewServeMux()
 
