@@ -1,6 +1,5 @@
 <script setup lang="ts">
-const { user } = useUserSession();
-const { profile } = useUserStore();
+const { user } = useUserStore();
 const themes = ref([
   {
     label: "System",
@@ -53,15 +52,15 @@ const themes = ref([
         </UPopover>
       </div>
       <UPopover class="relative right-9">
-        <UAvatar size="lg" :src="profile?.picture ?? ''" class="ms-4" />
+        <UAvatar size="lg" :src="user?.picture ?? ''" class="ms-4" />
         <template #content>
           <UCard>
             <template #header>
               <div class="flex items-center">
-                <UAvatar size="xl" :src="profile?.picture ?? ''" class="mr-2" />
+                <UAvatar size="xl" :src="user?.picture ?? ''" class="mr-2" />
                 <div class="flex flex-col">
                   <span class="text-sm font-semibold">{{
-                    profile?.username
+                    user?.username
                   }}</span>
                   <span class="text-sm text-gray-600 dark:text-gray-500">{{
                     user?.email

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-const searchString = ref("");
 const query = useState("query", () => "");
+const searchString = ref("");
 
-async function search() {
+function search() {
   if (!searchString.value) return;
   query.value = searchString.value;
   navigateTo(`/recipes/search?query=${query.value}`);
+  searchString.value = "";
 }
 </script>
 
