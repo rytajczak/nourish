@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"time"
 )
 
 type Service interface {
@@ -16,10 +15,9 @@ type Service interface {
 }
 
 type RecipeService struct {
-	url    string
-	host   string
-	key    string
-	client *http.Client
+	url  string
+	host string
+	key  string
 }
 
 func (r *RecipeService) newRequest(method, endpoint string, body io.Reader) (*http.Request, error) {
@@ -87,12 +85,13 @@ func (r *RecipeService) CreateCustomRecipe(context.Context) {
 }
 
 func NewRecipeService(host string, key string) Service {
+	fmt.Println(host)
 	url := fmt.Sprintf("https://%s", host)
+	fmt.Println(url)
 
 	return &RecipeService{
-		url:    url,
-		host:   host,
-		key:    key,
-		client: &http.Client{Timeout: 10 * time.Second},
+		url:  url,
+		host: host,
+		key:  key,
 	}
 }
