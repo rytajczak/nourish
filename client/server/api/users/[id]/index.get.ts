@@ -1,6 +1,11 @@
+import { User } from "#auth-utils";
+
 export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, "id");
-  console.log(id);
-  const user = await $fetch(`http://localhost:8080/users/${id}`);
+  const idToken = getCookie(event, "idToken");
+  const user = await $fetch<User>(`http://localhost:8080/users/me`, {
+    headers: {
+      Authorization: `Bearer ${idToken}`,
+    },
+  });
   return user;
 });
