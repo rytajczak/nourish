@@ -11,84 +11,6 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const addDislikedIngredient = `-- name: AddDislikedIngredient :one
-WITH inserted_ingredient AS (
-    INSERT INTO disliked_ingredient (id, name)
-    VALUES (DEFAULT, $1)
-    ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
-    RETURNING id
-)
-INSERT INTO users_disliked_ingredient (user_id, ingredient_id)
-SELECT $2, id FROM inserted_ingredient
-RETURNING user_id, ingredient_id
-`
-
-type AddDislikedIngredientParams struct {
-	Name   string      `json:"name"`
-	UserID pgtype.UUID `json:"user_id"`
-}
-
-func (q *Queries) AddDislikedIngredient(ctx context.Context, arg AddDislikedIngredientParams) (UsersDislikedIngredient, error) {
-	row := q.db.QueryRow(ctx, addDislikedIngredient, arg.Name, arg.UserID)
-	var i UsersDislikedIngredient
-	err := row.Scan(&i.UserID, &i.IngredientID)
-	return i, err
-}
-
-const addIntolerance = `-- name: AddIntolerance :exec
-INSERT INTO users_intolerance (user_id, intolerance_id)
-VALUES ($1, $2)
-ON CONFLICT DO NOTHING
-`
-
-type AddIntoleranceParams struct {
-	UserID        pgtype.UUID `json:"user_id"`
-	IntoleranceID pgtype.UUID `json:"intolerance_id"`
-}
-
-func (q *Queries) AddIntolerance(ctx context.Context, arg AddIntoleranceParams) error {
-	_, err := q.db.Exec(ctx, addIntolerance, arg.UserID, arg.IntoleranceID)
-	return err
-}
-
-const addLikedRecipe = `-- name: AddLikedRecipe :one
-WITH inserted_recipe AS (
-    INSERT INTO liked_recipe (spoon_id, title, image, calories, protein, carbs, fat)
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
-    RETURNING id
-)
-INSERT INTO users_liked_recipe (user_id, recipe_id)
-SELECT $8, id FROM inserted_recipe
-RETURNING user_id, recipe_id
-`
-
-type AddLikedRecipeParams struct {
-	SpoonID  pgtype.Int4 `json:"spoon_id"`
-	Title    string      `json:"title"`
-	Image    pgtype.Text `json:"image"`
-	Calories pgtype.Int4 `json:"calories"`
-	Protein  pgtype.Int4 `json:"protein"`
-	Carbs    pgtype.Int4 `json:"carbs"`
-	Fat      pgtype.Int4 `json:"fat"`
-	UserID   pgtype.UUID `json:"user_id"`
-}
-
-func (q *Queries) AddLikedRecipe(ctx context.Context, arg AddLikedRecipeParams) (UsersLikedRecipe, error) {
-	row := q.db.QueryRow(ctx, addLikedRecipe,
-		arg.SpoonID,
-		arg.Title,
-		arg.Image,
-		arg.Calories,
-		arg.Protein,
-		arg.Carbs,
-		arg.Fat,
-		arg.UserID,
-	)
-	var i UsersLikedRecipe
-	err := row.Scan(&i.UserID, &i.RecipeID)
-	return i, err
-}
-
 const createSpoonCredential = `-- name: CreateSpoonCredential :one
 INSERT INTO spoon_credential (user_id, username, password, hash)
 VALUES ($1, $2, $3, $4)
@@ -120,9 +42,9 @@ func (q *Queries) CreateSpoonCredential(ctx context.Context, arg CreateSpoonCred
 }
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (username, email, provider, picture)
-VALUES ($1, $2, $3, $4)
-RETURNING id, username, email, provider, picture, diet, created_at, modified_at
+INSERT INTO users (username, email, provider, picture, diet, calories, carbs, protein, fat)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+RETURNING id, username, email, provider, picture, diet, calories, carbs, protein, fat, created_at, modified_at
 `
 
 type CreateUserParams struct {
@@ -130,6 +52,11 @@ type CreateUserParams struct {
 	Email    string      `json:"email"`
 	Provider string      `json:"provider"`
 	Picture  pgtype.Text `json:"picture"`
+	Diet     pgtype.Text `json:"diet"`
+	Calories pgtype.Int4 `json:"calories"`
+	Carbs    pgtype.Int4 `json:"carbs"`
+	Protein  pgtype.Int4 `json:"protein"`
+	Fat      pgtype.Int4 `json:"fat"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -138,6 +65,11 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.Email,
 		arg.Provider,
 		arg.Picture,
+		arg.Diet,
+		arg.Calories,
+		arg.Carbs,
+		arg.Protein,
+		arg.Fat,
 	)
 	var i User
 	err := row.Scan(
@@ -147,127 +79,18 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Provider,
 		&i.Picture,
 		&i.Diet,
+		&i.Calories,
+		&i.Carbs,
+		&i.Protein,
+		&i.Fat,
 		&i.CreatedAt,
 		&i.ModifiedAt,
 	)
 	return i, err
 }
 
-const getDailyGoal = `-- name: GetDailyGoal :one
-SELECT calories, carbs, protein, fat FROM daily_goal WHERE user_id = $1
-`
-
-type GetDailyGoalRow struct {
-	Calories pgtype.Int4 `json:"calories"`
-	Carbs    pgtype.Int4 `json:"carbs"`
-	Protein  pgtype.Int4 `json:"protein"`
-	Fat      pgtype.Int4 `json:"fat"`
-}
-
-func (q *Queries) GetDailyGoal(ctx context.Context, userID pgtype.UUID) (GetDailyGoalRow, error) {
-	row := q.db.QueryRow(ctx, getDailyGoal, userID)
-	var i GetDailyGoalRow
-	err := row.Scan(
-		&i.Calories,
-		&i.Carbs,
-		&i.Protein,
-		&i.Fat,
-	)
-	return i, err
-}
-
-const getDislikedIngredients = `-- name: GetDislikedIngredients :many
-SELECT di.name
-FROM users_disliked_ingredient udi
-JOIN disliked_ingredient di ON di.id = udi.ingredient_id
-WHERE udi.user_id = $1
-`
-
-func (q *Queries) GetDislikedIngredients(ctx context.Context, userID pgtype.UUID) ([]string, error) {
-	rows, err := q.db.Query(ctx, getDislikedIngredients, userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []string
-	for rows.Next() {
-		var name string
-		if err := rows.Scan(&name); err != nil {
-			return nil, err
-		}
-		items = append(items, name)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getIntolerances = `-- name: GetIntolerances :many
-SELECT i.name
-FROM users_intolerance ui
-JOIN intolerance i ON i.id = ui.intolerance_id
-WHERE ui.user_id = $1
-`
-
-func (q *Queries) GetIntolerances(ctx context.Context, userID pgtype.UUID) ([]string, error) {
-	rows, err := q.db.Query(ctx, getIntolerances, userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []string
-	for rows.Next() {
-		var name string
-		if err := rows.Scan(&name); err != nil {
-			return nil, err
-		}
-		items = append(items, name)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getLikedRecipes = `-- name: GetLikedRecipes :many
-SELECT lr.id, lr.spoon_id, lr.title, lr.image, lr.calories, lr.protein, lr.carbs, lr.fat
-FROM users_liked_recipe ulr
-JOIN liked_recipe lr ON lr.id = ulr.recipe_id
-WHERE ulr.user_id = $1
-`
-
-func (q *Queries) GetLikedRecipes(ctx context.Context, userID pgtype.UUID) ([]LikedRecipe, error) {
-	rows, err := q.db.Query(ctx, getLikedRecipes, userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []LikedRecipe
-	for rows.Next() {
-		var i LikedRecipe
-		if err := rows.Scan(
-			&i.ID,
-			&i.SpoonID,
-			&i.Title,
-			&i.Image,
-			&i.Calories,
-			&i.Protein,
-			&i.Carbs,
-			&i.Fat,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getUserById = `-- name: GetUserById :one
-SELECT id, username, email, provider, picture, diet, created_at, modified_at FROM users WHERE id = $1
+SELECT id, username, email, provider, picture, diet, calories, carbs, protein, fat, created_at, modified_at FROM users WHERE id = $1
 `
 
 func (q *Queries) GetUserById(ctx context.Context, id pgtype.UUID) (User, error) {
@@ -280,6 +103,10 @@ func (q *Queries) GetUserById(ctx context.Context, id pgtype.UUID) (User, error)
 		&i.Provider,
 		&i.Picture,
 		&i.Diet,
+		&i.Calories,
+		&i.Carbs,
+		&i.Protein,
+		&i.Fat,
 		&i.CreatedAt,
 		&i.ModifiedAt,
 	)
@@ -295,64 +122,4 @@ func (q *Queries) GetUserIdByEmail(ctx context.Context, email string) (pgtype.UU
 	var id pgtype.UUID
 	err := row.Scan(&id)
 	return id, err
-}
-
-const removeIntolerance = `-- name: RemoveIntolerance :exec
-DELETE FROM users_intolerance
-WHERE user_id = $1 AND intolerance_id = $2
-`
-
-type RemoveIntoleranceParams struct {
-	UserID        pgtype.UUID `json:"user_id"`
-	IntoleranceID pgtype.UUID `json:"intolerance_id"`
-}
-
-func (q *Queries) RemoveIntolerance(ctx context.Context, arg RemoveIntoleranceParams) error {
-	_, err := q.db.Exec(ctx, removeIntolerance, arg.UserID, arg.IntoleranceID)
-	return err
-}
-
-const updateDailyGoal = `-- name: UpdateDailyGoal :one
-INSERT INTO daily_goal (user_id, calories, carbs, protein, fat)
-VALUES ($1, $2, $3, $4, $5)
-ON CONFLICT (user_id) 
-DO UPDATE SET 
-    calories = EXCLUDED.calories,
-    carbs = EXCLUDED.carbs,
-    protein = EXCLUDED.protein,
-    fat = EXCLUDED.fat
-RETURNING calories, carbs, protein, fat
-`
-
-type UpdateDailyGoalParams struct {
-	UserID   pgtype.UUID `json:"user_id"`
-	Calories pgtype.Int4 `json:"calories"`
-	Carbs    pgtype.Int4 `json:"carbs"`
-	Protein  pgtype.Int4 `json:"protein"`
-	Fat      pgtype.Int4 `json:"fat"`
-}
-
-type UpdateDailyGoalRow struct {
-	Calories pgtype.Int4 `json:"calories"`
-	Carbs    pgtype.Int4 `json:"carbs"`
-	Protein  pgtype.Int4 `json:"protein"`
-	Fat      pgtype.Int4 `json:"fat"`
-}
-
-func (q *Queries) UpdateDailyGoal(ctx context.Context, arg UpdateDailyGoalParams) (UpdateDailyGoalRow, error) {
-	row := q.db.QueryRow(ctx, updateDailyGoal,
-		arg.UserID,
-		arg.Calories,
-		arg.Carbs,
-		arg.Protein,
-		arg.Fat,
-	)
-	var i UpdateDailyGoalRow
-	err := row.Scan(
-		&i.Calories,
-		&i.Carbs,
-		&i.Protein,
-		&i.Fat,
-	)
-	return i, err
 }

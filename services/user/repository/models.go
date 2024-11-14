@@ -8,14 +8,6 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type DailyGoal struct {
-	UserID   pgtype.UUID `json:"user_id"`
-	Calories pgtype.Int4 `json:"calories"`
-	Carbs    pgtype.Int4 `json:"carbs"`
-	Protein  pgtype.Int4 `json:"protein"`
-	Fat      pgtype.Int4 `json:"fat"`
-}
-
 type DislikedIngredient struct {
 	ID   int32  `json:"id"`
 	Name string `json:"name"`
@@ -51,6 +43,10 @@ type User struct {
 	Provider   string           `json:"provider"`
 	Picture    pgtype.Text      `json:"picture"`
 	Diet       pgtype.Text      `json:"diet"`
+	Calories   pgtype.Int4      `json:"calories"`
+	Carbs      pgtype.Int4      `json:"carbs"`
+	Protein    pgtype.Int4      `json:"protein"`
+	Fat        pgtype.Int4      `json:"fat"`
 	CreatedAt  pgtype.Timestamp `json:"created_at"`
 	ModifiedAt pgtype.Timestamp `json:"modified_at"`
 }
