@@ -15,7 +15,8 @@ import (
 )
 
 type Service interface {
-	CreateUser(ctx context.Context, info CreateUserRequest) error
+	CreateUser(ctx context.Context, info CreateUserRequest) (*repository.User, error)
+	GetUser(ctx context.Context, email string) (*repository.User, error)
 }
 
 type UserService struct {
@@ -23,6 +24,13 @@ type UserService struct {
 	url     string
 	host    string
 	key     string
+}
+
+type SpoonUserConnectResponse struct {
+	Status              string `json:"status"`
+	Username            string `json:"username"`
+	SpoonacularPassword string `json:"spoonacularPassword"`
+	Hash                string `json:"hash"`
 }
 
 func NewUserService(host string, key string) Service {
@@ -44,7 +52,7 @@ func NewUserService(host string, key string) Service {
 	return &UserService{queries: repository.New(pool), url: url, host: host, key: key}
 }
 
-func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) error {
+func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (*repository.User, error) {
 	req, _ := http.NewRequest("POST", s.url+"/users/connect", nil)
 	req.Header.Add("x-rapidapi-key", s.key)
 	req.Header.Add("x-rapidapi-host", s.host)
@@ -52,7 +60,7 @@ func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) er
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer res.Body.Close()
@@ -75,11 +83,16 @@ func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) er
 		Hash:     response.Hash,
 	})
 
-	return nil
+	return &user, nil
 }
 
-func (s *UserService) GetUser(ctx context.Context, id string) (*repository.User, error) {
-	return nil, nil
+func (s *UserService) GetUser(ctx context.Context, email string) (*repository.User, error) {
+	user, err := s.queries.GetUserByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 func (s *UserService) UpdateUserPreferences(ctx context.Context, user *repository.User) error {

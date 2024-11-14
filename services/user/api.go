@@ -22,24 +22,6 @@ type CreateUserRequest struct {
 	Picture  string `json:"picture"`
 }
 
-type SpoonUserConnectResponse struct {
-	Status              string `json:"status"`
-	Username            string `json:"username"`
-	SpoonacularPassword string `json:"spoonacularPassword"`
-	Hash                string `json:"hash"`
-}
-
-type UpdateUserDailyGoalRequest struct {
-	Calories int `json:"calories"`
-	Carbs    int `json:"carbs"`
-	Protein  int `json:"protein"`
-	Fat      int `json:"fat"`
-}
-
-type UpdateUserIntolerancesRequest struct {
-	Intolerances []string `json:"intolerances"`
-}
-
 func NewApiServer(svc Service) *ApiServer {
 	return &ApiServer{svc: svc}
 }
@@ -101,11 +83,23 @@ func (s *ApiServer) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.svc.CreateUser(context.Background(), body)
+	user, err := s.svc.CreateUser(context.Background(), body)
+	if err != nil {
+		WriteJSON(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	WriteJSON(w, http.StatusOK, user)
 }
 
 func (s *ApiServer) handleGetUser(w http.ResponseWriter, r *http.Request) {
-	WriteJSON(w, http.StatusOK, map[string]string{"msg": "user not found"})
+	user, err := s.svc.GetUser(context.Background(), r.Header.Get("email"))
+	if err != nil {
+		WriteJSON(w, http.StatusNotFound, map[string]string{"error": "user not found"})
+		return
+	}
+
+	WriteJSON(w, http.StatusOK, user)
 }
 
 func (s *ApiServer) handleUpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
@@ -119,7 +113,7 @@ func (s *ApiServer) Start(listenAddr string) error {
 
 	m.HandleFunc("POST /users/", s.VerifyIDToken(s.handleCreateUser))
 	m.HandleFunc("GET /users/me", s.VerifyIDToken(s.handleGetUser))
-	// m.HandleFunc("POST /users/me/preferences", s.VerifyIDToken(s.handleUpdateUserPreferences))
+	// m.HandleFunc("PUT /users/me/preferences", s.VerifyIDToken(s.handleUpdateUserPreferences))
 
 	return http.ListenAndServe(listenAddr, m)
 }

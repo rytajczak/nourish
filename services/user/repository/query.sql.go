@@ -89,6 +89,30 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, username, email, provider, picture, diet, calories, carbs, protein, fat, created_at, modified_at FROM users WHERE email = $1
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Provider,
+		&i.Picture,
+		&i.Diet,
+		&i.Calories,
+		&i.Carbs,
+		&i.Protein,
+		&i.Fat,
+		&i.CreatedAt,
+		&i.ModifiedAt,
+	)
+	return i, err
+}
+
 const getUserById = `-- name: GetUserById :one
 SELECT id, username, email, provider, picture, diet, calories, carbs, protein, fat, created_at, modified_at FROM users WHERE id = $1
 `
@@ -111,15 +135,4 @@ func (q *Queries) GetUserById(ctx context.Context, id pgtype.UUID) (User, error)
 		&i.ModifiedAt,
 	)
 	return i, err
-}
-
-const getUserIdByEmail = `-- name: GetUserIdByEmail :one
-SELECT id FROM users WHERE email = $1
-`
-
-func (q *Queries) GetUserIdByEmail(ctx context.Context, email string) (pgtype.UUID, error) {
-	row := q.db.QueryRow(ctx, getUserIdByEmail, email)
-	var id pgtype.UUID
-	err := row.Scan(&id)
-	return id, err
 }
