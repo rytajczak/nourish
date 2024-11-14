@@ -7,6 +7,10 @@ CREATE TABLE users (
     provider VARCHAR(50) NOT NULL,
     picture VARCHAR(100),
     diet VARCHAR(50) DEFAULT '',
+    calories INTEGER DEFAULT 0,
+    carbs INTEGER DEFAULT 0,
+    protein INTEGER DEFAULT 0,
+    fat INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -16,14 +20,6 @@ CREATE TABLE spoon_credential (
     username VARCHAR(100) NOT NULL,
     password VARCHAR(100) NOT NULL,
     hash VARCHAR(100) NOT NULL
-);
-
-CREATE TABLE daily_goal (
-    user_id UUID PRIMARY KEY REFERENCES users(id),
-    calories INTEGER,
-    carbs INTEGER,
-    protein INTEGER,
-    fat INTEGER
 );
 
 CREATE TABLE intolerance (
