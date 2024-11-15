@@ -2,6 +2,7 @@
 @import "@nuxt/ui";
 
 body {
+  @apply text-[#0c2b10] dark:text-[#f4f7f4];
   font-family:
     system-ui,
     -apple-system,
