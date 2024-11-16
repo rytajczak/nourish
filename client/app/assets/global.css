@@ -18,5 +18,5 @@ body {
 }
 
 * {
-  @apply border-[#d8d8d8] dark:border-[#343434];
+  @apply border-[#d8d8d8] dark:border-[#0d0e0e];
 }

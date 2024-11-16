@@ -4,7 +4,7 @@ const { logOut } = useUserStore();
 
 <template>
   <aside
-    class="fixed top-0 left-0 z-50 block h-screen w-64 -translate-x-full border-r-[1px] bg-[#ffffff] transition-transform md:translate-x-0 dark:bg-[#171717]"
+    class="fixed top-0 left-0 z-50 block h-screen w-64 -translate-x-full border-r-[1px] bg-[#fdfdfd] transition-transform md:translate-x-0 dark:bg-[#191919]"
   >
     <div class="flex flex-col">
       <div class="h-20">

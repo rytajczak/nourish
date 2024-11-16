@@ -3,11 +3,12 @@ definePageMeta({
   middleware: "auth",
 });
 
-const { user } = useUserStore();
+const { user, intolerances } = useUserStore();
 </script>
 
 <template>
   <div>
     <pre>{{ user }}</pre>
+    <pre>{{ intolerances }}</pre>
   </div>
 </template>
