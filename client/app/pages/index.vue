@@ -4,7 +4,7 @@ definePageMeta({
   layout: false,
 });
 if (loggedIn.value) {
-  navigateTo("/planner");
+  navigateTo("/dashboard");
 }
 </script>
 

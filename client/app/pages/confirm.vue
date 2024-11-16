@@ -13,7 +13,7 @@ const { data } = await useFetch(`/api/users/${user.value?.id}`, {
 // watch(data, () => {
 //   if (data.value?.profile && user.value?.id == data.value?.profile.userId) {
 //     setUser(data.value);
-//     return navigateTo("/planner");
+//     return navigateTo("/dashboard");
 //   }
 // });
 </script>

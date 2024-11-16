@@ -3,7 +3,7 @@ import { User } from "#auth-utils";
 const config = useRuntimeConfig();
 
 /**
- * @description Handles the Google OAuth login and redirects to the planner page.
+ * @description Handles the Google OAuth login and redirects to the dashboard page.
  */
 export default defineOAuthGoogleEventHandler({
   async onSuccess(event, { user, tokens }) {
@@ -22,7 +22,7 @@ export default defineOAuthGoogleEventHandler({
         },
       );
       await setUserSession(event, { user: existingUser });
-      return sendRedirect(event, "/planner");
+      return sendRedirect(event, "/dashboard");
     } catch (error) {
       const newUser = await $fetch<User>(`${config.public.apiUrl}/users/`, {
         method: "POST",
