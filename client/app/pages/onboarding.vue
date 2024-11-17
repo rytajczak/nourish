@@ -1,7 +1,12 @@
 <script setup>
 definePageMeta({
+  middleware: "auth",
   layout: false,
 });
+async function handleResponse(response, form$) {
+  console.log(response);
+  console.log(form$);
+}
 </script>
 
 <template>
@@ -13,11 +18,13 @@ definePageMeta({
         validate-on="step|change"
         endpoint="/api/users/me/preferences"
         method="put"
+        @response="handleResponse"
       >
         <template #empty>
           <FormSteps>
             <FormStep
-              name="page0"
+              name="daily_goals"
+              label="Daily Goals"
               :elements="[
                 'goal_header',
                 'divider',
@@ -27,10 +34,10 @@ definePageMeta({
                 'fat',
                 'divider_1',
               ]"
-              label="Daily Goals"
             />
             <FormStep
-              name="page1"
+              name="diet"
+              label="Diet"
               :elements="[
                 'checkbox',
                 'diet_header',
@@ -38,10 +45,9 @@ definePageMeta({
                 'diet',
                 'divider_3',
               ]"
-              label="Diet"
             />
             <FormStep
-              name="page2"
+              name="intolerances"
               label="Intolerances"
               :elements="[
                 'intolerance_header',
@@ -209,11 +215,6 @@ definePageMeta({
               ]"
             />
             <StaticElement name="divider_4" tag="hr" />
-            <ButtonElement
-              name="submit"
-              button-label="Submit"
-              :submits="true"
-            />
           </FormElements>
           <FormStepsControls />
         </template>
