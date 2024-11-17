@@ -89,6 +89,38 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const createUserIntolerance = `-- name: CreateUserIntolerance :one
+INSERT INTO users_intolerance (user_id, intolerance_id)
+SELECT $1, i.id
+FROM intolerance i
+WHERE i.name = $2
+RETURNING user_id, intolerance_id
+`
+
+type CreateUserIntoleranceParams struct {
+	UserID pgtype.UUID `json:"user_id"`
+	Name   string      `json:"name"`
+}
+
+func (q *Queries) CreateUserIntolerance(ctx context.Context, arg CreateUserIntoleranceParams) (UsersIntolerance, error) {
+	row := q.db.QueryRow(ctx, createUserIntolerance, arg.UserID, arg.Name)
+	var i UsersIntolerance
+	err := row.Scan(&i.UserID, &i.IntoleranceID)
+	return i, err
+}
+
+const deleteUserIntolerance = `-- name: DeleteUserIntolerance :one
+DELETE FROM users_intolerance WHERE user_id = $1
+RETURNING user_id, intolerance_id
+`
+
+func (q *Queries) DeleteUserIntolerance(ctx context.Context, userID pgtype.UUID) (UsersIntolerance, error) {
+	row := q.db.QueryRow(ctx, deleteUserIntolerance, userID)
+	var i UsersIntolerance
+	err := row.Scan(&i.UserID, &i.IntoleranceID)
+	return i, err
+}
+
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, username, email, provider, picture, diet, calories, carbs, protein, fat, created_at, modified_at FROM users WHERE email = $1
 `
@@ -119,6 +151,75 @@ SELECT id, username, email, provider, picture, diet, calories, carbs, protein, f
 
 func (q *Queries) GetUserById(ctx context.Context, id pgtype.UUID) (User, error) {
 	row := q.db.QueryRow(ctx, getUserById, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Provider,
+		&i.Picture,
+		&i.Diet,
+		&i.Calories,
+		&i.Carbs,
+		&i.Protein,
+		&i.Fat,
+		&i.CreatedAt,
+		&i.ModifiedAt,
+	)
+	return i, err
+}
+
+const getUserIntolerances = `-- name: GetUserIntolerances :many
+SELECT i.name
+FROM users_intolerance ui
+JOIN intolerance i ON ui.intolerance_id = i.id
+JOIN users u ON ui.user_id = u.id
+WHERE u.email = $1
+`
+
+func (q *Queries) GetUserIntolerances(ctx context.Context, email string) ([]string, error) {
+	rows, err := q.db.Query(ctx, getUserIntolerances, email)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var name string
+		if err := rows.Scan(&name); err != nil {
+			return nil, err
+		}
+		items = append(items, name)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateUserPreferences = `-- name: UpdateUserPreferences :one
+UPDATE users SET diet = $1, calories = $2, protein = $3, carbs = $4, fat = $5 WHERE email = $6
+RETURNING id, username, email, provider, picture, diet, calories, carbs, protein, fat, created_at, modified_at
+`
+
+type UpdateUserPreferencesParams struct {
+	Diet     pgtype.Text `json:"diet"`
+	Calories pgtype.Int4 `json:"calories"`
+	Protein  pgtype.Int4 `json:"protein"`
+	Carbs    pgtype.Int4 `json:"carbs"`
+	Fat      pgtype.Int4 `json:"fat"`
+	Email    string      `json:"email"`
+}
+
+func (q *Queries) UpdateUserPreferences(ctx context.Context, arg UpdateUserPreferencesParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateUserPreferences,
+		arg.Diet,
+		arg.Calories,
+		arg.Protein,
+		arg.Carbs,
+		arg.Fat,
+		arg.Email,
+	)
 	var i User
 	err := row.Scan(
 		&i.ID,

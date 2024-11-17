@@ -17,6 +17,9 @@ import (
 type Service interface {
 	CreateUser(ctx context.Context, info CreateUserRequest) (*repository.User, error)
 	GetUser(ctx context.Context, email string) (*repository.User, error)
+	UpdateUserPreferences(ctx context.Context, email string, info *UpdateUserPreferencesRequest) (*repository.User, error)
+	GetUserIntolerances(ctx context.Context, email string) ([]string, error)
+	UpdateUserIntolerances(ctx context.Context, email string, intolerances []string) ([]string, error)
 }
 
 type UserService struct {
@@ -52,6 +55,7 @@ func NewUserService(host string, key string) Service {
 	return &UserService{queries: repository.New(pool), url: url, host: host, key: key}
 }
 
+// CreateUser creates a new user and connects them to their spoon account
 func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (*repository.User, error) {
 	req, _ := http.NewRequest("POST", s.url+"/users/connect", nil)
 	req.Header.Add("x-rapidapi-key", s.key)
@@ -86,6 +90,7 @@ func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (*
 	return &user, nil
 }
 
+// GetUser gets a user by their email
 func (s *UserService) GetUser(ctx context.Context, email string) (*repository.User, error) {
 	user, err := s.queries.GetUserByEmail(ctx, email)
 	if err != nil {
@@ -95,6 +100,53 @@ func (s *UserService) GetUser(ctx context.Context, email string) (*repository.Us
 	return &user, nil
 }
 
-func (s *UserService) UpdateUserPreferences(ctx context.Context, user *repository.User) error {
-	return nil
+// UpdateUserPreferences updates a user's preferences
+func (s *UserService) UpdateUserPreferences(ctx context.Context, email string, info *UpdateUserPreferencesRequest) (*repository.User, error) {
+	updatedUser, err := s.queries.UpdateUserPreferences(ctx, repository.UpdateUserPreferencesParams{
+		Email:    email,
+		Diet:     pgtype.Text{String: info.Diet, Valid: true},
+		Calories: pgtype.Int4{Int32: int32(info.Calories), Valid: true},
+		Protein:  pgtype.Int4{Int32: int32(info.Protein), Valid: true},
+		Carbs:    pgtype.Int4{Int32: int32(info.Carbs), Valid: true},
+		Fat:      pgtype.Int4{Int32: int32(info.Fat), Valid: true},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &updatedUser, nil
+}
+
+func (s *UserService) GetUserIntolerances(ctx context.Context, email string) ([]string, error) {
+	intolerances, err := s.queries.GetUserIntolerances(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+	return intolerances, nil
+}
+
+func (s *UserService) UpdateUserIntolerances(ctx context.Context, email string, intolerances []string) ([]string, error) {
+	fmt.Println("updating intolerances for user", email)
+	user, err := s.queries.GetUserByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("deleting intolerances for user", email)
+	_, err = s.queries.DeleteUserIntolerance(ctx, user.ID)
+	if err != nil {
+		fmt.Println("error deleting intolerances", err)
+	}
+
+	fmt.Println("adding intolerances for user", email)
+	for _, intolerance := range intolerances {
+		fmt.Println("adding intolerance", intolerance, "for user", user.ID)
+		_, err = s.queries.CreateUserIntolerance(ctx, repository.CreateUserIntoleranceParams{
+			UserID: user.ID,
+			Name:   intolerance,
+		})
+	}
+	fmt.Println("done adding intolerances")
+
+	return intolerances, nil
 }

@@ -22,6 +22,15 @@ type CreateUserRequest struct {
 	Picture  string `json:"picture"`
 }
 
+type UpdateUserPreferencesRequest struct {
+	Calories     int      `json:"calories"`
+	Protein      int      `json:"protein"`
+	Carbs        int      `json:"carbs"`
+	Fat          int      `json:"fat"`
+	Diet         string   `json:"diet"`
+	Intolerances []string `json:"intolerances"`
+}
+
 func NewApiServer(svc Service) *ApiServer {
 	return &ApiServer{svc: svc}
 }
@@ -36,38 +45,28 @@ func WriteJSON(w http.ResponseWriter, status int, v any) error {
 // Verify ID Token
 func (s *ApiServer) VerifyIDToken(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Starting token verification...")
-
 		authHeader := r.Header.Get("Authorization")
-		fmt.Printf("Auth header: %s\n", authHeader)
 		if authHeader == "" {
-			fmt.Println("No auth header found")
 			WriteJSON(w, http.StatusUnauthorized, "Authorization header is required")
 			return
 		}
 
 		token := strings.TrimPrefix(authHeader, "Bearer ")
-		fmt.Printf("Extracted token: %s\n", token)
 		if token == authHeader {
-			fmt.Println("No bearer token found")
 			WriteJSON(w, http.StatusUnauthorized, "Bearer token is required")
 			return
 		}
 
-		fmt.Println("Validating token with Google...")
 		ctx := context.Background()
 		payload, err := idtoken.Validate(ctx, token, os.Getenv("GOOGLE_CLIENT_ID"))
 		if err != nil {
-			fmt.Printf("Token validation failed: %v\n", err)
 			WriteJSON(w, http.StatusUnauthorized, err.Error())
 			return
 		}
 
 		email := payload.Claims["email"].(string)
-		fmt.Printf("Token validated successfully for email: %s\n", email)
 		r.Header.Set("email", email)
 
-		fmt.Println("Proceeding to next handler...")
 		next.ServeHTTP(w, r)
 	})
 }
@@ -103,17 +102,28 @@ func (s *ApiServer) handleGetUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *ApiServer) handleUpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
+	var body UpdateUserPreferencesRequest
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		WriteJSON(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	s.svc.UpdateUserPreferences(context.Background(), r.Header.Get("email"), &body)
+	s.svc.UpdateUserIntolerances(context.Background(), r.Header.Get("email"), body.Intolerances)
+
+	WriteJSON(w, http.StatusOK, body)
 }
 
 // Start API Server
 func (s *ApiServer) Start(listenAddr string) error {
 	m := http.NewServeMux()
 
-	m.HandleFunc("GET /users/health", s.handleHealth)
+	m.HandleFunc("GET /v1/users/health", s.handleHealth)
 
-	m.HandleFunc("POST /users/", s.VerifyIDToken(s.handleCreateUser))
-	m.HandleFunc("GET /users/me", s.VerifyIDToken(s.handleGetUser))
-	// m.HandleFunc("PUT /users/me/preferences", s.VerifyIDToken(s.handleUpdateUserPreferences))
+	m.HandleFunc("POST /v1/users/", s.VerifyIDToken(s.handleCreateUser))
+	m.HandleFunc("GET /v1/users/me", s.VerifyIDToken(s.handleGetUser))
+	m.HandleFunc("PUT /v1/users/me/preferences", s.VerifyIDToken(s.handleUpdateUserPreferences))
 
+	fmt.Println("Starting API Server on", listenAddr)
 	return http.ListenAndServe(listenAddr, m)
 }
