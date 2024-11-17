@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { user } = useUserStore();
+const { user } = useUserSession();
 const themes = ref([
   {
     label: "System",
