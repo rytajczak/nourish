@@ -1,11 +1,7 @@
 <script setup lang="ts">
-const { loggedIn } = useUserSession();
 definePageMeta({
   layout: false,
 });
-if (loggedIn.value) {
-  navigateTo("/dashboard");
-}
 </script>
 
 <template>

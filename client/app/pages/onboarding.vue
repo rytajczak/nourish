@@ -3,9 +3,16 @@ definePageMeta({
   middleware: "auth",
   layout: false,
 });
-async function handleResponse(response, form$) {
-  console.log(response);
-  console.log(form$);
+
+const { loadUser } = useUserStore();
+
+async function handleResponse(response) {
+  switch (response.status) {
+    case 200:
+      await loadUser(response.data);
+      navigateTo("/dashboard");
+      break;
+  }
 }
 </script>
 
@@ -16,8 +23,8 @@ async function handleResponse(response, form$) {
         size="md"
         :display-errors="false"
         validate-on="step|change"
-        endpoint="/api/users/me/preferences"
-        method="put"
+        endpoint="/api/users/signup"
+        method="post"
         @response="handleResponse"
       >
         <template #empty>
