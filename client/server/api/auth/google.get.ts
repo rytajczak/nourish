@@ -12,19 +12,15 @@ export default defineOAuthGoogleEventHandler({
       path: "/",
     });
     try {
-      const existingUser = await $fetch<User>(
-        `${config.public.apiUrl}/users/me`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${tokens.id_token}`,
-          },
+      await $fetch<User>(`${config.public.apiUrl}/users/me`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${tokens.id_token}`,
         },
-      );
-      await setUserSession(event, { user: existingUser });
-      return sendRedirect(event, "/dashboard");
+      });
+      return sendRedirect(event, "/confirm");
     } catch (error) {
-      const newUser = await $fetch<User>(`${config.public.apiUrl}/users/`, {
+      await $fetch<User>(`${config.public.apiUrl}/users/`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${tokens.id_token}`,
@@ -36,7 +32,6 @@ export default defineOAuthGoogleEventHandler({
           provider: "google",
         },
       });
-      await setUserSession(event, { user: newUser });
       return sendRedirect(event, "/onboarding");
     }
   },
