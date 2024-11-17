@@ -1,12 +1,9 @@
-import { User } from "#auth-utils";
-const config = useRuntimeConfig();
+const apiUrl = useRuntimeConfig().public.apiUrl;
 
 export default defineEventHandler(async (event) => {
-  const idToken = getCookie(event, "idToken");
-  const user = await $fetch<User>(`${config.public.apiUrl}/users/me`, {
-    headers: {
-      Authorization: `Bearer ${idToken}`,
-    },
-  })
-  return user;
+  const { secure } = await requireUserSession(event);
+
+  return await $fetch(`${apiUrl}/users/me`, {
+    headers: { Authorization: `Bearer ${secure?.idToken}` },
+  });
 });
