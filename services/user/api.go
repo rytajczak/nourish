@@ -16,10 +16,16 @@ type ApiServer struct {
 }
 
 type CreateUserRequest struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Provider string `json:"provider"`
-	Picture  string `json:"picture"`
+	Email        string   `json:"email"`
+	Username     string   `json:"username"`
+	Provider     string   `json:"provider"`
+	Picture      string   `json:"picture"`
+	Diet         string   `json:"diet"`
+	Calories     int      `json:"calories"`
+	Protein      int      `json:"protein"`
+	Carbs        int      `json:"carbs"`
+	Fat          int      `json:"fat"`
+	Intolerances []string `json:"intolerances"`
 }
 
 type UpdateUserPreferencesRequest struct {
@@ -75,13 +81,15 @@ func (s *ApiServer) handleHealth(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, http.StatusOK, map[string]string{"msg": "ok"})
 }
 
-func (s *ApiServer) handleCreateUser(w http.ResponseWriter, r *http.Request) {
+func (s *ApiServer) handleSignup(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("creating user")
 	var body CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		WriteJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
+	fmt.Println("creating user", body)
 	user, err := s.svc.CreateUser(context.Background(), body)
 	if err != nil {
 		WriteJSON(w, http.StatusInternalServerError, err.Error())
@@ -120,9 +128,8 @@ func (s *ApiServer) Start(listenAddr string) error {
 
 	m.HandleFunc("GET /v1/users/health", s.handleHealth)
 
-	m.HandleFunc("POST /v1/users/", s.VerifyIDToken(s.handleCreateUser))
+	m.HandleFunc("POST /v1/users/signup", s.VerifyIDToken(s.handleSignup))
 	m.HandleFunc("GET /v1/users/me", s.VerifyIDToken(s.handleGetUser))
-	m.HandleFunc("PUT /v1/users/me/preferences", s.VerifyIDToken(s.handleUpdateUserPreferences))
 
 	fmt.Println("Starting API Server on", listenAddr)
 	return http.ListenAndServe(listenAddr, m)

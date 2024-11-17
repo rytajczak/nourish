@@ -78,7 +78,17 @@ func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (*
 		Email:    info.Email,
 		Provider: info.Provider,
 		Picture:  pgtype.Text{String: info.Picture, Valid: true},
+		Diet:     pgtype.Text{String: info.Diet, Valid: true},
+		Calories: pgtype.Int4{Int32: int32(info.Calories), Valid: true},
+		Protein:  pgtype.Int4{Int32: int32(info.Protein), Valid: true},
+		Carbs:    pgtype.Int4{Int32: int32(info.Carbs), Valid: true},
+		Fat:      pgtype.Int4{Int32: int32(info.Fat), Valid: true},
 	})
+
+	_, err = s.UpdateUserIntolerances(ctx, user.Email, info.Intolerances)
+	if err != nil {
+		return nil, err
+	}
 
 	_, err = s.queries.CreateSpoonCredential(ctx, repository.CreateSpoonCredentialParams{
 		UserID:   user.ID,
@@ -126,27 +136,19 @@ func (s *UserService) GetUserIntolerances(ctx context.Context, email string) ([]
 }
 
 func (s *UserService) UpdateUserIntolerances(ctx context.Context, email string, intolerances []string) ([]string, error) {
-	fmt.Println("updating intolerances for user", email)
 	user, err := s.queries.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Println("deleting intolerances for user", email)
-	_, err = s.queries.DeleteUserIntolerance(ctx, user.ID)
-	if err != nil {
-		fmt.Println("error deleting intolerances", err)
-	}
+	s.queries.DeleteUserIntolerance(ctx, user.ID)
 
-	fmt.Println("adding intolerances for user", email)
 	for _, intolerance := range intolerances {
-		fmt.Println("adding intolerance", intolerance, "for user", user.ID)
 		_, err = s.queries.CreateUserIntolerance(ctx, repository.CreateUserIntoleranceParams{
 			UserID: user.ID,
 			Name:   intolerance,
 		})
 	}
-	fmt.Println("done adding intolerances")
 
 	return intolerances, nil
 }

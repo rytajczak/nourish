@@ -6,7 +6,7 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     provider VARCHAR(50) NOT NULL,
     picture VARCHAR(100),
-    diet VARCHAR(50) DEFAULT '',
+    diet VARCHAR(50) DEFAULT 'none',
     calories INTEGER DEFAULT 0,
     carbs INTEGER DEFAULT 0,
     protein INTEGER DEFAULT 0,
