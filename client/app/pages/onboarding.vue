@@ -2,10 +2,6 @@
 definePageMeta({
   layout: false,
 });
-async function handleSubmit() {
-  console.log("submit");
-  return navigateTo("/dashboard");
-}
 </script>
 
 <template>
@@ -15,8 +11,8 @@ async function handleSubmit() {
         size="md"
         :display-errors="false"
         validate-on="step|change"
-        endpoint="false"
-        @submit="handleSubmit"
+        endpoint="/api/users/me/preferences"
+        method="put"
       >
         <template #empty>
           <FormSteps>

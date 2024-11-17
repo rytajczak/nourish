@@ -1,14 +1,9 @@
 <script setup lang="ts">
 definePageMeta({
-  middleware: "auth",
   layout: false,
 });
 
-const { user } = useUserSession();
-
-const { data } = await useFetch(`/api/users/${user.value?.id}`, {
-  lazy: true,
-});
+const { data } = await useFetch(`/api/users/me`);
 
 // watch(data, () => {
 //   if (data.value?.profile && user.value?.id == data.value?.profile.userId) {
@@ -21,7 +16,6 @@ const { data } = await useFetch(`/api/users/${user.value?.id}`, {
 <template>
   <div>
     <DevOnly>
-      <pre>{{ user }}</pre>
       <pre>{{ data }}</pre>
     </DevOnly>
     <div class="flex h-screen w-screen items-center justify-center">

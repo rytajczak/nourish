@@ -11,7 +11,7 @@ const props = defineProps<Recipe>();
       body: 'p-4 sm:p-4',
       footer: 'p-4 sm:p-4',
     }"
-    class="cursor-pointer transition-all duration-300 hover:scale-105 dark:bg-[#191919]"
+    class="cursor-pointer transition-all duration-300 hover:scale-105 dark:bg-[#1e1e1e]"
   >
     <template #header>
       <div class="relative">
@@ -27,6 +27,11 @@ const props = defineProps<Recipe>();
             <UIcon name="solar:alarm-outline" class="mr-1" />
             {{ props.readyInMinutes }} min
           </span>
+        </div>
+        <div class="absolute top-0 right-2 flex">
+          <UIcon v-if="props.vegetarian" name="lucide:salad" />
+          <UIcon v-if="props.vegan" name="lucide:leaf" />
+          <UIcon v-if="props.glutenFree" name="lucide:wheat" />
         </div>
       </div>
     </template>
@@ -48,7 +53,7 @@ const props = defineProps<Recipe>();
       class="mt-4 flex items-center justify-between text-gray-500 dark:text-gray-400"
     >
       <span
-        >{{ props.nutrition.nutrients[0]?.amount }}
+        >{{ Math.round(props.nutrition.nutrients[0]?.amount ?? 0) }}
         {{ props.nutrition.nutrients[0]?.unit }}
         •
         {{ props.servings }} servings</span
