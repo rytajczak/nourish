@@ -2,7 +2,6 @@ export default defineNuxtConfig({
   future: { compatibilityVersion: 4 },
   compatibilityDate: "2024-04-03",
   modules: [
-    "@nuxt/eslint",
     "nuxt-auth-utils",
     "@nuxt/ui",
     "@vueuse/nuxt",
@@ -19,7 +18,7 @@ export default defineNuxtConfig({
       apiUrl:
         process.env.NODE_ENV === "production"
           ? "https://api.helpmemealprep.com"
-          : "http://api.localhost",
+          : "http://api.localhost/v1",
     },
   },
   devtools: { enabled: true },
