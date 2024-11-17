@@ -14,9 +14,12 @@ INSERT INTO spoon_credential (user_id, username, password, hash)
 VALUES ($1, $2, $3, $4)
 RETURNING *;
 
--- name: UpdateUserPreferences :one
+-- name: GetUserProfile :one
+SELECT diet, calories, protein, carbs, fat FROM users WHERE email = $1;
+
+-- name: UpdateUserProfile :one
 UPDATE users SET diet = $1, calories = $2, protein = $3, carbs = $4, fat = $5 WHERE email = $6
-RETURNING *;
+RETURNING diet, calories, protein, carbs, fat;
 
 -- name: GetUserIntolerances :many
 SELECT i.name

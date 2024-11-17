@@ -15,11 +15,10 @@ import (
 )
 
 type Service interface {
-	CreateUser(ctx context.Context, info CreateUserRequest) (*repository.User, error)
-	GetUser(ctx context.Context, email string) (*repository.User, error)
-	UpdateUserPreferences(ctx context.Context, email string, info *UpdateUserPreferencesRequest) (*repository.User, error)
-	GetUserIntolerances(ctx context.Context, email string) ([]string, error)
-	UpdateUserIntolerances(ctx context.Context, email string, intolerances []string) ([]string, error)
+	CreateUser(ctx context.Context, info CreateUserRequest) (map[string]any, error)
+	GetMe(ctx context.Context, email string) (map[string]any, error)
+	UpdateProfile(ctx context.Context, email string, info *UpdateUserPreferencesRequest) (*repository.UpdateUserProfileRow, error)
+	UpdateIntolerances(ctx context.Context, email string, intolerances []string) ([]string, error)
 }
 
 type UserService struct {
@@ -56,7 +55,7 @@ func NewUserService(host string, key string) Service {
 }
 
 // CreateUser creates a new user and connects them to their spoon account
-func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (*repository.User, error) {
+func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (map[string]any, error) {
 	req, _ := http.NewRequest("POST", s.url+"/users/connect", nil)
 	req.Header.Add("x-rapidapi-key", s.key)
 	req.Header.Add("x-rapidapi-host", s.host)
@@ -85,7 +84,12 @@ func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (*
 		Fat:      pgtype.Int4{Int32: int32(info.Fat), Valid: true},
 	})
 
-	_, err = s.UpdateUserIntolerances(ctx, user.Email, info.Intolerances)
+	profile, err := s.queries.GetUserProfile(ctx, user.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	intolerances, err := s.UpdateIntolerances(ctx, user.Email, info.Intolerances)
 	if err != nil {
 		return nil, err
 	}
@@ -97,22 +101,27 @@ func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (*
 		Hash:     response.Hash,
 	})
 
-	return &user, nil
+	return map[string]any{"profile": profile, "intolerances": intolerances}, nil
 }
 
-// GetUser gets a user by their email
-func (s *UserService) GetUser(ctx context.Context, email string) (*repository.User, error) {
-	user, err := s.queries.GetUserByEmail(ctx, email)
+// GetMe gets a user by their email
+func (s *UserService) GetMe(ctx context.Context, email string) (map[string]any, error) {
+	profile, err := s.queries.GetUserProfile(ctx, email)
 	if err != nil {
 		return nil, err
 	}
 
-	return &user, nil
+	intolerances, err := s.queries.GetUserIntolerances(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+
+	return map[string]any{"profile": profile, "intolerances": intolerances}, nil
 }
 
 // UpdateUserPreferences updates a user's preferences
-func (s *UserService) UpdateUserPreferences(ctx context.Context, email string, info *UpdateUserPreferencesRequest) (*repository.User, error) {
-	updatedUser, err := s.queries.UpdateUserPreferences(ctx, repository.UpdateUserPreferencesParams{
+func (s *UserService) UpdateProfile(ctx context.Context, email string, info *UpdateUserPreferencesRequest) (*repository.UpdateUserProfileRow, error) {
+	updatedProfile, err := s.queries.UpdateUserProfile(ctx, repository.UpdateUserProfileParams{
 		Email:    email,
 		Diet:     pgtype.Text{String: info.Diet, Valid: true},
 		Calories: pgtype.Int4{Int32: int32(info.Calories), Valid: true},
@@ -124,18 +133,10 @@ func (s *UserService) UpdateUserPreferences(ctx context.Context, email string, i
 		return nil, err
 	}
 
-	return &updatedUser, nil
+	return &updatedProfile, nil
 }
 
-func (s *UserService) GetUserIntolerances(ctx context.Context, email string) ([]string, error) {
-	intolerances, err := s.queries.GetUserIntolerances(ctx, email)
-	if err != nil {
-		return nil, err
-	}
-	return intolerances, nil
-}
-
-func (s *UserService) UpdateUserIntolerances(ctx context.Context, email string, intolerances []string) ([]string, error) {
+func (s *UserService) UpdateIntolerances(ctx context.Context, email string, intolerances []string) ([]string, error) {
 	user, err := s.queries.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err

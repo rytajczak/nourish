@@ -82,14 +82,12 @@ func (s *ApiServer) handleHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *ApiServer) handleSignup(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("creating user")
 	var body CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		WriteJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	fmt.Println("creating user", body)
 	user, err := s.svc.CreateUser(context.Background(), body)
 	if err != nil {
 		WriteJSON(w, http.StatusInternalServerError, err.Error())
@@ -99,27 +97,14 @@ func (s *ApiServer) handleSignup(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, http.StatusOK, user)
 }
 
-func (s *ApiServer) handleGetUser(w http.ResponseWriter, r *http.Request) {
-	user, err := s.svc.GetUser(context.Background(), r.Header.Get("email"))
+func (s *ApiServer) handleGetMe(w http.ResponseWriter, r *http.Request) {
+	me, err := s.svc.GetMe(context.Background(), r.Header.Get("email"))
 	if err != nil {
-		WriteJSON(w, http.StatusNotFound, map[string]string{"error": "user not found"})
+		WriteJSON(w, http.StatusNotFound, err.Error())
 		return
 	}
 
-	WriteJSON(w, http.StatusOK, user)
-}
-
-func (s *ApiServer) handleUpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
-	var body UpdateUserPreferencesRequest
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		WriteJSON(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	s.svc.UpdateUserPreferences(context.Background(), r.Header.Get("email"), &body)
-	s.svc.UpdateUserIntolerances(context.Background(), r.Header.Get("email"), body.Intolerances)
-
-	WriteJSON(w, http.StatusOK, body)
+	WriteJSON(w, http.StatusOK, me)
 }
 
 // Start API Server
@@ -129,7 +114,7 @@ func (s *ApiServer) Start(listenAddr string) error {
 	m.HandleFunc("GET /v1/users/health", s.handleHealth)
 
 	m.HandleFunc("POST /v1/users/signup", s.VerifyIDToken(s.handleSignup))
-	m.HandleFunc("GET /v1/users/me", s.VerifyIDToken(s.handleGetUser))
+	m.HandleFunc("GET /v1/users/me", s.VerifyIDToken(s.handleGetMe))
 
 	fmt.Println("Starting API Server on", listenAddr)
 	return http.ListenAndServe(listenAddr, m)

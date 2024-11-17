@@ -197,12 +197,37 @@ func (q *Queries) GetUserIntolerances(ctx context.Context, email string) ([]stri
 	return items, nil
 }
 
-const updateUserPreferences = `-- name: UpdateUserPreferences :one
-UPDATE users SET diet = $1, calories = $2, protein = $3, carbs = $4, fat = $5 WHERE email = $6
-RETURNING id, username, email, provider, picture, diet, calories, carbs, protein, fat, created_at, modified_at
+const getUserProfile = `-- name: GetUserProfile :one
+SELECT diet, calories, protein, carbs, fat FROM users WHERE email = $1
 `
 
-type UpdateUserPreferencesParams struct {
+type GetUserProfileRow struct {
+	Diet     pgtype.Text `json:"diet"`
+	Calories pgtype.Int4 `json:"calories"`
+	Protein  pgtype.Int4 `json:"protein"`
+	Carbs    pgtype.Int4 `json:"carbs"`
+	Fat      pgtype.Int4 `json:"fat"`
+}
+
+func (q *Queries) GetUserProfile(ctx context.Context, email string) (GetUserProfileRow, error) {
+	row := q.db.QueryRow(ctx, getUserProfile, email)
+	var i GetUserProfileRow
+	err := row.Scan(
+		&i.Diet,
+		&i.Calories,
+		&i.Protein,
+		&i.Carbs,
+		&i.Fat,
+	)
+	return i, err
+}
+
+const updateUserProfile = `-- name: UpdateUserProfile :one
+UPDATE users SET diet = $1, calories = $2, protein = $3, carbs = $4, fat = $5 WHERE email = $6
+RETURNING diet, calories, protein, carbs, fat
+`
+
+type UpdateUserProfileParams struct {
 	Diet     pgtype.Text `json:"diet"`
 	Calories pgtype.Int4 `json:"calories"`
 	Protein  pgtype.Int4 `json:"protein"`
@@ -211,8 +236,16 @@ type UpdateUserPreferencesParams struct {
 	Email    string      `json:"email"`
 }
 
-func (q *Queries) UpdateUserPreferences(ctx context.Context, arg UpdateUserPreferencesParams) (User, error) {
-	row := q.db.QueryRow(ctx, updateUserPreferences,
+type UpdateUserProfileRow struct {
+	Diet     pgtype.Text `json:"diet"`
+	Calories pgtype.Int4 `json:"calories"`
+	Protein  pgtype.Int4 `json:"protein"`
+	Carbs    pgtype.Int4 `json:"carbs"`
+	Fat      pgtype.Int4 `json:"fat"`
+}
+
+func (q *Queries) UpdateUserProfile(ctx context.Context, arg UpdateUserProfileParams) (UpdateUserProfileRow, error) {
+	row := q.db.QueryRow(ctx, updateUserProfile,
 		arg.Diet,
 		arg.Calories,
 		arg.Protein,
@@ -220,20 +253,13 @@ func (q *Queries) UpdateUserPreferences(ctx context.Context, arg UpdateUserPrefe
 		arg.Fat,
 		arg.Email,
 	)
-	var i User
+	var i UpdateUserProfileRow
 	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.Email,
-		&i.Provider,
-		&i.Picture,
 		&i.Diet,
 		&i.Calories,
-		&i.Carbs,
 		&i.Protein,
+		&i.Carbs,
 		&i.Fat,
-		&i.CreatedAt,
-		&i.ModifiedAt,
 	)
 	return i, err
 }
