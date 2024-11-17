@@ -31,9 +31,9 @@ services:
       dockerfile: Dockerfile
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.user.rule=Host(`api.localhost`) && PathPrefix(`/users`)"
+      - "traefik.http.routers.user.rule=Host(`api.localhost`) && PathPrefix(`/v1/users`)"
       - "traefik.http.services.user.loadbalancer.server.port=8081"
-      - "traefik.http.middlewares.user-strip-prefix.stripprefix.prefixes=/users"
+      - "traefik.http.middlewares.user-strip-prefix.stripprefix.prefixes=/v1/users"
     networks:
       - bridge
 
