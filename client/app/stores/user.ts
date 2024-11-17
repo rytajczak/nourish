@@ -1,12 +1,30 @@
+export interface Profile {
+  diet: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}
+
 export const useUserStore = defineStore(
   "user",
   () => {
-    const { user, clear } = useUserSession();
+    const { clear } = useUserSession();
+
+    const profile = ref<Profile>({} as Profile);
     const intolerances = ref<string[]>([]);
-    const savedRecipes = ref<any[]>([]);
     const dislikedIngredients = ref<string[]>([]);
+    const savedRecipes = ref<any[]>([]);
+
+    async function loadUser(data: any) {
+      profile.value = data.profile;
+      intolerances.value = data.intolerances;
+      dislikedIngredients.value = data.dislikedIngredients;
+      savedRecipes.value = data.savedRecipes;
+    }
 
     async function logOut() {
+      profile.value = {} as Profile;
       intolerances.value = [];
       savedRecipes.value = [];
       dislikedIngredients.value = [];
@@ -14,7 +32,14 @@ export const useUserStore = defineStore(
       navigateTo("/");
     }
 
-    return { user, intolerances, dislikedIngredients, savedRecipes, logOut };
+    return {
+      profile,
+      intolerances,
+      dislikedIngredients,
+      savedRecipes,
+      loadUser,
+      logOut,
+    };
   },
   { persist: true },
 );
