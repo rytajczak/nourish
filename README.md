@@ -18,26 +18,25 @@ Nourish is a full-featured meal planning web application designed to streamline 
 ## How it works
 **Deployment**
 
-deployment is done via a digital ocean droplet (because I dislike serverless). The actual reason for deploying to a VPC instead of any serverless solutions is that I gain much more control over the stack. To me, serverless feels like too much magic, and that magic runs the risk of inconsistent pricing. While yes, running this app serverless would likely be dirt cheap, what happens at a much larges scale? What happens if my API Gateway gets hit with a DDoS attack? I run the risk of paying an exuberant price for all those network calls.
+![image.png](/.eraser/WO6FPCcUiJGt5l8xozHX___1Enb9iXhRwP7bhK676Cd8i3xr483___Dce2iWTcfmT4pTyrg4eZC.png "image.png")
 
-![Infra](/.eraser/WO6FPCcUiJGt5l8xozHX___1Enb9iXhRwP7bhK676Cd8i3xr483___---figure---1t0zezk7OoLRN416OKykD---figure---sl3p-aXR8R_Dk-6NznbVxA.png "Infra")
+deployment is done via a digital ocean droplet (because I dislike serverless). The actual reason for deploying to a VPC instead of any serverless solutions is that I gain much more control over the stack. To me, serverless feels like too much magic, and that magic runs the risk of inconsistent pricing. While yes, running this app serverless would likely be dirt cheap, what happens at a much larges scale? What happens if my API Gateway gets hit with a DDoS attack? I run the risk of paying an exuberant price for all those network calls. 
 
 **Authentication**
 
+![image.png](/.eraser/WO6FPCcUiJGt5l8xozHX___1Enb9iXhRwP7bhK676Cd8i3xr483___HPzssizIGiXVdES9Aeov6.png "image.png")
+
 In past projects, I've had tons of auth troubles. Specifically, I've had troubles with regards to security. Because of this, I've realized that using third-party auth such as Auth0 and Clerk, is typically a better solution for public facing applications. **However, **using third party libraries doesn't help me grow as an engineer and it is for this reason, I've decided to handle a large majority of it manually.
 
-![Authentication](/.eraser/WO6FPCcUiJGt5l8xozHX___1Enb9iXhRwP7bhK676Cd8i3xr483___---figure---TechvnnKYoF6B2cw9ehj2---figure---uN10Z0_JOYt_VZjTZ_035A.png "Authentication")
-
 **Database**
+
+![image.png](/.eraser/WO6FPCcUiJGt5l8xozHX___1Enb9iXhRwP7bhK676Cd8i3xr483___pMXUTSoWJHqlhI0ER3QjC.png "image.png")
 
 There are two primary approaches for building a meal planning application:
 
 1. Users create recipes and share those recipes with others, manually
 2. Recipes get pulled from an external API
 I chose the ladder option as I wanted to work with external data as I haven't had much experience doing so. Because of this, much of the apps functionality can be handled the API (Spoonacular).
-
-![Database Schema](/.eraser/WO6FPCcUiJGt5l8xozHX___1Enb9iXhRwP7bhK676Cd8i3xr483___---figure---y3cFvsMQb12FopB-dNSct---figure---iFZZxJH9awdVRAdSaAClpA.png "Database Schema")
-
 #### Technology Stack
 - **Frontend:** Nuxt with Tailwind CSS for styling.
 - **Backend Services: **Golang and the standard library
@@ -45,7 +44,7 @@ I chose the ladder option as I wanted to work with external data as I haven't ha
 - **CI/CD Pipeline:** GitHub Actions used for automated testing and deployment.
 - **Deployment:** Docker Compose with Traefik as a reverse proxy, hosted on a DigitalOcean VPS with Cloudflare for added security.
 - **CDN:** DigitalOcean Spaces for media assets.
-- **Cache Management:** Nitro caching + redis 
+- **Cache Management:** Nitro caching + redis
 #### Future Improvements
 - **Mobile Application:** Potential future expansion to a mobile app.
 - **Additional Authentication Options:** Support for other OAuth providers.
