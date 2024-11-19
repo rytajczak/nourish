@@ -4,21 +4,9 @@ definePageMeta({
   layout: false,
 });
 
-const { loadUser } = useUserStore();
+const { getUser } = useUserStore();
 
-await useFetch(`/api/users/me`, {
-  onResponse({ response }) {
-    switch (response.status) {
-      case 404:
-        return navigateTo("/onboarding");
-      case 200:
-        loadUser(response._data);
-        return navigateTo("/dashboard");
-      default:
-        return navigateTo("/");
-    }
-  },
-});
+getUser();
 </script>
 
 <template>
