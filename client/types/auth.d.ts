@@ -7,6 +7,8 @@ declare module "#auth-utils" {
   }
   interface SecureSessionData {
     idToken: string;
+    spoonName?: string;
+    spoonHash?: string;
   }
 }
 export {};

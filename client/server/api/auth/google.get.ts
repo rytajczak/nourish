@@ -1,7 +1,3 @@
-import { User } from "#auth-utils";
-
-const config = useRuntimeConfig();
-
 /**
  * @description Handles the Google OAuth login and redirects to the appropriate page.
  */
