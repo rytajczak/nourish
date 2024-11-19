@@ -1,0 +1,30 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+:root {
+  --app-font-family: "Poppins", sans-serif;
+  --app-foreground: #09090b;
+  --app-primary: #01a53f;
+  --app-secondary: #e5e5e5;
+  --app-border: var(--app-secondary);
+
+  &.dark {
+    --app-primary: #00bf49;
+    --app-foreground: #f5f5f5;
+    --app-secondary: #252525;
+  }
+}
+
+:root {
+  --font-family-sans: var(--app-font-family);
+  --ui-text: var(--app-foreground);
+  --ui-secondary: var(--app-secondary);
+  --ui-border: var(--app-border);
+}
+
+@theme {
+  --color-primary: var(--app-primary);
+  --color-background: var(--app-background);
+  --color-muted: var(--ui-text-muted);
+  --color-border: var(--app-border);
+}

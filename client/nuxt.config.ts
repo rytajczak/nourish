@@ -10,7 +10,7 @@ export default defineNuxtConfig({
     "pinia-plugin-persistedstate/nuxt",
     "@vueform/nuxt",
   ],
-  css: ["./app/assets/global.css"],
+  css: ["./app/assets/main.css"],
   app: { pageTransition: { name: "page", mode: "out-in" } },
   ssr: false,
   runtimeConfig: {
