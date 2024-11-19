@@ -4,15 +4,8 @@ definePageMeta({
   layout: false,
 });
 
-const { loadUser } = useUserStore();
-
-async function handleResponse(response) {
-  switch (response.status) {
-    case 200:
-      await loadUser(response.data);
-      navigateTo("/dashboard");
-      break;
-  }
+async function handleResponse() {
+  navigateTo("/confirm");
 }
 </script>
 

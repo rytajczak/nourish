@@ -6,7 +6,10 @@ definePageMeta({
 
 const { getUser } = useUserStore();
 
-getUser();
+onMounted(async () => {
+  if (await getUser()) navigateTo("/dashboard");
+  else navigateTo("/onboarding");
+});
 </script>
 
 <template>

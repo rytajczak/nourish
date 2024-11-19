@@ -20,21 +20,25 @@ interface GetMeResponse {
 export default defineEventHandler(async (event) => {
   const { secure } = await requireUserSession(event);
 
-  const response = await $fetch<GetMeResponse>(`${apiUrl}/users/me`, {
-    headers: { Authorization: `Bearer ${secure?.idToken}` },
-  });
+  try {
+    const response = await $fetch<GetMeResponse>(`${apiUrl}/users/me`, {
+      headers: { Authorization: `Bearer ${secure?.idToken}` },
+    });
 
-  await setUserSession(event, {
-    secure: {
-      spoonName: response.spoonCredential.username,
-      spoonHash: response.spoonCredential.hash,
-    },
-  });
+    await setUserSession(event, {
+      secure: {
+        spoonName: response.spoonCredential.username,
+        spoonHash: response.spoonCredential.hash,
+      },
+    });
 
-  return {
-    profile: response.profile,
-    intolerances: response.intolerances,
-    dislikedIngredients: response.dislikedIngredients,
-    savedRecipes: response.savedRecipes,
-  };
+    return {
+      profile: response.profile,
+      intolerances: response.intolerances,
+      dislikedIngredients: response.dislikedIngredients,
+      savedRecipes: response.savedRecipes,
+    };
+  } catch (error) {
+    return null;
+  }
 });

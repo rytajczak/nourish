@@ -1,7 +1,5 @@
 const config = useRuntimeConfig();
 
-const desiredNutrients = ["Calories", "Protein", "Carbohydrates", "Fat"];
-
 interface RecipeResponse {
   results: Recipe[];
   offset: number;
