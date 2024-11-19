@@ -31,8 +31,6 @@ export default defineEventHandler(async (event) => {
     intolerances: rawBody.intolerances,
   };
 
-  console.log(body);
-
   try {
     const response = await $fetch<SignupResponse>(`${apiUrl}/users/signup`, {
       method: "POST",
