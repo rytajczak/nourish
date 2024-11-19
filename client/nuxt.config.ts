@@ -13,13 +13,14 @@ export default defineNuxtConfig({
   css: ["./app/assets/main.css"],
   app: { pageTransition: { name: "page", mode: "out-in" } },
   ssr: false,
+
   runtimeConfig: {
+    spoonacularApiKey: "me at the red lobster",
+    spoonacularApiHost: "me at the red lobster",
     public: {
-      apiUrl:
-        process.env.NODE_ENV === "production"
-          ? "https://api.helpmemealprep.com"
-          : "http://api.localhost/v1",
+      apiUrl: "me at the red lobster",
     },
   },
+
   devtools: { enabled: true },
 });
