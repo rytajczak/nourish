@@ -6,7 +6,7 @@ declare module "#auth-utils" {
     picture: string;
   }
   interface SecureSessionData {
-    idToken: string;
+    idToken?: string;
     spoonName?: string;
     spoonHash?: string;
   }
