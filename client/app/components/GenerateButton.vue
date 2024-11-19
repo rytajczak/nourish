@@ -4,7 +4,7 @@ const selectedDate = useState("selectedDate");
 
 <template>
   <UModal title="Select a time frame">
-    <UButton variant="subtle">Generate Meals</UButton>
+    <UButton>Generate Meals</UButton>
     <template #body>
       <div class="flex items-center">
         <UButton

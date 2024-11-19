@@ -31,19 +31,23 @@ const showing = ref("all");
         <div class="grid grid-cols-3 gap-4">
           <UCard class="col-span-3">
             <div class="flex flex-col">
-              <span class="text-sm text-gray-400">Total calories today</span>
+              <span class="text-sm text-[var(--ui-text-muted)]"
+                >Total calories today</span
+              >
               <span class="text-xl font-semibold">2000 kcal</span>
             </div>
           </UCard>
           <UCard>
             <div class="flex flex-col">
-              <span class="text-sm text-gray-400">Protein (g)</span>
+              <span class="text-sm text-[var(--ui-text-muted)]"
+                >Protein (g)</span
+              >
               <span class="text-xl font-semibold">180 g</span>
             </div>
           </UCard>
           <UCard>
             <div class="flex flex-col">
-              <span class="text-sm text-gray-400">Carbs (g)</span>
+              <span class="text-sm text-[var(--ui-text-muted)]">Carbs (g)</span>
               <span class="text-xl font-semibold">180 g</span>
             </div>
           </UCard>

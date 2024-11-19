@@ -20,7 +20,9 @@ const themes = ref([
 </script>
 
 <template>
-  <div class="flex h-20 items-center justify-between border-b-[1px] px-8">
+  <div
+    class="flex h-20 items-center justify-between border-b-[1px] border-[var(--ui-border)] px-8"
+  >
     <SearchBar />
     <div class="flex items-center">
       <div class="border-r pr-2">

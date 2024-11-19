@@ -28,7 +28,7 @@ const props = defineProps<Recipe>();
             {{ props.readyInMinutes }} min
           </span>
         </div>
-        <div class="absolute top-0 right-2 flex">
+        <div class="absolute top-2 right-2 flex">
           <UIcon v-if="props.vegetarian" name="lucide:salad" />
           <UIcon v-if="props.vegan" name="lucide:leaf" />
           <UIcon v-if="props.glutenFree" name="lucide:wheat" />

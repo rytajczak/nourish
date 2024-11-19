@@ -41,7 +41,8 @@ onMounted(() => {
         class="m-4 hidden flex-1 cursor-pointer transition-all duration-300 hover:scale-105 xl:block"
         :ui="{ body: 'p-4 sm:p-4' }"
         :class="{
-          'bg-[#14ae4e] text-white': selectedDate.getDate() == day.getDate(),
+          'bg-[var(--ui-primary)] text-white':
+            selectedDate.getDate() == day.getDate(),
         }"
         @click="selectedDate = day"
       >
