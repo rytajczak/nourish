@@ -89,9 +89,12 @@ func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (m
 		return nil, err
 	}
 
-	intolerances, err := s.UpdateIntolerances(ctx, user.Email, info.Intolerances)
-	if err != nil {
-		return nil, err
+	var intolerances []string
+	if len(info.Intolerances) > 0 {
+		intolerances, err = s.UpdateIntolerances(ctx, user.Email, info.Intolerances)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	_, err = s.queries.CreateSpoonCredential(ctx, repository.CreateSpoonCredentialParams{
@@ -101,12 +104,27 @@ func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (m
 		Hash:     response.Hash,
 	})
 
-	return map[string]any{"profile": profile, "intolerances": intolerances}, nil
+	spoonCredential, err := s.queries.GetUsernameAndHash(ctx, user.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return map[string]any{"profile": profile, "intolerances": intolerances, "spoonCredential": spoonCredential}, nil
 }
 
 // GetMe gets a user by their email
 func (s *UserService) GetMe(ctx context.Context, email string) (map[string]any, error) {
+	user, err := s.queries.GetUserByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+
 	profile, err := s.queries.GetUserProfile(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+
+	spoonCredential, err := s.queries.GetUsernameAndHash(ctx, user.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +134,11 @@ func (s *UserService) GetMe(ctx context.Context, email string) (map[string]any, 
 		return nil, err
 	}
 
-	return map[string]any{"profile": profile, "intolerances": intolerances}, nil
+	if intolerances == nil {
+		intolerances = []string{}
+	}
+
+	return map[string]any{"profile": profile, "intolerances": intolerances, "spoonCredential": spoonCredential}, nil
 }
 
 // UpdateUserPreferences updates a user's preferences

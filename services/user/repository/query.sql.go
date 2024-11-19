@@ -222,6 +222,22 @@ func (q *Queries) GetUserProfile(ctx context.Context, email string) (GetUserProf
 	return i, err
 }
 
+const getUsernameAndHash = `-- name: GetUsernameAndHash :one
+SELECT username, hash FROM spoon_credential WHERE user_id = $1
+`
+
+type GetUsernameAndHashRow struct {
+	Username string `json:"username"`
+	Hash     string `json:"hash"`
+}
+
+func (q *Queries) GetUsernameAndHash(ctx context.Context, userID pgtype.UUID) (GetUsernameAndHashRow, error) {
+	row := q.db.QueryRow(ctx, getUsernameAndHash, userID)
+	var i GetUsernameAndHashRow
+	err := row.Scan(&i.Username, &i.Hash)
+	return i, err
+}
+
 const updateUserProfile = `-- name: UpdateUserProfile :one
 UPDATE users SET diet = $1, calories = $2, protein = $3, carbs = $4, fat = $5 WHERE email = $6
 RETURNING diet, calories, protein, carbs, fat

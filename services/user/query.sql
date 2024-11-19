@@ -9,6 +9,9 @@ INSERT INTO users (username, email, provider, picture, diet, calories, carbs, pr
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 RETURNING *;
 
+-- name: GetUsernameAndHash :one
+SELECT username, hash FROM spoon_credential WHERE user_id = $1;
+
 -- name: CreateSpoonCredential :one
 INSERT INTO spoon_credential (user_id, username, password, hash)
 VALUES ($1, $2, $3, $4)
