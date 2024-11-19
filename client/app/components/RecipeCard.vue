@@ -11,7 +11,7 @@ const props = defineProps<Recipe>();
       body: 'p-4 sm:p-4',
       footer: 'p-4 sm:p-4',
     }"
-    class="cursor-pointer transition-all duration-300 hover:scale-105 dark:bg-[#1e1e1e]"
+    class="cursor-pointer transition-all duration-300 hover:scale-105"
   >
     <template #header>
       <div class="relative">
@@ -50,7 +50,7 @@ const props = defineProps<Recipe>();
       </div>
     </div>
     <div
-      class="mt-4 flex items-center justify-between text-gray-500 dark:text-gray-400"
+      class="mt-4 flex items-center justify-between text-[var(--ui-text-muted)]"
     >
       <span
         >{{ Math.round(props.nutrition.nutrients[0]?.amount ?? 0) }}

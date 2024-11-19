@@ -1,6 +1,13 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+:root {
+  --ui-bg-elevated: #f9f9f9;
+}
+.dark {
+  --ui-bg-elevated: #191919;
+}
+
 body {
   @apply text-[#0c2b10] dark:text-[#f4f7f4];
   font-family:

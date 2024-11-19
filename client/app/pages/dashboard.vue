@@ -2,21 +2,8 @@
 definePageMeta({
   middleware: "auth",
 });
-const { user } = useUserStore();
-const dates = [
-  "2024-11-15",
-  "2024-11-16",
-  "2024-11-17",
-  "2024-11-18",
-  "2024-11-19",
-  "2024-11-20",
-  "2024-11-21",
-  "2024-11-22",
-  "2024-11-23",
-  "2024-11-24",
-  "2024-11-25",
-];
-const selectedDate = ref(new Date().toISOString().split("T")[0]);
+
+const showing = ref("all");
 </script>
 
 <template>
@@ -24,30 +11,49 @@ const selectedDate = ref(new Date().toISOString().split("T")[0]);
     <div class="mb-6 flex items-center">
       <h1 class="text-3xl font-semibold">Dashboard</h1>
       <USeparator orientation="vertical" class="h-8 px-4" />
-      <UButton variant="subtle">Generate Plan</UButton>
+      <GenerateButton />
     </div>
-    <div class="flex">
-      <div class="mr-4 flex-2">
-        <UCard class="px-8">
-          <template #header>
-            <h2 class="text-xl font-semibold">Select a date</h2>
-          </template>
-          <!-- <UCarousel
-            v-slot="{ item }"
-            :items="dates"
-            :ui="{
-              item: 'basis-1/7',
-            }"
-            arrows
-          >
-            <div class="max-w-24 text-center">{{ item }}</div>
-          </UCarousel> -->
-        </UCard>
-        <h2 class="mt-6 text-xl font-semibold">Meals to prepare</h2>
+    <div class="flex flex-col 2xl:flex-row">
+      <div class="flex-3 2xl:mr-4">
+        <WeekCarousel />
+        <div class="mt-6 flex items-center justify-between">
+          <h2 class="text-xl font-semibold">Meals to prepare</h2>
+          <USelect
+            v-model="showing"
+            color="neutral"
+            :items="['all', 'breakfast', 'lunch', 'dinner']"
+            class="w-28"
+          />
+        </div>
       </div>
-      <div class="ml-4 flex-1">
-        <h2 class="mb-4 text-xl font-semibold">Statistics</h2>
-        <UCard>Today's nutrition</UCard>
+      <div class="flex-2 2xl:ml-4">
+        <h2 class="my-4 text-xl font-semibold">Statistics</h2>
+        <div class="grid grid-cols-3 gap-4">
+          <UCard class="col-span-3">
+            <div class="flex flex-col">
+              <span class="text-sm text-gray-400">Total calories today</span>
+              <span class="text-xl font-semibold">2000 kcal</span>
+            </div>
+          </UCard>
+          <UCard>
+            <div class="flex flex-col">
+              <span class="text-sm text-gray-400">Protein (g)</span>
+              <span class="text-xl font-semibold">180 g</span>
+            </div>
+          </UCard>
+          <UCard>
+            <div class="flex flex-col">
+              <span class="text-sm text-gray-400">Carbs (g)</span>
+              <span class="text-xl font-semibold">180 g</span>
+            </div>
+          </UCard>
+          <UCard>
+            <div class="flex flex-col">
+              <span class="text-sm text-gray-400">Fat (g)</span>
+              <span class="text-xl font-semibold">180 g</span>
+            </div>
+          </UCard>
+        </div>
       </div>
     </div>
   </div>
