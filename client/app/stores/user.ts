@@ -16,11 +16,9 @@ export const useUserStore = defineStore(
     const dislikedIngredients = ref<string[]>([]);
     const savedRecipes = ref<any[]>([]);
 
-    async function loadUser(data: any) {
-      profile.value = data.profile;
-      intolerances.value = data.intolerances;
-      dislikedIngredients.value = data.dislikedIngredients;
-      savedRecipes.value = data.savedRecipes;
+    async function getUser() {
+      const response = await $fetch("/api/users/me");
+      console.log(response);
     }
 
     async function logOut() {
@@ -37,7 +35,7 @@ export const useUserStore = defineStore(
       intolerances,
       dislikedIngredients,
       savedRecipes,
-      loadUser,
+      getUser,
       logOut,
     };
   },
