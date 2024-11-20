@@ -43,9 +43,9 @@ services:
       dockerfile: Dockerfile
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.recipe.rule=Host(`api.localhost`) && PathPrefix(`/recipes`)"
+      - "traefik.http.routers.recipe.rule=Host(`api.localhost`) && PathPrefix(`/v1/recipes`)"
       - "traefik.http.services.recipe.loadbalancer.server.port=8082"
-      - "traefik.http.middlewares.recipe-strip-prefix.stripprefix.prefixes=/recipes"
+      - "traefik.http.middlewares.recipe-strip-prefix.stripprefix.prefixes=/v1/recipes"
     networks:
       - bridge
 

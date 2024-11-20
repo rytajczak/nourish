@@ -77,8 +77,8 @@ func (s *ApiServer) VerifyIDToken(next http.HandlerFunc) http.HandlerFunc {
 	})
 }
 
-func (s *ApiServer) handleHealth(w http.ResponseWriter, r *http.Request) {
-	WriteJSON(w, http.StatusOK, map[string]string{"msg": "ok"})
+func (s *ApiServer) handlePing(w http.ResponseWriter, r *http.Request) {
+	WriteJSON(w, http.StatusOK, nil)
 }
 
 func (s *ApiServer) handleSignup(w http.ResponseWriter, r *http.Request) {
@@ -111,7 +111,7 @@ func (s *ApiServer) handleGetMe(w http.ResponseWriter, r *http.Request) {
 func (s *ApiServer) Start(listenAddr string) error {
 	m := http.NewServeMux()
 
-	m.HandleFunc("GET /v1/users/health", s.handleHealth)
+	m.HandleFunc("GET /v1/users/ping", s.handlePing)
 
 	m.HandleFunc("POST /v1/users/signup", s.VerifyIDToken(s.handleSignup))
 	m.HandleFunc("GET /v1/users/me", s.VerifyIDToken(s.handleGetMe))

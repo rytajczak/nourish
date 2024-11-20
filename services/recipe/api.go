@@ -22,7 +22,7 @@ func WriteJSON(w http.ResponseWriter, status int, v any) error {
 	return json.NewEncoder(w).Encode(v)
 }
 
-func (s *ApiServer) handleHealth(w http.ResponseWriter, r *http.Request) {
+func (s *ApiServer) handlePing(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, 200, nil)
 }
 
@@ -36,8 +36,8 @@ func (s *ApiServer) handleSearch(w http.ResponseWriter, r *http.Request) {
 func (s *ApiServer) Start(listenAddr string) error {
 	m := http.NewServeMux()
 
-	m.HandleFunc("GET /recipes/health", s.handleHealth)
-	m.HandleFunc("GET /recipes/search", s.handleSearch)
+	m.HandleFunc("GET /v1/recipes/ping", s.handlePing)
+	m.HandleFunc("GET /v1/recipes/search", s.handleSearch)
 
 	return http.ListenAndServe(listenAddr, m)
 }
