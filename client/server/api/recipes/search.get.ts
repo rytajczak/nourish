@@ -1,13 +1,13 @@
 const config = useRuntimeConfig();
 
 interface RecipeResponse {
-  results: Recipe[];
+  results: DetailedRecipe[];
   offset: number;
   number: number;
   totalResults: number;
 }
 
-export interface Recipe {
+export interface DetailedRecipe {
   vegetarian: boolean;
   vegan: boolean;
   glutenFree: boolean;
