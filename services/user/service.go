@@ -17,7 +17,7 @@ import (
 type Service interface {
 	CreateUser(ctx context.Context, info CreateUserRequest) (map[string]any, error)
 	GetMe(ctx context.Context, email string) (map[string]any, error)
-	UpdateProfile(ctx context.Context, email string, info *UpdateUserPreferencesRequest) (*repository.UpdateUserProfileRow, error)
+	UpdateProfile(ctx context.Context, email string, profile map[string]any) (map[string]any, error)
 	UpdateIntolerances(ctx context.Context, email string, intolerances []string) ([]string, error)
 }
 
@@ -141,21 +141,8 @@ func (s *UserService) GetMe(ctx context.Context, email string) (map[string]any, 
 	return map[string]any{"profile": profile, "intolerances": intolerances, "spoonCredential": spoonCredential}, nil
 }
 
-// UpdateUserPreferences updates a user's preferences
-func (s *UserService) UpdateProfile(ctx context.Context, email string, info *UpdateUserPreferencesRequest) (*repository.UpdateUserProfileRow, error) {
-	updatedProfile, err := s.queries.UpdateUserProfile(ctx, repository.UpdateUserProfileParams{
-		Email:    email,
-		Diet:     pgtype.Text{String: info.Diet, Valid: true},
-		Calories: pgtype.Int4{Int32: int32(info.Calories), Valid: true},
-		Protein:  pgtype.Int4{Int32: int32(info.Protein), Valid: true},
-		Carbs:    pgtype.Int4{Int32: int32(info.Carbs), Valid: true},
-		Fat:      pgtype.Int4{Int32: int32(info.Fat), Valid: true},
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &updatedProfile, nil
+func (s *UserService) UpdateProfile(ctx context.Context, email string, profile map[string]any) (map[string]any, error) {
+	return nil, nil
 }
 
 func (s *UserService) UpdateIntolerances(ctx context.Context, email string, intolerances []string) ([]string, error) {

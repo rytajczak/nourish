@@ -28,7 +28,7 @@ type CreateUserRequest struct {
 	Intolerances []string `json:"intolerances"`
 }
 
-type UpdateUserPreferencesRequest struct {
+type UpdateUserProfileRequest struct {
 	Calories     int      `json:"calories"`
 	Protein      int      `json:"protein"`
 	Carbs        int      `json:"carbs"`
@@ -107,6 +107,14 @@ func (s *ApiServer) handleGetMe(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, http.StatusOK, me)
 }
 
+func (s *ApiServer) handleUpdateProfile(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("all ive come to find is better than divine")
+}
+
+func (s *ApiServer) handleUpdateIntolerances(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("the lesson here, dont run from fear")
+}
+
 // Start API Server
 func (s *ApiServer) Start(listenAddr string) error {
 	m := http.NewServeMux()
@@ -115,6 +123,8 @@ func (s *ApiServer) Start(listenAddr string) error {
 
 	m.HandleFunc("POST /v1/users/signup", s.VerifyIDToken(s.handleSignup))
 	m.HandleFunc("GET /v1/users/me", s.VerifyIDToken(s.handleGetMe))
+	m.HandleFunc("PUT /v1/users/me/profile", s.VerifyIDToken(s.handleUpdateProfile))
+	m.HandleFunc("PUT /v1/users/me/intolerances", s.VerifyIDToken(s.handleUpdateIntolerances))
 
 	fmt.Println("Starting API Server on", listenAddr)
 	return http.ListenAndServe(listenAddr, m)
