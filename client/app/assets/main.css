@@ -27,6 +27,7 @@
 
 @theme {
   --color-primary: var(--app-primary);
+  --color-foreground: var(--app-foreground);
   --color-background: var(--app-background);
   --color-muted: var(--ui-text-muted);
   --color-border: var(--app-border);
