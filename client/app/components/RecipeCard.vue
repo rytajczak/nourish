@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Recipe } from "~~/server/api/recipes/search.get";
-const props = defineProps<Recipe>();
+import type { DetailedRecipe } from "~~/server/api/recipes/search.get";
+const props = defineProps<DetailedRecipe>();
 </script>
 
 <template>
@@ -49,9 +49,7 @@ const props = defineProps<Recipe>();
         />
       </div>
     </div>
-    <div
-      class="mt-4 flex items-center justify-between text-[var(--ui-text-muted)]"
-    >
+    <div class="text-muted mt-4 flex items-center justify-between">
       <span
         >{{ Math.round(props.nutrition.nutrients[0]?.amount ?? 0) }}
         {{ props.nutrition.nutrients[0]?.unit }}

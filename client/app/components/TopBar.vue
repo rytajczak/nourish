@@ -25,7 +25,7 @@ const themes = ref([
   >
     <SearchBar />
     <div class="flex items-center">
-      <div class="border-r pr-2">
+      <div>
         <UPopover>
           <UButton
             color="neutral"
@@ -53,8 +53,9 @@ const themes = ref([
           </template>
         </UPopover>
       </div>
+      <USeparator orientation="vertical" class="mx-3 h-8" />
       <UPopover class="relative right-9">
-        <UAvatar size="lg" :src="user?.picture ?? ''" class="ms-4" />
+        <UAvatar size="lg" :src="user?.picture ?? ''" />
         <template #content>
           <UCard>
             <template #header>
@@ -64,7 +65,7 @@ const themes = ref([
                   <span class="text-sm font-semibold">{{
                     user?.username
                   }}</span>
-                  <span class="text-sm text-gray-600 dark:text-gray-500">{{
+                  <span class="text-sm text-[var(--ui-text-muted)]">{{
                     user?.email
                   }}</span>
                 </div>

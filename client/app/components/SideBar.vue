@@ -4,7 +4,7 @@ const { logOut } = useUserStore();
 
 <template>
   <aside
-    class="fixed top-0 left-0 z-50 block h-screen w-64 -translate-x-full border-r-[1px] border-[var(--ui-border)] bg-[var(--ui-bg-elevated)] transition-transform md:translate-x-0"
+    class="border-border fixed top-0 left-0 z-50 block h-screen w-64 -translate-x-full border-r-[1px] transition-transform md:translate-x-0"
   >
     <div class="flex flex-col">
       <div class="h-20">
@@ -12,7 +12,7 @@ const { logOut } = useUserStore();
           to="/dashboard"
           class="flex items-center px-6 py-[24px] text-2xl font-bold"
         >
-          <Icon name="lucide:leaf" class="mr-2 text-[var(--ui-primary)]" />
+          <Icon name="lucide:leaf" class="text-primary mr-2" />
           Nourish
         </NuxtLink>
       </div>
@@ -54,14 +54,6 @@ const { logOut } = useUserStore();
           to="/profile"
           icon="solar:user-circle-outline"
           >Profile</UButton
-        >
-        <UButton
-          size="lg"
-          color="neutral"
-          variant="ghost"
-          to="/recipes/custom"
-          icon="solar:document-text-outline"
-          >My Recipes</UButton
         >
         <UButton
           size="lg"
