@@ -24,7 +24,7 @@ const props = defineProps<DetailedRecipe>();
           <span
             class="flex items-center rounded-2xl bg-white/70 px-2 py-1 text-sm shadow-xl backdrop-blur-md dark:bg-[#191919]/70"
           >
-            <UIcon name="solar:alarm-outline" class="mr-1" />
+            <UIcon name="lucide:alarm-clock" class="mr-1" />
             {{ props.readyInMinutes }} min
           </span>
         </div>
@@ -44,7 +44,7 @@ const props = defineProps<DetailedRecipe>();
           color="secondary"
           size="lg"
           variant="ghost"
-          icon="solar:bookmark-outline"
+          icon="lucide:book-marked"
           class="p-1"
         />
       </div>

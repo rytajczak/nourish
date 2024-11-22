@@ -17,15 +17,13 @@ const { logOut } = useUserStore();
         </NuxtLink>
       </div>
       <div class="flex flex-col px-6 py-6">
-        <span class="ms-3 mb-2 text-sm text-gray-700 dark:text-gray-400"
-          >Menu</span
-        >
+        <span class="mb-2 text-sm text-gray-700 dark:text-gray-400">Menu</span>
         <UButton
           size="lg"
           color="neutral"
           variant="ghost"
           to="/dashboard"
-          icon="solar:calendar-linear"
+          icon="lucide:layout-dashboard"
           >dashboard</UButton
         >
         <UButton
@@ -33,7 +31,7 @@ const { logOut } = useUserStore();
           color="neutral"
           variant="ghost"
           to="/recipes/saved"
-          icon="solar:bookmark-outline"
+          icon="lucide:book-marked"
           >Saved Recipes</UButton
         >
         <UButton
@@ -41,10 +39,10 @@ const { logOut } = useUserStore();
           color="neutral"
           variant="ghost"
           to="/grocery-list"
-          icon="solar:bag-4-outline"
+          icon="lucide:shopping-basket"
           >Grocery List</UButton
         >
-        <span class="ms-3 mt-8 mb-2 text-sm text-gray-700 dark:text-gray-400"
+        <span class="mt-8 mb-2 text-sm text-gray-700 dark:text-gray-400"
           >Settings</span
         >
         <UButton
@@ -52,14 +50,14 @@ const { logOut } = useUserStore();
           color="neutral"
           variant="ghost"
           to="/profile"
-          icon="solar:user-circle-outline"
+          icon="lucide:circle-user-round"
           >Profile</UButton
         >
         <UButton
           size="lg"
           color="neutral"
           variant="ghost"
-          icon="solar:logout-2-outline"
+          icon="lucide:log-out"
           @click="logOut"
           >Log Out</UButton
         >

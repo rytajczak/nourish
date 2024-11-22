@@ -12,7 +12,7 @@ definePageMeta({
       <p class="dark:text-gray-400">because your health is important</p>
       <div class="mt-4">
         <span class="flex items-center">
-          <Icon name="solar:login-2-outline" class="me-2" />
+          <Icon name="lucide:log-in" class="me-2" />
           login
         </span>
         <div class="mt-2">

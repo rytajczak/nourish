@@ -5,10 +5,15 @@ definePageMeta({
 });
 
 const { getUser } = useUserStore();
+const { onboardUser } = useOnboardingStore();
 
 onMounted(async () => {
-  if (await getUser()) navigateTo("/dashboard");
-  else navigateTo("/onboarding");
+  if (!(await getUser())) {
+    console.log("no user found");
+    onboardUser();
+  }
+
+  navigateTo("/dashboard");
 });
 </script>
 

@@ -42,9 +42,18 @@ onMounted(() => {
       </div>
       <UModal v-model:open="onboarding.open" prevent-close>
         <template #content>
-          <UCard>
+          <UProgress
+            color="neutral"
+            v-model="onboarding.progress"
+            :ui="{ base: 'rounded-b' }"
+          />
+          <UCard
+            :ui="{ root: 'rounded-none rounded-b-[calc(var(--ui-radius)*2)]' }"
+          >
             <OnboardingWelcome v-if="onboarding.progress == 0" />
-            <OnboardingProfile v-if="onboarding.progress == 25" />
+            <OnboardingGoals v-if="onboarding.progress == 33" />
+            <OnboardingDiet v-if="onboarding.progress == 66" />
+            <OnboardingIntolerance v-if="onboarding.progress == 99" />
           </UCard>
         </template>
       </UModal>

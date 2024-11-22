@@ -29,18 +29,13 @@ const themes = ref([
         <UPopover>
           <UButton
             color="neutral"
-            icon="solar:settings-outline"
+            icon="lucide:settings"
             size="lg"
             variant="link"
           />
         </UPopover>
         <UPopover class="relative right-24">
-          <UButton
-            color="neutral"
-            icon="solar:sun-2-outline"
-            size="lg"
-            variant="link"
-          />
+          <UButton color="neutral" icon="lucide:sun" size="lg" variant="link" />
           <template #content>
             <UCard>
               <URadioGroup
@@ -78,7 +73,7 @@ const themes = ref([
                 variant="ghost"
                 class="p-0"
                 to="/profile"
-                icon="solar:user-circle-outline"
+                icon="lucide:circle-user-round"
                 >Profile</UButton
               >
               <UButton
@@ -87,8 +82,8 @@ const themes = ref([
                 variant="ghost"
                 class="mt-4 p-0"
                 to="/recipes/custom"
-                icon="solar:document-text-outline"
-                >My Recipes</UButton
+                icon="lucide:book-marked"
+                >Saved Recipes</UButton
               >
             </div>
             <template #footer>
@@ -97,7 +92,7 @@ const themes = ref([
                 color="neutral"
                 variant="ghost"
                 class="p-0"
-                icon="solar:logout-2-outline"
+                icon="lucide:log-out"
                 >Log Out</UButton
               >
             </template>

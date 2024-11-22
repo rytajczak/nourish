@@ -1,20 +1,13 @@
 <script setup lang="ts">
 const planner = usePlannerStore();
-
-const selectedDate = useState<Date>("selectedDate", () => new Date());
 const days = ref<Date[]>([]);
 
 onMounted(async () => {
   for (let i = 0; i < 7; i++) {
-    const nextDate = new Date(selectedDate.value);
-    nextDate.setDate(selectedDate.value.getDate() + i);
-    days.value.push(nextDate);
+    const date = new Date(planner.weekStartDate);
+    date.setDate(planner.weekStartDate.getDate() + i);
+    days.value.push(date);
   }
-  await planner.fetchWeek(new Date());
-});
-
-watch(selectedDate, async () => {
-  await planner.fetchWeek(new Date());
 });
 </script>
 
@@ -41,14 +34,14 @@ watch(selectedDate, async () => {
     </template>
     <div class="flex items-center justify-center">
       <UCard
-        v-for="day in days"
+        v-for="(day, index) in days"
         class="mx-3 hidden flex-1 cursor-pointer transition-all duration-150 hover:scale-105 lg:block"
         :class="{
           'bg-foreground/90 text-background':
-            selectedDate.getDate() == day.getDate(),
+            planner.selectedDay.getDate() == day.getDate(),
         }"
         :ui="{ body: 'p-3 sm:p-3' }"
-        @click="selectedDate = day"
+        @click="planner.selectedDay = day"
       >
         <div class="flex flex-col items-center justify-center">
           <span class="text-xl font-semibold">{{
@@ -56,18 +49,20 @@ watch(selectedDate, async () => {
           }}</span>
           <span
             :class="{
-              'text-neutral': selectedDate.getDate() == day.getDate(),
+              'text-neutral': planner.selectedDay.getDate() == day.getDate(),
             }"
             >{{ day.toLocaleDateString("en-US", { weekday: "short" }) }}</span
           >
         </div>
       </UCard>
       <div class="flex items-center justify-center lg:hidden">
-        <UButton variant="ghost" icon="i-heroicons-chevron-left" />
+        <UButton variant="ghost" icon="lucide:arrow-left" />
         <span class="text-xl font-semibold">
-          {{ selectedDate.toLocaleDateString("en-US", { weekday: "long" }) }}
+          {{
+            planner.selectedDay.toLocaleDateString("en-US", { weekday: "long" })
+          }}
         </span>
-        <UButton variant="ghost" icon="i-heroicons-chevron-right" />
+        <UButton variant="ghost" icon="lucide:arrow-right" />
       </div>
     </div>
   </UCard>

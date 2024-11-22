@@ -1,21 +1,14 @@
 <script setup lang="ts">
 const planner = usePlannerStore();
-const selectedDate = useState<Date>("selectedDate");
 
 const open = ref(false);
 
-const weekStart = new Date();
-const weekEnd = computed(() => {
-  return new Date(weekStart.getTime() + 6 * 24 * 60 * 60 * 1000);
+const weekEndDate = computed(() => {
+  return new Date(planner.weekStartDate.getTime() + 6 * 24 * 60 * 60 * 1000);
 });
 
 async function handleGenerateDay() {
-  await planner.generateDay(selectedDate.value);
-  open.value = false;
-}
-
-async function handleGenerateWeek() {
-  await planner.generateWeek();
+  await planner.generateDay();
   open.value = false;
 }
 </script>
@@ -34,7 +27,7 @@ async function handleGenerateWeek() {
           <div class="flex w-full flex-col items-center justify-center">
             <span class="text-lg font-semibold">Selected day</span>
             <span class="text-muted text-sm">{{
-              selectedDate.toLocaleDateString("en-US", {
+              planner.selectedDay.toLocaleDateString("en-US", {
                 weekday: "long",
               })
             }}</span>
@@ -51,14 +44,14 @@ async function handleGenerateWeek() {
             <span class="text-lg font-semibold">This week</span>
             <span class="text-muted text-sm"
               >{{
-                weekStart.toLocaleDateString("en-US", {
+                planner.weekStartDate.toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
                 })
               }}
               -
               {{
-                weekEnd.toLocaleDateString("en-US", {
+                weekEndDate.toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
                 })
