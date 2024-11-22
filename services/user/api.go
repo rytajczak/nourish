@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -94,6 +95,7 @@ func (s *ApiServer) handleSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("created user: %s", user)
 	WriteJSON(w, http.StatusOK, user)
 }
 
