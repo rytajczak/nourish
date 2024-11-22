@@ -1,6 +1,9 @@
 export default defineNuxtConfig({
   future: { compatibilityVersion: 4 },
   compatibilityDate: "2024-04-03",
+
+  ssr: false,
+
   modules: [
     "nuxt-auth-utils",
     "@nuxt/ui",
@@ -9,6 +12,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "pinia-plugin-persistedstate/nuxt",
   ],
+
   css: ["./app/assets/main.css"],
   app: { pageTransition: { name: "page", mode: "out-in" } },
 
@@ -17,6 +21,12 @@ export default defineNuxtConfig({
     spoonacularApiHost: "me at the red lobster",
     public: {
       apiUrl: "me at the red lobster",
+    },
+  },
+
+  icon: {
+    clientBundle: {
+      scan: true,
     },
   },
 
