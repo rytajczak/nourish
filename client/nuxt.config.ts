@@ -11,7 +11,6 @@ export default defineNuxtConfig({
   ],
   css: ["./app/assets/main.css"],
   app: { pageTransition: { name: "page", mode: "out-in" } },
-  ssr: false,
 
   runtimeConfig: {
     spoonacularApiKey: "me at the red lobster",
