@@ -123,7 +123,7 @@ func (s *ApiServer) Start(listenAddr string) error {
 
 	m.HandleFunc("GET /v1/users/ping", s.handlePing)
 
-	m.HandleFunc("POST /v1/users/signup", s.VerifyIDToken(s.handleSignup))
+	m.HandleFunc("POST /v1/users", s.VerifyIDToken(s.handleSignup))
 	m.HandleFunc("GET /v1/users/me", s.VerifyIDToken(s.handleGetMe))
 	m.HandleFunc("PUT /v1/users/me/profile", s.VerifyIDToken(s.handleUpdateProfile))
 	m.HandleFunc("PUT /v1/users/me/intolerances", s.VerifyIDToken(s.handleUpdateIntolerances))
