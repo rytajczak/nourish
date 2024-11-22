@@ -1,19 +1,14 @@
 <script setup lang="ts">
-const { logOut } = useUserStore();
-const onboarding = useOnboardingStore();
-async function handleLogOut() {
-  navigateTo("/");
-  await logOut();
-}
+const { signOut } = useUserStore();
+const { nextStep } = useOnboardingStore();
 </script>
 
 <template>
   <div>
     <span class="text-2xl">
       <UIcon name="lucide:leaf" class="text-primary mr-1" />
-      Nourish
     </span>
-    <div class="my-4">
+    <div class="mt-2 mb-6">
       <h2 class="text-2xl font-semibold">Welcome</h2>
       <h2 class="text-muted mt-1">
         Tell us a little about yourself to personalize your meal planning
@@ -24,15 +19,15 @@ async function handleLogOut() {
       <UButton
         variant="outline"
         color="neutral"
-        class="flex items-center justify-center py-3"
-        @click="handleLogOut"
+        class="flex items-center justify-center py-3 font-bold"
+        @click="signOut"
       >
         <span>Cancel</span>
       </UButton>
       <UButton
         color="neutral"
-        class="flex items-center justify-center py-3"
-        @click="onboarding.nextStep"
+        class="flex items-center justify-center py-3 font-bold"
+        @click="nextStep"
       >
         <span>Get Started</span>
       </UButton>
