@@ -8,7 +8,6 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@pinia/nuxt",
     "pinia-plugin-persistedstate/nuxt",
-    "@vueform/nuxt",
   ],
   css: ["./app/assets/main.css"],
   app: { pageTransition: { name: "page", mode: "out-in" } },
