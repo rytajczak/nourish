@@ -37,6 +37,7 @@ export default defineEventHandler(async (event) => {
       headers: { Authorization: `Bearer ${secure?.idToken}` },
       body,
     });
+    console.log(response);
 
     await setUserSession(event, {
       secure: {
