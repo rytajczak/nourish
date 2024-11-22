@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { logOut } = useUserStore();
+const { signOut } = useUserStore();
 </script>
 
 <template>
@@ -58,7 +58,7 @@ const { logOut } = useUserStore();
           color="neutral"
           variant="ghost"
           icon="lucide:log-out"
-          @click="logOut"
+          @click="signOut"
           >Log Out</UButton
         >
       </div>
