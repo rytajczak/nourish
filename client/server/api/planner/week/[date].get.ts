@@ -12,10 +12,8 @@ export default defineEventHandler(async (event) => {
         query: { hash: secure?.spoonHash },
       },
     );
-    console.log(response);
     return response;
   } catch (error) {
-    console.log(error);
     return null;
   }
 });

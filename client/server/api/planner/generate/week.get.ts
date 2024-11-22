@@ -21,6 +21,5 @@ export default defineEventHandler(async (event) => {
       params: { timeFrame: "week" },
     },
   );
-  console.log(response);
   return response;
 });
