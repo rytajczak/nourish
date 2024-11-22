@@ -3,7 +3,14 @@ definePageMeta({
   middleware: "auth",
 });
 
-const showing = ref("all");
+const planner = usePlannerStore();
+const onboarding = useOnboardingStore();
+
+const showingMeals = ref("all");
+
+onMounted(() => {
+  planner.fetchWeek();
+});
 </script>
 
 <template>
@@ -13,52 +20,34 @@ const showing = ref("all");
       <USeparator orientation="vertical" class="h-8 px-4" />
       <GenerateButton />
     </div>
-    <div class="flex flex-col 2xl:flex-row">
-      <div class="flex-3 2xl:mr-4">
-        <WeekCarousel />
+    <div class="grid grid-cols-1 xl:grid-cols-5 xl:gap-8">
+      <div class="col-span-3">
+        <DaySelector />
         <div class="mt-6 flex items-center justify-between">
           <h2 class="text-xl font-semibold">Meals to prepare</h2>
           <USelect
-            v-model="showing"
+            v-model="showingMeals"
             color="neutral"
             :items="['all', 'breakfast', 'lunch', 'dinner']"
-            class="w-28"
+            class="w-32"
           />
         </div>
-      </div>
-      <div class="flex-2 2xl:ml-4">
-        <h2 class="my-4 text-xl font-semibold">Statistics</h2>
-        <div class="grid grid-cols-3 gap-4">
-          <UCard class="col-span-3">
-            <div class="flex flex-col">
-              <span class="text-sm text-[var(--ui-text-muted)]"
-                >Total calories today</span
-              >
-              <span class="text-xl font-semibold">2000 kcal</span>
-            </div>
-          </UCard>
-          <UCard>
-            <div class="flex flex-col">
-              <span class="text-sm text-[var(--ui-text-muted)]"
-                >Protein (g)</span
-              >
-              <span class="text-xl font-semibold">180 g</span>
-            </div>
-          </UCard>
-          <UCard>
-            <div class="flex flex-col">
-              <span class="text-sm text-[var(--ui-text-muted)]">Carbs (g)</span>
-              <span class="text-xl font-semibold">180 g</span>
-            </div>
-          </UCard>
-          <UCard>
-            <div class="flex flex-col">
-              <span class="text-sm text-gray-400">Fat (g)</span>
-              <span class="text-xl font-semibold">180 g</span>
-            </div>
-          </UCard>
+        <pre>{{ planner.selectedDayInfo?.items }}</pre>
+        <div>
+          <UButton color="neutral" @click="planner.addEntry">Add entry</UButton>
         </div>
       </div>
+      <div class="col-span-1 xl:col-span-2">
+        <NutritionInfo />
+      </div>
+      <UModal v-model:open="onboarding.open" prevent-close>
+        <template #content>
+          <UCard>
+            <OnboardingWelcome v-if="onboarding.progress == 0" />
+            <OnboardingProfile v-if="onboarding.progress == 25" />
+          </UCard>
+        </template>
+      </UModal>
     </div>
   </div>
 </template>
