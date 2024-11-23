@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -21,21 +20,16 @@ type CreateUserRequest struct {
 	Username     string   `json:"username"`
 	Provider     string   `json:"provider"`
 	Picture      string   `json:"picture"`
-	Diet         string   `json:"diet"`
-	Calories     int      `json:"calories"`
-	Protein      int      `json:"protein"`
-	Carbs        int      `json:"carbs"`
-	Fat          int      `json:"fat"`
+	Profile      Profile  `json:"profile"`
 	Intolerances []string `json:"intolerances"`
 }
 
-type UpdateUserProfileRequest struct {
-	Calories     int      `json:"calories"`
-	Protein      int      `json:"protein"`
-	Carbs        int      `json:"carbs"`
-	Fat          int      `json:"fat"`
-	Diet         string   `json:"diet"`
-	Intolerances []string `json:"intolerances"`
+type Profile struct {
+	Diet     string `json:"diet"`
+	Calories int    `json:"calories"`
+	Protein  int    `json:"protein"`
+	Carbs    int    `json:"carbs"`
+	Fat      int    `json:"fat"`
 }
 
 func NewApiServer(svc Service) *ApiServer {
@@ -82,7 +76,7 @@ func (s *ApiServer) handlePing(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, http.StatusOK, nil)
 }
 
-func (s *ApiServer) handleSignup(w http.ResponseWriter, r *http.Request) {
+func (s *ApiServer) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 	var body CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		WriteJSON(w, http.StatusBadRequest, err.Error())
@@ -95,8 +89,7 @@ func (s *ApiServer) handleSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("created user: %s", user)
-	WriteJSON(w, http.StatusOK, user)
+	WriteJSON(w, http.StatusCreated, user)
 }
 
 func (s *ApiServer) handleGetMe(w http.ResponseWriter, r *http.Request) {
@@ -123,7 +116,7 @@ func (s *ApiServer) Start(listenAddr string) error {
 
 	m.HandleFunc("GET /v1/users/ping", s.handlePing)
 
-	m.HandleFunc("POST /v1/users", s.VerifyIDToken(s.handleSignup))
+	m.HandleFunc("POST /v1/users/", s.VerifyIDToken(s.handleCreateUser))
 	m.HandleFunc("GET /v1/users/me", s.VerifyIDToken(s.handleGetMe))
 	m.HandleFunc("PUT /v1/users/me/profile", s.VerifyIDToken(s.handleUpdateProfile))
 	m.HandleFunc("PUT /v1/users/me/intolerances", s.VerifyIDToken(s.handleUpdateIntolerances))

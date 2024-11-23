@@ -77,11 +77,11 @@ func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (m
 		Email:    info.Email,
 		Provider: info.Provider,
 		Picture:  pgtype.Text{String: info.Picture, Valid: true},
-		Diet:     pgtype.Text{String: info.Diet, Valid: true},
-		Calories: pgtype.Int4{Int32: int32(info.Calories), Valid: true},
-		Protein:  pgtype.Int4{Int32: int32(info.Protein), Valid: true},
-		Carbs:    pgtype.Int4{Int32: int32(info.Carbs), Valid: true},
-		Fat:      pgtype.Int4{Int32: int32(info.Fat), Valid: true},
+		Diet:     pgtype.Text{String: info.Profile.Diet, Valid: true},
+		Calories: pgtype.Int4{Int32: int32(info.Profile.Calories), Valid: true},
+		Protein:  pgtype.Int4{Int32: int32(info.Profile.Protein), Valid: true},
+		Carbs:    pgtype.Int4{Int32: int32(info.Profile.Carbs), Valid: true},
+		Fat:      pgtype.Int4{Int32: int32(info.Profile.Carbs), Valid: true},
 	})
 
 	profile, err := s.queries.GetUserProfile(ctx, user.Email)
