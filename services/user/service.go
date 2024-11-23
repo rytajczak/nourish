@@ -15,7 +15,7 @@ import (
 )
 
 type Service interface {
-	CreateUser(ctx context.Context, info CreateUserRequest) (map[string]any, error)
+	CreateUser(ctx context.Context, request CreateUserRequest) (map[string]any, error)
 	GetMe(ctx context.Context, email string) (map[string]any, error)
 	UpdateProfile(ctx context.Context, email string, profile map[string]any) (map[string]any, error)
 	UpdateIntolerances(ctx context.Context, email string, intolerances []string) ([]string, error)
@@ -55,7 +55,7 @@ func NewUserService(host string, key string) Service {
 }
 
 // CreateUser creates a new user and connects them to their spoon account
-func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (map[string]any, error) {
+func (s *UserService) CreateUser(ctx context.Context, request CreateUserRequest) (map[string]any, error) {
 	req, _ := http.NewRequest("POST", s.url+"/users/connect", nil)
 	req.Header.Add("x-rapidapi-key", s.key)
 	req.Header.Add("x-rapidapi-host", s.host)
@@ -73,15 +73,15 @@ func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (m
 	json.Unmarshal(body, &response)
 
 	user, err := s.queries.CreateUser(ctx, repository.CreateUserParams{
-		Username: info.Username,
-		Email:    info.Email,
-		Provider: info.Provider,
-		Picture:  pgtype.Text{String: info.Picture, Valid: true},
-		Diet:     pgtype.Text{String: info.Profile.Diet, Valid: true},
-		Calories: pgtype.Int4{Int32: int32(info.Profile.Calories), Valid: true},
-		Protein:  pgtype.Int4{Int32: int32(info.Profile.Protein), Valid: true},
-		Carbs:    pgtype.Int4{Int32: int32(info.Profile.Carbs), Valid: true},
-		Fat:      pgtype.Int4{Int32: int32(info.Profile.Carbs), Valid: true},
+		Username: request.Username,
+		Email:    request.Email,
+		Provider: request.Provider,
+		Picture:  pgtype.Text{String: request.Picture, Valid: true},
+		Diet:     pgtype.Text{String: request.Profile.Diet, Valid: true},
+		Calories: pgtype.Int4{Int32: int32(request.Profile.Calories), Valid: true},
+		Protein:  pgtype.Int4{Int32: int32(request.Profile.Protein), Valid: true},
+		Carbs:    pgtype.Int4{Int32: int32(request.Profile.Carbs), Valid: true},
+		Fat:      pgtype.Int4{Int32: int32(request.Profile.Carbs), Valid: true},
 	})
 
 	profile, err := s.queries.GetUserProfile(ctx, user.Email)
@@ -89,11 +89,15 @@ func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (m
 		return nil, err
 	}
 
-	var intolerances []string
-	if len(info.Intolerances) > 0 {
-		intolerances, err = s.UpdateIntolerances(ctx, user.Email, info.Intolerances)
+	intolerances := []string{}
+	if len(request.Intolerances) > 0 {
+		intolerances, err = s.UpdateIntolerances(ctx, user.Email, request.Intolerances)
 		if err != nil {
 			return nil, err
+		}
+
+		if intolerances == nil {
+			intolerances = []string{}
 		}
 	}
 
