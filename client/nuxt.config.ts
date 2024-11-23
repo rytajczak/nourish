@@ -26,6 +26,16 @@ export default defineNuxtConfig({
 
   icon: {
     clientBundle: {
+      icons: [
+        "lucide:milk-off",
+        "lucide:egg-off",
+        "lucide:wheat-off",
+        "lucide:nut-off",
+        "lucide:fish-off",
+        "lucide:mouse-off",
+        "lucide:bean-off",
+        "lucide:wine-off",
+      ],
       scan: true,
     },
   },
