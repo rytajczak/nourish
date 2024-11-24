@@ -4,25 +4,40 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
+	"net/url"
+	"strconv"
+	"time"
 )
 
 type Service interface {
-	SearchRecipes(string, context.Context) map[string]any
-	GetRecipeById(int, context.Context) map[string]any
+	SearchRecipes(params url.Values, ctx context.Context) map[string]any
+	GetRecipeInfo(id int, ctx context.Context) (map[string]any, bool, error)
+	GetRecipeInfoBulk(ids []int, ctx context.Context) map[string]any
 }
 
 type RecipeService struct {
-	url  string
-	host string
-	key  string
+	url   string
+	host  string
+	key   string
+	cache *Cache
 }
 
-func (r *RecipeService) newRequest(method, endpoint string, body io.Reader) (*http.Request, error) {
+func NewRecipeService(host string, key string, cache *Cache) Service {
+	url := fmt.Sprintf("https://%s", host)
+
+	return &RecipeService{
+		url:   url,
+		host:  host,
+		key:   key,
+		cache: cache,
+	}
+}
+
+func (r *RecipeService) newRequest(method string, endpoint string) (*http.Request, error) {
 	url := fmt.Sprintf("%s%s", r.url, endpoint)
-	req, err := http.NewRequest(method, url, body)
+	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -31,14 +46,14 @@ func (r *RecipeService) newRequest(method, endpoint string, body io.Reader) (*ht
 	return req, nil
 }
 
-func (r *RecipeService) SearchRecipes(query string, ctx context.Context) map[string]any {
-	req, err := r.newRequest("GET", "/recipes/complexSearch", nil)
+func (s *RecipeService) SearchRecipes(params url.Values, ctx context.Context) map[string]any {
+	req, err := s.newRequest("GET", "/recipes/complexSearch")
 	if err != nil {
 		log.Fatal("failed to attach headers")
 	}
 
 	q := req.URL.Query()
-	q.Add("query", query)
+	q.Add("query", params.Get("query"))
 	q.Add("addRecipeNutrition", "true")
 	q.Add("instructionsRequired", "true")
 	q.Add("number", "30")
@@ -58,40 +73,41 @@ func (r *RecipeService) SearchRecipes(query string, ctx context.Context) map[str
 	return response
 }
 
-func (r *RecipeService) GetRecipeById(id int, ctx context.Context) map[string]any {
-	url := fmt.Sprintf("/recipes/%d/information", id)
+func (s *RecipeService) GetRecipeInfo(id int, ctx context.Context) (map[string]any, bool, error) {
+	cacheKey := strconv.Itoa(id)
 
-	req, err := r.newRequest("GET", url, nil)
+	if cached, err := s.cache.Get(cacheKey); err == nil {
+		var cachedResponse map[string]any
+		if err := json.Unmarshal([]byte(cached), &cachedResponse); err == nil {
+			return cachedResponse, true, nil
+		}
+	}
+
+	url := fmt.Sprintf("/recipes/%d/information", id)
+	req, err := s.newRequest("GET", url)
 	if err != nil {
-		log.Fatal("failed to attach headers")
+		return nil, false, err
 	}
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatal(err.Error())
+		return nil, false, err
 	}
 	defer res.Body.Close()
 
 	var response map[string]any
 	if err := json.NewDecoder(res.Body).Decode(&response); err != nil {
-		log.Fatal("couldn't unmarshal results")
+		return nil, false, err
 	}
 
-	return response
+	responseJSON, err := json.Marshal(response)
+	if err == nil {
+		s.cache.Set(cacheKey, responseJSON, 120*time.Minute)
+	}
+
+	return response, false, nil
 }
 
-func (r *RecipeService) CreateCustomRecipe(context.Context) {
+func (s *RecipeService) GetRecipeInfoBulk(ids []int, ctx context.Context) map[string]any {
 	panic("unimplemented")
-}
-
-func NewRecipeService(host string, key string) Service {
-	fmt.Println(host)
-	url := fmt.Sprintf("https://%s", host)
-	fmt.Println(url)
-
-	return &RecipeService{
-		url:  url,
-		host: host,
-		key:  key,
-	}
 }
