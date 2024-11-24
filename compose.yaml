@@ -14,17 +14,6 @@ services:
     networks:
       - bridge
 
-  # nuxt-service:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.http.routers.nuxt.rule=Host(`localhost`) && PathPrefix(`/`)"
-  #     - "traefik.http.services.nuxt.loadbalancer.server.port=3000"
-  #   networks:
-  #     - bridge
-
   user-service:
     build:
       context: ./services/user
@@ -34,6 +23,19 @@ services:
       - "traefik.http.routers.user.rule=Host(`api.localhost`) && PathPrefix(`/v1/users`)"
       - "traefik.http.services.user.loadbalancer.server.port=8081"
       - "traefik.http.middlewares.user-strip-prefix.stripprefix.prefixes=/v1/users"
+    networks:
+      - bridge
+
+  user-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: users
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./services/user/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - "5432:5432"
     networks:
       - bridge
 
@@ -49,16 +51,10 @@ services:
     networks:
       - bridge
 
-  users-db:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: users
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-    volumes:
-      - ./services/user/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+  recipe-cache:
+    image: redis:latest
     ports:
-      - "5432:5432"
+      - "6379:6379"
     networks:
       - bridge
 
