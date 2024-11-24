@@ -3,6 +3,7 @@ module user
 go 1.23.2
 
 require (
+	github.com/charmbracelet/log v0.4.0
 	github.com/jackc/pgx/v5 v5.7.1
 	google.golang.org/api v0.205.0
 )
@@ -13,7 +14,6 @@ require (
 	cloud.google.com/go/compute/metadata v0.5.2 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/charmbracelet/lipgloss v0.10.0 // indirect
-	github.com/charmbracelet/log v0.4.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
