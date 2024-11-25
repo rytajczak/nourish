@@ -1,4 +1,4 @@
-import type { Day } from "~~/server/utils/spoonacular";
+import type { Day } from "~~/server/utils/bff";
 
 interface PlannerEntry {
   date: number;
@@ -19,6 +19,7 @@ export const usePlannerStore = defineStore("planner", () => {
    */
   const selectedDay = ref<Date>(new Date());
   const showingMeals = ref("all");
+
   const breakfast = computed(() =>
     selectedDayInfo.value?.items.filter((item) => item.slot == 1),
   );
@@ -59,12 +60,9 @@ export const usePlannerStore = defineStore("planner", () => {
    * @param startDate The starting date for the week
    */
   async function fetchWeek() {
-    const response = await $fetch(
-      `/api/planner/me/week/${dateToString(weekStartDate.value)}`,
-    );
-    if (!response) return;
-
-    days.value = response.days;
+    const startDate = dateToString(weekStartDate.value);
+    const response = await $fetch(`/api/mealplanner/me/week/${startDate}`);
+    console.log(response);
   }
   /**
    * Generate breakfast, lunch, and dinner for the current week
@@ -78,18 +76,33 @@ export const usePlannerStore = defineStore("planner", () => {
 
   async function addEntry() {}
 
+  async function deleteEntry() {}
+
+  async function clearDay() {
+    const response = await $fetch(
+      `/api/mealplanner/me/day/${dateToString(selectedDay.value)}`,
+      { method: "DELETE" },
+    );
+  }
+
   return {
     days,
     selectedDay,
     selectedDayInfo,
-    showingMeals,
     breakfast,
     lunch,
     dinner,
-    weekStartDate,
+
+    // actions
     fetchWeek,
     generateDay,
     generateWeek,
     addEntry,
+    deleteEntry,
+    clearDay,
+
+    // helpers
+    weekStartDate,
+    showingMeals,
   };
 });

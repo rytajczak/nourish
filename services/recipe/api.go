@@ -24,12 +24,17 @@ func WriteJSON(w http.ResponseWriter, status int, v any) error {
 }
 
 func (s *ApiServer) handlePing(w http.ResponseWriter, r *http.Request) {
-	WriteJSON(w, 200, nil)
+	WriteJSON(w, http.StatusOK, nil)
 }
 
 func (s *ApiServer) handleSearch(w http.ResponseWriter, r *http.Request) {
-	recipes := s.svc.SearchRecipes(r.URL.Query(), context.Background())
-	WriteJSON(w, 200, recipes)
+	recipes, err := s.svc.SearchRecipes(r.URL.Query(), context.Background())
+	if err != nil {
+		WriteJSON(w, http.StatusBadGateway, nil)
+		return
+	}
+
+	WriteJSON(w, http.StatusOK, recipes)
 }
 
 func (s *ApiServer) handleGetInfo(w http.ResponseWriter, r *http.Request) {
@@ -37,9 +42,22 @@ func (s *ApiServer) handleGetInfo(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		WriteJSON(w, http.StatusBadRequest, map[string]any{"error": "'id' must be a number"})
+		return
 	}
 
-	result, _, err := s.svc.GetRecipeInfo(id, context.Background())
+	result, err := s.svc.GetRecipeInfo(id, context.Background())
+
+	WriteJSON(w, http.StatusOK, result)
+}
+
+func (s *ApiServer) handleGetBulkInfo(w http.ResponseWriter, r *http.Request) {
+	queryParams := r.URL.Query()
+	ids := queryParams.Get("ids")
+
+	result, err := s.svc.GetRecipeInfoBulk(ids, context.Background())
+	if err != nil {
+		WriteJSON(w, http.StatusInternalServerError, nil)
+	}
 
 	WriteJSON(w, http.StatusOK, result)
 }
@@ -51,7 +69,7 @@ func (s *ApiServer) Start(listenAddr string) error {
 
 	m.HandleFunc("GET /v1/recipes/search", s.handleSearch)
 	m.HandleFunc("GET /v1/recipes/{id}/info", s.handleGetInfo)
-	m.HandleFunc("GET /v1/recipes/info-bulk", s.handleSearch)
+	m.HandleFunc("GET /v1/recipes/info-bulk", s.handleGetBulkInfo)
 
 	return http.ListenAndServe(listenAddr, m)
 }
