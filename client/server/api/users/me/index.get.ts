@@ -1,27 +1,10 @@
-const apiUrl = useRuntimeConfig().public.apiUrl;
-
-interface GetMeResponse {
-  profile: {
-    diet: string;
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-  };
-  intolerances: string[];
-  dislikedIngredients: string[];
-  savedRecipes: any[];
-  spoonCredential: {
-    username: string;
-    hash: string;
-  };
-}
+import { getApiUrl, UserResourceResponse } from "~~/server/utils/bff";
 
 export default defineEventHandler(async (event) => {
-  const { secure } = await requireUserSession(event);
-
   try {
-    const response = await $fetch<GetMeResponse>(`${apiUrl}/users/me`, {
+    const { secure } = await requireUserSession(event);
+
+    const response = await $fetch<UserResourceResponse>(getApiUrl(event), {
       headers: { Authorization: `Bearer ${secure?.idToken}` },
     });
 
@@ -35,7 +18,6 @@ export default defineEventHandler(async (event) => {
     return {
       profile: response.profile,
       intolerances: response.intolerances,
-      dislikedIngredients: response.dislikedIngredients,
       savedRecipes: response.savedRecipes,
     };
   } catch (error) {

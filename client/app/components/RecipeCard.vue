@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import type { DetailedRecipe } from "~~/server/api/recipes/search.get";
-const props = defineProps<DetailedRecipe>();
+const props = defineProps<{
+  image: string;
+  title: string;
+  readyInMinutes: number;
+}>();
 </script>
 
 <template>
@@ -28,11 +31,6 @@ const props = defineProps<DetailedRecipe>();
             {{ props.readyInMinutes }} min
           </span>
         </div>
-        <div class="absolute top-2 right-2 flex">
-          <UIcon v-if="props.vegetarian" name="lucide:salad" />
-          <UIcon v-if="props.vegan" name="lucide:leaf" />
-          <UIcon v-if="props.glutenFree" name="lucide:wheat" />
-        </div>
       </div>
     </template>
     <div class="space-between flex">
@@ -44,18 +42,18 @@ const props = defineProps<DetailedRecipe>();
           color="secondary"
           size="lg"
           variant="ghost"
-          icon="lucide:book-marked"
+          icon="lucide:bookmark"
           class="p-1"
         />
       </div>
     </div>
     <div class="text-muted mt-4 flex items-center justify-between">
-      <span
+      <!-- <span
         >{{ Math.round(props.nutrition.nutrients[0]?.amount ?? 0) }}
         {{ props.nutrition.nutrients[0]?.unit }}
         •
         {{ props.servings }} servings</span
-      >
+      > -->
     </div>
   </UCard>
 </template>

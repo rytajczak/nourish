@@ -1,43 +1,18 @@
-const apiUrl = useRuntimeConfig().public.apiUrl;
-
-interface SignupResponse {
-  profile: {
-    diet: string;
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-  };
-  intolerances: string[];
-  dislikedIngredients: string[];
-  savedRecipes: any[];
-  spoonCredential: {
-    username: string;
-    hash: string;
-  };
-}
+import { getApiUrl } from "~~/server/utils/bff";
 
 export default defineEventHandler(async (event) => {
-  const { user, secure } = await requireUserSession(event);
-  const rawBody = await readBody(event);
-
-  const body = {
-    ...user,
-    diet: rawBody.diet,
-    calories: parseInt(rawBody.calories),
-    protein: parseInt(rawBody.protein),
-    carbs: parseInt(rawBody.carbs),
-    fat: parseInt(rawBody.fat),
-    intolerances: rawBody.intolerances,
-  };
-
   try {
-    const response = await $fetch<SignupResponse>(`${apiUrl}/users/signup`, {
-      method: "POST",
+    const { user, secure } = await requireUserSession(event);
+    const body = await readBody(event);
+
+    const response = await $fetch<UserResourceResponse>(getApiUrl(event), {
       headers: { Authorization: `Bearer ${secure?.idToken}` },
-      body,
+      method: "POST",
+      body: {
+        ...user,
+        ...body,
+      },
     });
-    console.log(response);
 
     await setUserSession(event, {
       secure: {
@@ -45,8 +20,14 @@ export default defineEventHandler(async (event) => {
         spoonHash: response.spoonCredential.hash,
       },
     });
-    return true;
+
+    return {
+      profile: response.profile,
+      intolerances: response.intolerances,
+      savedRecipes: response.savedRecipes,
+    };
   } catch (error) {
-    return false;
+    console.log(error);
+    return null;
   }
 });

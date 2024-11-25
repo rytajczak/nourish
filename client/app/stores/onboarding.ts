@@ -38,10 +38,22 @@ export const useOnboardingStore = defineStore(
       intolerances: [],
     });
 
-    function onboardUser() {
+    function begin() {
       open.value = true;
       step.value = 0;
+      data.value.profile = {
+        diet: "",
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+      };
       data.value.intolerances = [];
+    }
+
+    function end() {
+      open.value = false;
+      step.value = 0;
     }
 
     function setGoals(goals: Goals) {
@@ -72,7 +84,8 @@ export const useOnboardingStore = defineStore(
       step,
       progress,
       data,
-      onboardUser,
+      begin,
+      end,
       setGoals,
       setDiet,
       setIntolerances,

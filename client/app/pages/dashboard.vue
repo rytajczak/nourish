@@ -6,10 +6,8 @@ definePageMeta({
 const planner = usePlannerStore();
 const onboarding = useOnboardingStore();
 
-const showingMeals = ref("all");
-
-onMounted(() => {
-  planner.fetchWeek();
+onMounted(async () => {
+  await planner.fetchWeek();
 });
 </script>
 
@@ -23,17 +21,19 @@ onMounted(() => {
     <div class="grid grid-cols-1 xl:grid-cols-5 xl:gap-8">
       <div class="col-span-3">
         <DaySelector />
-        <div class="mt-6 flex items-center justify-between">
+        <div class="mt-12 flex items-center justify-between">
           <h2 class="text-xl font-semibold">Meals to prepare</h2>
           <USelect
-            v-model="showingMeals"
+            v-model="planner.showingMeals"
             color="neutral"
             :items="['all', 'breakfast', 'lunch', 'dinner']"
             class="w-32"
           />
         </div>
-        <pre>{{ planner.selectedDayInfo?.items }}</pre>
-        <div>
+        <TimeSlot time="breakfast" />
+        <TimeSlot time="lunch" />
+        <TimeSlot time="dinner" />
+        <div class="mt-4">
           <UButton color="neutral" @click="planner.addEntry">Add entry</UButton>
         </div>
       </div>
@@ -50,10 +50,10 @@ onMounted(() => {
           <UCard
             :ui="{ root: 'rounded-none rounded-b-[calc(var(--ui-radius)*2)]' }"
           >
-            <OnboardingWelcome v-if="onboarding.progress == 0" />
-            <OnboardingGoals v-if="onboarding.progress == 33" />
-            <OnboardingDiet v-if="onboarding.progress == 66" />
-            <OnboardingIntolerance v-if="onboarding.progress == 99" />
+            <OnboardingWelcome v-if="onboarding.step == 0" />
+            <OnboardingGoals v-if="onboarding.step == 1" />
+            <OnboardingDiet v-if="onboarding.step == 2" />
+            <OnboardingIntolerance v-if="onboarding.step == 3" />
           </UCard>
         </template>
       </UModal>

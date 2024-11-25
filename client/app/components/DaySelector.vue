@@ -37,7 +37,7 @@ onMounted(async () => {
         v-for="(day, index) in days"
         class="mx-3 hidden flex-1 cursor-pointer transition-all duration-150 hover:scale-105 lg:block"
         :class="{
-          'bg-foreground/90 text-background':
+          'bg-foreground text-background':
             planner.selectedDay.getDate() == day.getDate(),
         }"
         :ui="{ body: 'p-3 sm:p-3' }"

@@ -3,17 +3,15 @@ definePageMeta({
   middleware: "auth",
 });
 
-const { user } = useUserSession();
-const { profile, intolerances, dislikedIngredients, savedRecipes } =
-  useUserStore();
+const session = useUserSession();
+const user = useUserStore();
 </script>
 
 <template>
   <div>
-    <pre>user: {{ user }}</pre>
-    <pre>profile: {{ profile }}</pre>
-    <pre>intolerances: {{ intolerances }}</pre>
-    <pre>dislikedIngredients: {{ dislikedIngredients }}</pre>
-    <pre>savedRecipes: {{ savedRecipes }}</pre>
+    <pre>user: {{ session.user }}</pre>
+    <pre>profile: {{ user.profile }}</pre>
+    <pre>intolerances: {{ user.intolerances }}</pre>
+    <pre>savedRecipes: {{ user.savedRecipes }}</pre>
   </div>
 </template>

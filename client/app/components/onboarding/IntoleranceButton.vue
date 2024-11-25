@@ -25,11 +25,12 @@ function toggleAndEmit() {
     class="border-border flex h-12 items-center justify-center rounded-[calc(var(--ui-radius)*2)] border"
     @click="toggleAndEmit"
   >
-    <span class="text-lg">
-      <UIcon
-        :name="value ? iconOff : icon"
-        :class="value ? 'text-red-500' : 'text-foreground'"
-      />
+    <UIcon
+      :name="value ? iconOff : icon"
+      :class="value ? 'text-red-500' : 'text-foreground'"
+      class="text-xl"
+    />
+    <span class="text-muted text-lg capitalize">
       {{ name }}
     </span>
   </UButton>

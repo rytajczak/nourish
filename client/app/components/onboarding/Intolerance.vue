@@ -18,7 +18,6 @@ const buttons = ref([
 ]);
 
 const intolerances = ref<string[]>([]);
-
 function handleToggle(name: string, value: boolean) {
   if (value) {
     if (!intolerances.value.includes(name)) {
@@ -29,9 +28,9 @@ function handleToggle(name: string, value: boolean) {
   }
 }
 
-function handleCreateUser() {
+async function handleCreateUser() {
   onboarding.setIntolerances(intolerances.value);
-  createUser(onboarding.data);
+  if (await createUser(onboarding.data)) onboarding.end();
 }
 </script>
 
@@ -67,6 +66,7 @@ function handleCreateUser() {
         size="xl"
         color="neutral"
         class="flex items-center justify-center font-bold"
+        loading-auto
         @click="handleCreateUser"
       >
         <span>Submit</span>
