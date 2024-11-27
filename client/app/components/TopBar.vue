@@ -21,7 +21,7 @@ const themes = ref([
 
 <template>
   <div
-    class="flex h-20 items-center justify-between border-b-[1px] border-[var(--ui-border)] px-8"
+    class="border-border bg-elevated flex h-20 items-center justify-between border-b-[1px] px-8"
   >
     <SearchBar />
     <div class="flex items-center">
@@ -81,7 +81,7 @@ const themes = ref([
                 color="neutral"
                 variant="ghost"
                 class="mt-4 p-0"
-                to="/recipes/custom"
+                to="/recipes/saved"
                 icon="lucide:book-marked"
                 >Saved Recipes</UButton
               >

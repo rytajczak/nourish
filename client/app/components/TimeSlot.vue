@@ -22,10 +22,10 @@ const mealtime = computed(() => {
         planner.showingMeals === 'all' || planner.showingMeals == props.time
       "
     >
-      <h2 class="text-lg font-semibold">{{ props.time }}</h2>
+      <h2 class="text-lg font-semibold capitalize">{{ props.time }}</h2>
       <UCard class="mt-2">
-        <div v-if="mealtime">
-          <div v-for="meal in mealtime">
+        <div v-if="mealtime?.length! > 0">
+          <div v-for="meal in mealtime" :key="meal.id">
             {{ meal }}
           </div>
         </div>

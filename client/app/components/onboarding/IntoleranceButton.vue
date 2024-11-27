@@ -22,7 +22,7 @@ function toggleAndEmit() {
   <UButton
     color="neutral"
     variant="outline"
-    class="border-border flex h-12 items-center justify-center rounded-[calc(var(--ui-radius)*2)] border"
+    class="border-border flex h-12 items-center justify-center border"
     @click="toggleAndEmit"
   >
     <UIcon

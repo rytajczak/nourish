@@ -33,30 +33,35 @@ onMounted(async () => {
         <TimeSlot time="breakfast" />
         <TimeSlot time="lunch" />
         <TimeSlot time="dinner" />
-        <div class="mt-4">
+        <div class="mt-4 flex">
           <UButton color="neutral" @click="planner.addEntry">Add entry</UButton>
+          <UButton
+            color="error"
+            variant="subtle"
+            loading-auto
+            @click="planner.clearDay"
+            >Clear day</UButton
+          >
         </div>
       </div>
       <div class="col-span-1 xl:col-span-2">
         <NutritionInfo />
       </div>
-      <UModal v-model:open="onboarding.open" prevent-close>
-        <template #content>
+    </div>
+    <UModal v-model:open="onboarding.open" prevent-close>
+      <template #content>
+        <UCard :ui="{ header: 'p-0 sm:p-0 border-none' }">
           <UProgress
             color="neutral"
             v-model="onboarding.progress"
-            :ui="{ base: 'rounded-b' }"
+            class="mb-6"
           />
-          <UCard
-            :ui="{ root: 'rounded-none rounded-b-[calc(var(--ui-radius)*2)]' }"
-          >
-            <OnboardingWelcome v-if="onboarding.step == 0" />
-            <OnboardingGoals v-if="onboarding.step == 1" />
-            <OnboardingDiet v-if="onboarding.step == 2" />
-            <OnboardingIntolerance v-if="onboarding.step == 3" />
-          </UCard>
-        </template>
-      </UModal>
-    </div>
+          <OnboardingWelcome v-if="onboarding.step == 0" />
+          <OnboardingGoals v-if="onboarding.step == 1" />
+          <OnboardingDiet v-if="onboarding.step == 2" />
+          <OnboardingIntolerance v-if="onboarding.step == 3" />
+        </UCard>
+      </template>
+    </UModal>
   </div>
 </template>

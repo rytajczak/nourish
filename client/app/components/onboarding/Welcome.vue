@@ -1,6 +1,11 @@
 <script setup lang="ts">
 const { signOut } = useUserStore();
-const { nextStep } = useOnboardingStore();
+const { end, nextStep } = useOnboardingStore();
+
+async function handleSignOut() {
+  end();
+  await signOut();
+}
 </script>
 
 <template>
@@ -20,7 +25,7 @@ const { nextStep } = useOnboardingStore();
         variant="outline"
         color="neutral"
         class="flex items-center justify-center py-3 font-bold"
-        @click="signOut"
+        @click="handleSignOut"
       >
         <span>Cancel</span>
       </UButton>

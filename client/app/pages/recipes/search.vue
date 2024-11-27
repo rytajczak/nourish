@@ -4,7 +4,7 @@ definePageMeta({
 });
 
 const query = useState<string>("query");
-const { data, execute } = await useFetch("/api/recipes/search", {
+const { data, status, execute } = await useFetch("/api/recipes/search", {
   lazy: true,
   immediate: false,
   watch: false,
@@ -31,6 +31,9 @@ onMounted(async () => {
     </div>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
       <RecipeCard v-for="recipe in data?.results" v-bind="recipe" />
+      <UCard v-for="i in 30">
+        <USkeleton class="h-30 w-full" />
+      </UCard>
     </div>
   </div>
 </template>

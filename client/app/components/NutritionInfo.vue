@@ -7,6 +7,7 @@ function getNutrient(name: string): Nutrient | undefined {
     (nutrient) => nutrient.name == name,
   );
 }
+
 const calories = computed(() => getNutrient("Calories"));
 const protein = computed(() => getNutrient("Protein"));
 const carbs = computed(() => getNutrient("Carbohydrates"));
@@ -14,50 +15,56 @@ const fat = computed(() => getNutrient("Fat"));
 </script>
 
 <template>
-  <div class="flex items-center justify-between">
-    <h2 class="my-4 text-xl font-semibold">Nutrition info</h2>
-    <USelect
-      v-model="showing"
-      color="neutral"
-      :items="['selected day', 'this week']"
-      class="w-36"
-    />
-  </div>
-  <div class="grid grid-cols-3 gap-4">
-    <UCard class="col-span-3">
-      <div class="flex flex-col">
-        <span class="text-sm text-[var(--ui-text-muted)]"
-          >Total calories
-          {{ showing === "selected day" ? "selected day" : "this week" }}</span
-        >
-        <span class="text-xl font-semibold"
-          >{{ Math.round(calories?.amount ?? 0) }} {{ calories?.unit }}</span
-        >
-      </div>
-    </UCard>
-    <UCard>
-      <div class="flex flex-col">
-        <span class="text-muted text-sm">Protein ({{ protein?.unit }})</span>
-        <span class="text-xl font-semibold"
-          >{{ Math.round(protein?.amount ?? 0) }} {{ protein?.unit }}</span
-        >
-      </div>
-    </UCard>
-    <UCard>
-      <div class="flex flex-col">
-        <span class="text-muted text-sm">Carbs ({{ carbs?.unit }})</span>
-        <span class="text-xl font-semibold"
-          >{{ Math.round(carbs?.amount ?? 0) }} {{ carbs?.unit }}</span
-        >
-      </div>
-    </UCard>
-    <UCard>
-      <div class="flex flex-col">
-        <span class="text-muted text-sm">Fat ({{ fat?.unit }})</span>
-        <span class="text-xl font-semibold"
-          >{{ Math.round(fat?.amount ?? 0) }} {{ fat?.unit }}</span
-        >
-      </div>
-    </UCard>
+  <div>
+    <div class="flex items-center justify-between">
+      <h2 class="my-4 text-xl font-semibold">Macros</h2>
+      <USelect
+        v-model="showing"
+        color="neutral"
+        :items="['selected day', 'this week']"
+        class="w-36"
+      />
+    </div>
+    <div class="grid grid-cols-3 gap-4">
+      <UCard class="col-span-3">
+        <div class="flex flex-col">
+          <span class="text-sm text-[var(--ui-text-muted)]"
+            >Total calories
+            {{
+              showing === "selected day" ? "selected day" : "this week"
+            }}</span
+          >
+          <span
+            class="text-xl font-semibold text-orange-500 dark:text-orange-400"
+            >{{ Math.round(calories?.amount ?? 0) }} {{ calories?.unit }}</span
+          >
+        </div>
+      </UCard>
+      <UCard>
+        <div class="flex flex-col">
+          <span class="text-muted text-sm">Protein ({{ protein?.unit }})</span>
+          <span
+            class="text-xl font-semibold text-purple-500 dark:text-purple-400"
+            >{{ Math.round(protein?.amount ?? 0) }} {{ protein?.unit }}</span
+          >
+        </div>
+      </UCard>
+      <UCard>
+        <div class="flex flex-col">
+          <span class="text-muted text-sm">Carbs (g)</span>
+          <span class="text-xl font-semibold text-teal-500 dark:text-teal-400"
+            >{{ Math.round(carbs?.amount ?? 0) }} {{ carbs?.unit }}</span
+          >
+        </div>
+      </UCard>
+      <UCard>
+        <div class="flex flex-col">
+          <span class="text-muted text-sm">Fat (g)</span>
+          <span class="text-xl font-semibold text-green-500 dark:text-green-400"
+            >{{ Math.round(fat?.amount ?? 0) }} {{ fat?.unit }}</span
+          >
+        </div>
+      </UCard>
+    </div>
   </div>
 </template>
