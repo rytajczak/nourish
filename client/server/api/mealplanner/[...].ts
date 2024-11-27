@@ -1,6 +1,5 @@
 import { getSpoonUrl } from "~~/server/utils/bff";
 
-// wow! this is ass! hi Shull!
 export default defineEventHandler(async (event) => {
   const { secure } = await requireUserSession(event);
   const adjustedUrl = getSpoonUrl(event).replace(
