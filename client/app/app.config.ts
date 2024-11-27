@@ -4,7 +4,11 @@ export default defineAppConfig({
       primary: "green",
       neutral: "neutral",
     },
-    card: { slots: { root: "shadow-lg" } },
+    card: {
+      slots: {
+        root: "shadow-lg bg-elevated",
+      },
+    },
     navigationMenu: {
       variants: {
         orientation: {
