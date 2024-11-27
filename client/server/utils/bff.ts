@@ -21,8 +21,8 @@ export interface UserResourceResponse {
 }
 
 export const spoonHeaders = {
-  "x-rapidapi-key": key,
-  "x-rapidapi-host": host,
+  "X-Rapidapi-Key": key,
+  "X-Rapidapi-Host": host,
 };
 
 export interface Nutrient {
