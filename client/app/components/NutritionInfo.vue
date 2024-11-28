@@ -42,7 +42,7 @@ const fat = computed(() => getNutrient("Fat"));
       </UCard>
       <UCard>
         <div class="flex flex-col">
-          <span class="text-muted text-sm">Protein ({{ protein?.unit }})</span>
+          <span class="text-muted text-sm">Protein (g)</span>
           <span
             class="text-xl font-semibold text-purple-500 dark:text-purple-400"
             >{{ Math.round(protein?.amount ?? 0) }} {{ protein?.unit }}</span

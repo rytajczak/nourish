@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { profile, intolerances } = useUserStore();
 const planner = usePlannerStore();
 
 const open = ref(false);
@@ -8,7 +9,7 @@ const weekEndDate = computed(() => {
 });
 
 async function handleGenerateDay() {
-  await planner.generateDay();
+  await planner.generateDay(profile.calories, profile.diet, intolerances);
   open.value = false;
 }
 </script>

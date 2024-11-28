@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Nutrient } from "~~/server/utils/bff";
+const { savedRecipes, saveRecipe } = useUserStore();
 
 const props = defineProps<{
   id: number;
@@ -19,6 +20,12 @@ const calories = computed(() => getNutrient("Calories"));
 const protein = computed(() => getNutrient("Protein"));
 const carbs = computed(() => getNutrient("Carbohydrates"));
 const fat = computed(() => getNutrient("Fat"));
+
+const [value, toggle] = useToggle(savedRecipes.includes(props.id));
+async function handleSave() {
+  toggle();
+  saveRecipe();
+}
 </script>
 
 <template>
@@ -37,6 +44,7 @@ const fat = computed(() => getNutrient("Fat"));
           >
             <UIcon name="lucide:alarm-clock" class="mr-1" />
             {{ props.readyInMinutes }} min
+            <DevOnly>{{ props.id }}</DevOnly>
           </span>
         </div>
       </div>
@@ -48,14 +56,15 @@ const fat = computed(() => getNutrient("Fat"));
       <div class="flex flex-1 items-start justify-end">
         <UButton
           color="secondary"
-          size="lg"
+          size="xl"
           variant="ghost"
-          icon="lucide:bookmark"
-          class="p-1"
+          :icon="value ? 'lucide:bookmark-check' : 'lucide:bookmark'"
+          class="p-0"
+          v-on:click="handleSave"
         />
       </div>
     </div>
-    <div class="mt-2 flex justify-between">
+    <div class="mt-2 flex flex-wrap justify-between">
       <div class="flex flex-col items-center text-sm font-semibold">
         <span class="text-muted">Calories</span>
         <span class="text-orange-500 dark:text-orange-400">{{
