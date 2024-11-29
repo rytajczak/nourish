@@ -54,6 +54,14 @@ export const useOnboardingStore = defineStore(
     function end() {
       open.value = false;
       step.value = 0;
+      data.value.profile = {
+        diet: "",
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+      };
+      data.value.intolerances = [];
     }
 
     function setGoals(goals: Goals) {
