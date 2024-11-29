@@ -20,3 +20,17 @@ export function dateToTimestamp(date: Date): string {
   dayStart.setHours(0, 0, 0, 0);
   return String(dayStart.getTime() / 1000);
 }
+
+/**
+ * Debounce :)
+ * @param func function to debounce
+ * @param delay time in miliseconds to debounce
+ * @returns debounced function
+ */
+export function debounce(func: Function, delay: number) {
+  let timer: NodeJS.Timeout;
+  return function (this: any, ...args: any[]) {
+    clearTimeout(timer);
+    timer = setTimeout(() => func.apply(this, args), delay);
+  };
+}
