@@ -6,8 +6,11 @@ export default defineAppConfig({
     },
     card: {
       slots: {
-        root: "shadow-lg bg-elevated",
+        root: "shadow-md bg-elevated",
       },
+    },
+    skeleton: {
+      base: "bg-neutral-200 dark:bg-neutral-800",
     },
     navigationMenu: {
       variants: {
