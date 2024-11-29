@@ -69,6 +69,10 @@ export const useUserStore = defineStore(
       await $fetch("/api/users/me/profile");
     }
 
+    const saveRecipe = debounce(() => {
+      console.log("hello");
+    }, 300);
+
     /**
      * Log out the user and clear the user session
      */
@@ -86,6 +90,7 @@ export const useUserStore = defineStore(
       savedRecipes,
       createUser,
       getUser,
+      saveRecipe,
       updateProfile,
       signOut,
     };
