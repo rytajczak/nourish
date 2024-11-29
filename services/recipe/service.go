@@ -91,6 +91,10 @@ func (s *RecipeService) GetRecipeInfo(id int, ctx context.Context) (map[string]a
 		return nil, err
 	}
 
+	q := req.URL.Query()
+	q.Add("includeNutrition", "true")
+	req.URL.RawQuery = q.Encode()
+
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -137,6 +141,10 @@ func (s *RecipeService) GetRecipeInfoBulk(idsCSV string, ctx context.Context) ([
 		if err != nil {
 			return nil, err
 		}
+
+		q := req.URL.Query()
+		q.Add("includeNutrition", "true")
+		req.URL.RawQuery = q.Encode()
 
 		res, err := http.DefaultClient.Do(req)
 		if err != nil {
