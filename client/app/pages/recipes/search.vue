@@ -29,11 +29,10 @@ onMounted(async () => {
       <USeparator orientation="vertical" class="h-8 px-4" />
       <span class="text-blue-400">{{ data?.totalResults ?? 0 }} results</span>
     </div>
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
+    <div
+      class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6"
+    >
       <RecipeCard v-for="recipe in data?.results" v-bind="recipe" />
-      <UCard v-for="i in 30">
-        <USkeleton class="h-30 w-full" />
-      </UCard>
     </div>
   </div>
 </template>
