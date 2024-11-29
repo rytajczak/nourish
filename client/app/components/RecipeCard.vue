@@ -1,16 +1,9 @@
 <script setup lang="ts">
-import type { Nutrient } from "~~/server/utils/bff";
+import type { Nutrient, Recipe } from "~~/types/types";
+
 const { savedRecipes, saveRecipe } = useUserStore();
 
-const props = defineProps<{
-  id: number;
-  image: string;
-  title: string;
-  readyInMinutes: number;
-  nutrition: {
-    nutrients: Nutrient[];
-  };
-}>();
+const props = defineProps<Recipe>();
 
 function getNutrient(name: string): Nutrient | undefined {
   return props.nutrition.nutrients.find((nutrient) => nutrient.name == name);

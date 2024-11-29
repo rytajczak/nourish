@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Nutrient } from "~~/types/types";
+
 const planner = usePlannerStore();
 const showing = ref("selected day");
 
@@ -28,7 +30,7 @@ const fat = computed(() => getNutrient("Fat"));
     <div class="grid grid-cols-3 gap-4">
       <UCard class="col-span-3">
         <div class="flex flex-col">
-          <span class="text-sm text-[var(--ui-text-muted)]"
+          <span class="text-muted text-sm"
             >Total calories
             {{
               showing === "selected day" ? "selected day" : "this week"
