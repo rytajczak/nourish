@@ -1,4 +1,3 @@
-// Measure Interfaces
 export interface Measure {
   amount: number;
   unitLong: string;
@@ -10,7 +9,6 @@ export interface Measures {
   us: Measure;
 }
 
-// Ingredient Interface
 export interface Ingredient {
   aisle: string;
   amount: number;
@@ -26,7 +24,6 @@ export interface Ingredient {
   unit: string;
 }
 
-// Analyzed Instruction Interfaces
 export interface AnalyzedInstructionStep {
   number: number;
   step: string;
@@ -53,7 +50,6 @@ export interface AnalyzedInstruction {
   steps: AnalyzedInstructionStep[];
 }
 
-// Recipe Interfaces
 export interface WinePairing {
   pairedWines: string[];
   pairingText: string;
@@ -79,6 +75,7 @@ export interface Recipe {
   imageType: string;
   instructions: string;
   lowFodmap: boolean;
+  nutrition: Nutrient[];
   occasions: string[];
   originalId: null | number;
   preparationMinutes: number;
@@ -99,7 +96,6 @@ export interface Recipe {
   winePairing: WinePairing;
 }
 
-// Nutrition Interfaces
 export interface Nutrient {
   name: string;
   amount: number;
@@ -107,11 +103,6 @@ export interface Nutrient {
   percentOfDailyNeeds: number;
 }
 
-export interface NutritionSummary {
-  nutrients: Nutrient[];
-}
-
-// Recipe Value Interface
 export interface RecipeValue {
   readyInMinutes: number;
   sourceUrl: string;
@@ -121,27 +112,20 @@ export interface RecipeValue {
   imageType: string;
 }
 
-// Recipe Item Interface
-export interface RecipeItem {
-  id: number;
+export interface Entry {
+  date: number;
   slot: number;
   position: number;
-  type: string;
-  value: any;
+  type: "INGREDIENTS" | "PRODUCT" | "MENU_ITEM" | "RECIPE";
+  value: RecipeValue;
 }
 
-// Day Interface
 export interface Day {
   date: number;
   day: string;
-  items: RecipeItem[];
-  nutritionSummary: NutritionSummary;
-  nutritionSummaryBreakfast: NutritionSummary;
-  nutritionSummaryLunch: NutritionSummary;
-  nutritionSummaryDinner: NutritionSummary;
-}
-
-// Weekly Plan Interface
-export interface WeeklyPlan {
-  days: Day[];
+  items: Entry[];
+  nutritionSummary: Nutrient[];
+  nutritionSummaryBreakfast: Nutrient[];
+  nutritionSummaryLunch: Nutrient[];
+  nutritionSummaryDinner: Nutrient[];
 }
