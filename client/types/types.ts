@@ -75,9 +75,7 @@ export interface Recipe {
   imageType: string;
   instructions: string;
   lowFodmap: boolean;
-  nutrition: {
-    nutrients: Nutrient[];
-  };
+  nutrition: { nutrients: Nutrient[] };
   occasions: string[];
   originalId: null | number;
   preparationMinutes: number;
@@ -114,8 +112,8 @@ export interface RecipeValue {
   imageType: string;
 }
 
-export interface Entry {
-  date: number;
+export interface Item {
+  id: number;
   slot: number;
   position: number;
   type: "INGREDIENTS" | "PRODUCT" | "MENU_ITEM" | "RECIPE";
@@ -125,7 +123,7 @@ export interface Entry {
 export interface Day {
   date: number;
   day: string;
-  items: Entry[];
+  items: Item[];
   nutritionSummary: Nutrient[];
   nutritionSummaryBreakfast: Nutrient[];
   nutritionSummaryLunch: Nutrient[];
