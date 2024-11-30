@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Item } from "~~/types/types";
-import { animations } from "@formkit/drag-and-drop";
+import { dropOrSwap } from "@formkit/drag-and-drop";
 import { useDragAndDrop } from "@formkit/drag-and-drop/vue";
 
 definePageMeta({
@@ -12,8 +12,16 @@ const onboarding = useOnboardingStore();
 const showing = ref("all");
 
 const [parent, items] = useDragAndDrop<Item>([], {
-  plugins: [animations()],
+  onDragend: (event) => {
+    console.log(event.values);
+  },
+  plugins: [dropOrSwap()],
 });
+
+async function handleDeleteItem(id: number) {
+  items.value = items.value.filter((item) => item.id !== id);
+  await planner.deleteItem(id);
+}
 
 onMounted(async () => {
   await planner.fetchWeek();
@@ -45,10 +53,18 @@ watch(
           />
         </div>
         <ul ref="parent">
-          <PrepCard v-for="item in items" :key="item.id" v-bind="item" />
+          <PrepCard
+            v-for="item in items"
+            :key="item.id"
+            v-bind="item"
+            @delete="handleDeleteItem"
+          />
         </ul>
       </div>
-      <div class="col-span-1 xl:col-span-2"></div>
+      <div class="col-span-1 xl:col-span-2">
+        <NutritionInfo />
+        <pre>{{ items }}</pre>
+      </div>
     </div>
     <UModal v-model:open="onboarding.open" prevent-close>
       <template #content>

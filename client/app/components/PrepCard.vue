@@ -3,16 +3,11 @@ import type { Item } from "~~/types/types";
 
 const props = defineProps<Item>();
 
-const { recipeMap, deleteItem } = usePlannerStore();
+const { recipeMap } = usePlannerStore();
 
 const recipe = recipeMap?.get(Number(props.value.id));
 const hours = Math.floor(recipe?.readyInMinutes! / 60);
 const minutes = recipe?.readyInMinutes! % 60;
-
-async function handleDelete() {
-  console.log(`deleting entry id=${recipe?.id}`);
-  await deleteItem(props.id);
-}
 </script>
 
 <template>
@@ -52,7 +47,7 @@ async function handleDelete() {
             variant="ghost"
             color="error"
             icon="lucide:trash-2"
-            @click="handleDelete"
+            @click="$emit('delete', id)"
           />
         </div>
       </div>
