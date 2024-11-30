@@ -1,24 +1,26 @@
 <script setup lang="ts">
-const props = defineProps<{ id: number }>();
-const { recipeMap } = usePlannerStore();
-const recipeInfo = recipeMap?.get(props.id);
+import type { Item } from "~~/types/types";
 
-function getNutrient(name: string) {
-  return recipeInfo?.nutrition?.nutrients.find(
-    (nutrient) => nutrient.name == name,
-  );
+const props = defineProps<Item>();
+
+const { recipeMap, deleteItem } = usePlannerStore();
+
+const recipe = recipeMap?.get(Number(props.value.id));
+const hours = Math.floor(recipe?.readyInMinutes! / 60);
+const minutes = recipe?.readyInMinutes! % 60;
+
+async function handleDelete() {
+  console.log(`deleting entry id=${recipe?.id}`);
+  await deleteItem(props.id);
 }
-
-const calories = getNutrient("Calories");
-const protein = getNutrient("Protein");
-const carbs = getNutrient("Carbohydrates");
-const fat = getNutrient("Fat");
-const hours = Math.floor(recipeInfo?.readyInMinutes! / 60);
-const minutes = recipeInfo?.readyInMinutes! % 60;
 </script>
 
 <template>
-  <UCard class="mb-4" :ui="{ header: 'pl-0 sm:pl-2' }">
+  <UCard
+    as="li"
+    class="mb-4"
+    :ui="{ header: 'pl-0 sm:pl-2', body: 'p-0 sm:p-0' }"
+  >
     <template #header>
       <div class="flex">
         <div class="flex flex-2">
@@ -29,10 +31,15 @@ const minutes = recipeInfo?.readyInMinutes! % 60;
               class="entry-handle text-muted mr-2"
             />
           </div>
-          <img :src="recipeInfo?.image" alt="" class="h-28 rounded-xl" />
+          <NuxtImg
+            :src="recipe?.image"
+            class="h-28 w-40 rounded-md"
+            preload
+            :placeholder="[144, 128]"
+          />
           <div class="ml-4 flex flex-col">
             <h2 class="line-clamp-2 font-semibold">
-              {{ recipeInfo?.title }}
+              {{ recipe?.title }}
             </h2>
             <p class="text-muted flex items-center">
               <UIcon name="lucide:clock" class="me-1" />
@@ -40,9 +47,15 @@ const minutes = recipeInfo?.readyInMinutes! % 60;
             </p>
           </div>
         </div>
-        <div class="flex flex-1 items-center justify-center"></div>
+        <div class="flex flex-1 items-start justify-end">
+          <UButton
+            variant="ghost"
+            color="error"
+            icon="lucide:trash-2"
+            @click="handleDelete"
+          />
+        </div>
       </div>
-      <!-- <pre>${{ (recipeInfo?.pricePerServing / 100).toFixed(2) }} per serving</pre> -->
     </template>
   </UCard>
 </template>

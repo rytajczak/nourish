@@ -28,7 +28,7 @@ async function handleGenerateDay() {
           <div class="flex w-full flex-col items-center justify-center">
             <span class="text-lg font-semibold">Selected day</span>
             <span class="text-muted text-sm">{{
-              planner.selectedDay.toLocaleDateString("en-US", {
+              planner.selectedDate.toLocaleDateString("en-US", {
                 weekday: "long",
               })
             }}</span>

@@ -1,8 +1,7 @@
 <script setup lang="ts">
+import type { Item } from "~~/types/types";
 import { animations } from "@formkit/drag-and-drop";
 import { useDragAndDrop } from "@formkit/drag-and-drop/vue";
-import PrepCard from "~/components/PrepCard.vue";
-import type { Entry, RecipeValue } from "~~/types/types";
 
 definePageMeta({
   middleware: "auth",
@@ -10,25 +9,19 @@ definePageMeta({
 
 const planner = usePlannerStore();
 const onboarding = useOnboardingStore();
+const showing = ref("all");
 
-const [parent, items] = useDragAndDrop<RecipeValue>([], {
-  dragHandle: ".entry-handle",
-  onDragend: (event) => {
-    console.log(event);
-  },
+const [parent, items] = useDragAndDrop<Item>([], {
   plugins: [animations()],
 });
 
 onMounted(async () => {
   await planner.fetchWeek();
-  items.value = planner.selectedDayInfo?.items ?? [];
+  items.value = planner.selectedDay?.items ?? [];
 });
-
 watch(
-  () => planner.selectedDay,
-  () => {
-    items.value = planner.selectedDayInfo?.items ?? [];
-  },
+  () => planner.selectedDate,
+  () => (items.value = planner.selectedDay?.items ?? []),
 );
 </script>
 
@@ -45,30 +38,17 @@ watch(
         <div class="my-6 flex items-center justify-between">
           <h2 class="text-xl font-semibold">Meals to prepare</h2>
           <USelect
-            v-model="planner.showingMeals"
+            v-model="showing"
             color="neutral"
             :items="['all', 'breakfast', 'lunch', 'dinner']"
             class="w-32"
           />
         </div>
-        <div v-if="planner.status === 'success'">
-          <div ref="parent">
-            <PrepCard
-              v-for="item in items"
-              :key="item.id"
-              :id="Number(item.value.id)"
-            />
-          </div>
-        </div>
-        <USkeleton
-          v-if="planner.status === 'pending'"
-          v-for="i in 3"
-          class="mb-4 flex h-48 items-center justify-center"
-        />
+        <ul ref="parent">
+          <PrepCard v-for="item in items" :key="item.id" v-bind="item" />
+        </ul>
       </div>
-      <div class="col-span-1 xl:col-span-2">
-        <NutritionInfo />
-      </div>
+      <div class="col-span-1 xl:col-span-2"></div>
     </div>
     <UModal v-model:open="onboarding.open" prevent-close>
       <template #content>

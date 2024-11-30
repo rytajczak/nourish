@@ -5,7 +5,7 @@ const planner = usePlannerStore();
 const showing = ref("selected day");
 
 function getNutrient(name: string): Nutrient | undefined {
-  return planner.selectedDayInfo?.nutritionSummary.nutrients.find(
+  return planner.selectedDay?.nutritionSummary.find(
     (nutrient) => nutrient.name == name,
   );
 }

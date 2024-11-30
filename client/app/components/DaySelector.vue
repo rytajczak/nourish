@@ -38,10 +38,10 @@ onMounted(async () => {
         class="mx-3 hidden flex-1 cursor-pointer transition-all duration-150 hover:scale-105 lg:block"
         :class="{
           'bg-foreground text-background':
-            planner.selectedDay.getDate() == day.getDate(),
+            planner.selectedDate.getDate() == day.getDate(),
         }"
         :ui="{ body: 'p-3 sm:p-3' }"
-        @click="planner.selectedDay = day"
+        @click="planner.selectedDate = day"
       >
         <div class="flex flex-col items-center justify-center">
           <span class="text-xl font-semibold">{{
@@ -49,7 +49,7 @@ onMounted(async () => {
           }}</span>
           <span
             :class="{
-              'text-neutral': planner.selectedDay.getDate() == day.getDate(),
+              'text-neutral': planner.selectedDate.getDate() == day.getDate(),
             }"
             >{{ day.toLocaleDateString("en-US", { weekday: "short" }) }}</span
           >
@@ -59,7 +59,9 @@ onMounted(async () => {
         <UButton variant="ghost" icon="lucide:arrow-left" />
         <span class="text-xl font-semibold">
           {{
-            planner.selectedDay.toLocaleDateString("en-US", { weekday: "long" })
+            planner.selectedDate.toLocaleDateString("en-US", {
+              weekday: "long",
+            })
           }}
         </span>
         <UButton variant="ghost" icon="lucide:arrow-right" />
