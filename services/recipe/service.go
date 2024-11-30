@@ -8,6 +8,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/charmbracelet/log"
 )
 
 type Service interface {
@@ -95,6 +97,8 @@ func (s *RecipeService) GetRecipeInfo(id int, ctx context.Context) (map[string]a
 	q.Add("includeNutrition", "true")
 	req.URL.RawQuery = q.Encode()
 
+	log.Info(req.URL)
+
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -145,6 +149,8 @@ func (s *RecipeService) GetRecipeInfoBulk(idsCSV string, ctx context.Context) ([
 		q := req.URL.Query()
 		q.Add("includeNutrition", "true")
 		req.URL.RawQuery = q.Encode()
+
+		log.Info(req.URL)
 
 		res, err := http.DefaultClient.Do(req)
 		if err != nil {
