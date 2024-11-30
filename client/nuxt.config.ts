@@ -40,5 +40,9 @@ export default defineNuxtConfig({
     },
   },
 
+  image: {
+    domains: ["img.spoonacular.com"],
+  },
+
   devtools: { enabled: true },
 });
