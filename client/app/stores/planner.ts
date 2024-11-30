@@ -1,37 +1,23 @@
-import type { Day } from "~~/server/utils/bff";
-
-interface PlannerEntry {
-  date: number;
-  slot: number;
-  position: number;
-  type: "RECIPE" | "MENU_ITEM" | "PRODUCT" | "INGREDIENTS";
-  value: any;
-}
+import type { Day, Recipe, Entry, RecipeValue } from "~~/types/types";
 
 export const usePlannerStore = defineStore("planner", () => {
   /**
-   * the good stuff
+   * Array of days containing the recipes for each day
    */
   const days = ref<Day[]>([]);
 
   /**
-   * The current day selected
+   * Acts as a cache for the recipes that are in the current user's plan
    */
-  const selectedDay = ref<Date>(new Date());
-  const showingMeals = ref("all");
-
-  const breakfast = computed(() =>
-    selectedDayInfo.value?.items.filter((item) => item.slot == 1),
-  );
-  const lunch = computed(() =>
-    selectedDayInfo.value?.items.filter((item) => item.slot == 2),
-  );
-  const dinner = computed(() =>
-    selectedDayInfo.value?.items.filter((item) => item.slot == 3),
-  );
+  const recipeMap = ref<Map<number, Recipe>>();
 
   /**
-   * All the information for
+   * The currently selected Date
+   */
+  const selectedDay = ref<Date>(new Date());
+
+  /**
+   * Info regarding the currently selected day
    */
   const selectedDayInfo = computed(() => {
     const weekday = selectedDay.value.toLocaleDateString("en-US", {
@@ -44,7 +30,7 @@ export const usePlannerStore = defineStore("planner", () => {
   });
 
   /**
-   * The start date of the week
+   * The start date for the week
    */
   const weekStartDate = computed<Date>(() => {
     const startDate = new Date();
@@ -57,41 +43,97 @@ export const usePlannerStore = defineStore("planner", () => {
 
   /**
    * Fetch the meals of the current week starting from today
-   * @param startDate The starting date for the week
    */
   async function fetchWeek() {
+    status.value = "pending";
     const startDate = dateToString(weekStartDate.value);
-    const response = await $fetch(`/api/mealplanner/me/week/${startDate}`);
-    console.log(response);
+    const week = await $fetch<{ days: Day[] }>(
+      `/api/mealplanner/me/week/${startDate}`,
+    );
+    if (!week) {
+      status.value = "error";
+      return;
+    }
+
+    days.value = week.days;
+
+    const recipeIds = [
+      ...new Set(
+        week.days.flatMap((day) => day.items.map((item) => item.value.id)),
+      ),
+    ];
+
+    const csv = recipeIds.join(",");
+    const recipes = await $fetch("/api/recipes/info-bulk", {
+      query: { ids: csv },
+    });
+    if (!recipes) {
+      status.value = "success";
+      return;
+    }
+
+    const mappedRecipes = new Map<number, any>(
+      recipes.map((recipe: any) => [recipe.id, recipe]),
+    );
+
+    recipeMap.value = mappedRecipes;
+    status.value = "success";
   }
+
   /**
    * Generate breakfast, lunch, and dinner for the current week
    */
   async function generateWeek() {}
 
   /**
-   * Generate breakfast, lunch, and dinner for a date
+   * Generate breakfast, lunch, and dinner for the currently selected date
    */
-  async function generateDay() {}
+  async function generateDay(
+    targetCalories: number,
+    diet: string,
+    exclude: string[],
+  ) {
+    const csv = exclude.join(",");
+    await clearDay();
+    const response = await $fetch<{ meals: RecipeValue[] }>(
+      `/api/recipes/mealplans/generate`,
+      {
+        query: { timeFrame: "day", targetCalories, diet, exclude: csv },
+      },
+    );
+
+    const date = dateToTimestamp(selectedDay.value);
+    const body = response.meals.map((recipe, index) => {
+      return {
+        date,
+        slot: index + 1,
+        position: index,
+        type: "RECIPE",
+        value: recipe,
+      } as Entry;
+    });
+
+    console.log(body);
+  }
 
   async function addEntry() {}
 
   async function deleteEntry() {}
 
   async function clearDay() {
-    const response = await $fetch(
-      `/api/mealplanner/me/day/${dateToString(selectedDay.value)}`,
-      { method: "DELETE" },
-    );
+    const date = dateToString(selectedDay.value);
+    await $fetch(`/api/mealplanner/me/day/${date}`, {
+      method: "DELETE",
+    });
   }
+
+  const status = ref<"idle" | "pending" | "success" | "error">("idle");
 
   return {
     days,
+    recipeMap,
     selectedDay,
     selectedDayInfo,
-    breakfast,
-    lunch,
-    dinner,
 
     // actions
     fetchWeek,
@@ -103,6 +145,6 @@ export const usePlannerStore = defineStore("planner", () => {
 
     // helpers
     weekStartDate,
-    showingMeals,
+    status,
   };
 });
