@@ -75,7 +75,9 @@ export interface Recipe {
   imageType: string;
   instructions: string;
   lowFodmap: boolean;
-  nutrition: Nutrient[];
+  nutrition: {
+    nutrients: Nutrient[];
+  };
   occasions: string[];
   originalId: null | number;
   preparationMinutes: number;
