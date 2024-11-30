@@ -15,23 +15,6 @@ type ApiServer struct {
 	svc Service
 }
 
-type CreateUserRequest struct {
-	Email        string   `json:"email"`
-	Username     string   `json:"username"`
-	Provider     string   `json:"provider"`
-	Picture      string   `json:"picture"`
-	Profile      Profile  `json:"profile"`
-	Intolerances []string `json:"intolerances"`
-}
-
-type Profile struct {
-	Diet     string `json:"diet"`
-	Calories int    `json:"calories"`
-	Protein  int    `json:"protein"`
-	Carbs    int    `json:"carbs"`
-	Fat      int    `json:"fat"`
-}
-
 func NewApiServer(svc Service) *ApiServer {
 	return &ApiServer{svc: svc}
 }
@@ -83,7 +66,7 @@ func (s *ApiServer) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := s.svc.CreateUser(context.Background(), body)
+	user, err := s.svc.CreateUser(body, context.Background())
 	if err != nil {
 		WriteJSON(w, http.StatusInternalServerError, err.Error())
 		return
@@ -93,7 +76,7 @@ func (s *ApiServer) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *ApiServer) handleGetMe(w http.ResponseWriter, r *http.Request) {
-	me, err := s.svc.GetMe(context.Background(), r.Header.Get("email"))
+	me, err := s.svc.GetMe(r.Header.Get("email"), context.Background())
 	if err != nil {
 		WriteJSON(w, http.StatusNotFound, err.Error())
 		return

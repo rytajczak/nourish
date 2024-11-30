@@ -18,10 +18,10 @@ func NewLoggingService(next Service, logger *log.Logger) Service {
 	}
 }
 
-func (s *LoggingService) CreateUser(ctx context.Context, request CreateUserRequest) (map[string]any, error) {
+func (s *LoggingService) CreateUser(request CreateUserRequest, ctx context.Context) (map[string]any, error) {
 	s.logger.Info("Creating user", "request", request)
 
-	result, err := s.next.CreateUser(ctx, request)
+	result, err := s.next.CreateUser(request, ctx)
 	if err != nil {
 		s.logger.Error("Failed to create user", "err", err, "request", request)
 		return nil, err
@@ -31,14 +31,15 @@ func (s *LoggingService) CreateUser(ctx context.Context, request CreateUserReque
 	return result, nil
 }
 
-func (s *LoggingService) GetMe(ctx context.Context, email string) (map[string]any, error) {
-	return s.next.GetMe(ctx, email)
+func (s *LoggingService) GetMe(email string, ctx context.Context) (*UserResponse, error) {
+	s.logger.Info("Getting user", "email", email)
+	return s.next.GetMe(email, ctx)
 }
 
-func (s *LoggingService) UpdateIntolerances(ctx context.Context, email string, intolerances []string) ([]string, error) {
+func (s *LoggingService) UpdateIntolerances(email string, intolerances []string, ctx context.Context) ([]string, error) {
 	panic("unimplemented")
 }
 
-func (s *LoggingService) UpdateProfile(ctx context.Context, email string, profile map[string]any) (map[string]any, error) {
+func (s *LoggingService) UpdateProfile(email string, profile map[string]any, ctx context.Context) (map[string]any, error) {
 	panic("unimplemented")
 }

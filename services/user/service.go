@@ -15,10 +15,10 @@ import (
 )
 
 type Service interface {
-	CreateUser(ctx context.Context, request CreateUserRequest) (map[string]any, error)
-	GetMe(ctx context.Context, email string) (map[string]any, error)
-	UpdateProfile(ctx context.Context, email string, profile map[string]any) (map[string]any, error)
-	UpdateIntolerances(ctx context.Context, email string, intolerances []string) ([]string, error)
+	CreateUser(request CreateUserRequest, ctx context.Context) (map[string]any, error)
+	GetMe(email string, ctx context.Context) (*UserResponse, error)
+	UpdateProfile(email string, profile map[string]any, ctx context.Context) (map[string]any, error)
+	UpdateIntolerances(email string, intolerances []string, ctx context.Context) ([]string, error)
 }
 
 type UserService struct {
@@ -55,7 +55,7 @@ func NewUserService(host string, key string) Service {
 }
 
 // CreateUser creates a new user and connects them to their spoon account
-func (s *UserService) CreateUser(ctx context.Context, request CreateUserRequest) (map[string]any, error) {
+func (s *UserService) CreateUser(request CreateUserRequest, ctx context.Context) (map[string]any, error) {
 	req, _ := http.NewRequest("POST", s.url+"/users/connect", nil)
 	req.Header.Add("x-rapidapi-key", s.key)
 	req.Header.Add("x-rapidapi-host", s.host)
@@ -91,7 +91,7 @@ func (s *UserService) CreateUser(ctx context.Context, request CreateUserRequest)
 
 	intolerances := []string{}
 	if len(request.Intolerances) > 0 {
-		intolerances, err = s.UpdateIntolerances(ctx, user.Email, request.Intolerances)
+		intolerances, err = s.UpdateIntolerances(user.Email, request.Intolerances, ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -113,11 +113,17 @@ func (s *UserService) CreateUser(ctx context.Context, request CreateUserRequest)
 		return nil, err
 	}
 
-	return map[string]any{"profile": profile, "intolerances": intolerances, "spoonCredential": spoonCredential}, nil
+	result := map[string]any{
+		"profile":         profile,
+		"intolerances":    intolerances,
+		"spoonCredential": spoonCredential,
+	}
+
+	return result, nil
 }
 
 // GetMe gets a user by their email
-func (s *UserService) GetMe(ctx context.Context, email string) (map[string]any, error) {
+func (s *UserService) GetMe(email string, ctx context.Context) (*UserResponse, error) {
 	user, err := s.queries.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err
@@ -133,23 +139,24 @@ func (s *UserService) GetMe(ctx context.Context, email string) (map[string]any, 
 		return nil, err
 	}
 
-	intolerances, err := s.queries.GetUserIntolerances(ctx, email)
-	if err != nil {
-		return nil, err
-	}
-
+	intolerances, _ := s.queries.GetUserIntolerances(ctx, email)
 	if intolerances == nil {
 		intolerances = []string{}
 	}
 
-	return map[string]any{"profile": profile, "intolerances": intolerances, "spoonCredential": spoonCredential}, nil
+	return &UserResponse{
+		Profile:         profile,
+		Intolerances:    intolerances,
+		SavedRecipes:    []int{},
+		SpoonCredential: spoonCredential,
+	}, nil
 }
 
-func (s *UserService) UpdateProfile(ctx context.Context, email string, profile map[string]any) (map[string]any, error) {
+func (s *UserService) UpdateProfile(email string, profile map[string]any, ctx context.Context) (map[string]any, error) {
 	return nil, nil
 }
 
-func (s *UserService) UpdateIntolerances(ctx context.Context, email string, intolerances []string) ([]string, error) {
+func (s *UserService) UpdateIntolerances(email string, intolerances []string, ctx context.Context) ([]string, error) {
 	user, err := s.queries.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err

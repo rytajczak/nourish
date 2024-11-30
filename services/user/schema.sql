@@ -27,32 +27,15 @@ CREATE TABLE intolerance (
     name VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE disliked_ingredient (
-    id INTEGER PRIMARY KEY,
-    name VARCHAR(100) NOT NULL
-);
-
 CREATE TABLE liked_recipe (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     spoon_id INTEGER,
-    title VARCHAR(100) NOT NULL,
-    image VARCHAR(100),
-    calories INTEGER,
-    protein INTEGER,
-    carbs INTEGER,
-    fat INTEGER
 );
 
 CREATE TABLE users_intolerance (
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     intolerance_id UUID REFERENCES intolerance(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, intolerance_id)
-);
-
-CREATE TABLE users_disliked_ingredient (
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    ingredient_id INTEGER REFERENCES disliked_ingredient(id) ON DELETE CASCADE,
-    PRIMARY KEY (user_id, ingredient_id)
 );
 
 CREATE TABLE users_liked_recipe (
