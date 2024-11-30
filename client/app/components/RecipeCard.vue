@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import type { Nutrient, Recipe } from "~~/types/types";
+import type { Recipe } from "~~/types/types";
+const props = defineProps<Recipe>();
 
 const { savedRecipes, saveRecipe } = useUserStore();
-
-const props = defineProps<Recipe>();
 
 function getNutrient(name: string): Nutrient | undefined {
   return props.nutrition.nutrients.find((nutrient) => nutrient.name == name);
