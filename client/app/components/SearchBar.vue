@@ -18,5 +18,8 @@ function search() {
     icon="lucide:search"
     placeholder="What would you like to cook?"
     @keydown.enter="search"
+    :ui="{
+      base: 'bg-elevated',
+    }"
   />
 </template>

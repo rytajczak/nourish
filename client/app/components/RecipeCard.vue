@@ -1,22 +1,26 @@
 <script setup lang="ts">
-import type { Recipe } from "~~/types/types";
+import type { Recipe, Nutrient } from "~~/types/types";
 const props = defineProps<Recipe>();
 
-const { savedRecipes, saveRecipe } = useUserStore();
+const { savedRecipes, saveRecipe, removeSavedRecipe } = useUserStore();
 
 function getNutrient(name: string): Nutrient | undefined {
   return props.nutrition.nutrients.find((nutrient) => nutrient.name == name);
 }
 
-const calories = computed(() => getNutrient("Calories"));
-const protein = computed(() => getNutrient("Protein"));
-const carbs = computed(() => getNutrient("Carbohydrates"));
-const fat = computed(() => getNutrient("Fat"));
+const calories = getNutrient("Calories");
+const protein = getNutrient("Protein");
+const carbs = getNutrient("Carbohydrates");
+const fat = getNutrient("Fat");
 
-const [value, toggle] = useToggle(savedRecipes.includes(props.id));
+const [value, toggle] = useToggle(savedRecipes?.includes(props.id));
 async function handleSave() {
   toggle();
-  saveRecipe();
+  if (value.value) {
+    saveRecipe(props.id);
+  } else {
+    removeSavedRecipe(props.id);
+  }
 }
 </script>
 
@@ -36,7 +40,6 @@ async function handleSave() {
           >
             <UIcon name="lucide:alarm-clock" class="mr-1" />
             {{ props.readyInMinutes }} min
-            <DevOnly>{{ props.id }}</DevOnly>
           </span>
         </div>
       </div>

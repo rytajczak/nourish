@@ -5,7 +5,7 @@ const planner = usePlannerStore();
 const showing = ref("selected day");
 
 function getNutrient(name: string): Nutrient | undefined {
-  return planner.selectedDay?.nutritionSummary.find(
+  return planner.selectedDay?.nutritionSummary.nutrients.find(
     (nutrient) => nutrient.name == name,
   );
 }
@@ -36,8 +36,7 @@ const fat = computed(() => getNutrient("Fat"));
               showing === "selected day" ? "selected day" : "this week"
             }}</span
           >
-          <span
-            class="text-xl font-semibold text-orange-500 dark:text-orange-400"
+          <span class="text-xl font-semibold"
             >{{ Math.round(calories?.amount ?? 0) }} {{ calories?.unit }}</span
           >
         </div>
@@ -45,8 +44,7 @@ const fat = computed(() => getNutrient("Fat"));
       <UCard>
         <div class="flex flex-col">
           <span class="text-muted text-sm">Protein (g)</span>
-          <span
-            class="text-xl font-semibold text-purple-500 dark:text-purple-400"
+          <span class="text-xl font-semibold"
             >{{ Math.round(protein?.amount ?? 0) }} {{ protein?.unit }}</span
           >
         </div>
@@ -54,7 +52,7 @@ const fat = computed(() => getNutrient("Fat"));
       <UCard>
         <div class="flex flex-col">
           <span class="text-muted text-sm">Carbs (g)</span>
-          <span class="text-xl font-semibold text-teal-500 dark:text-teal-400"
+          <span class="text-xl font-semibold"
             >{{ Math.round(carbs?.amount ?? 0) }} {{ carbs?.unit }}</span
           >
         </div>
@@ -62,7 +60,7 @@ const fat = computed(() => getNutrient("Fat"));
       <UCard>
         <div class="flex flex-col">
           <span class="text-muted text-sm">Fat (g)</span>
-          <span class="text-xl font-semibold text-green-500 dark:text-green-400"
+          <span class="text-xl font-semibold"
             >{{ Math.round(fat?.amount ?? 0) }} {{ fat?.unit }}</span
           >
         </div>

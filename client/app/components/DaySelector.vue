@@ -34,13 +34,13 @@ onMounted(async () => {
     </template>
     <div class="flex items-center justify-center">
       <UCard
-        v-for="(day, index) in days"
-        class="mx-3 hidden flex-1 cursor-pointer transition-all duration-150 hover:scale-105 lg:block"
+        v-for="day in days"
+        class="bg-elevated mx-3 hidden flex-1 cursor-pointer transition-all duration-150 hover:scale-105 lg:block"
         :class="{
-          'bg-foreground text-background':
+          'bg-black text-white dark:bg-white dark:text-black':
             planner.selectedDate.getDate() == day.getDate(),
         }"
-        :ui="{ body: 'p-3 sm:p-3' }"
+        :ui="{ body: 'p-3 sm:p-3 rounded-xl' }"
         @click="planner.selectedDate = day"
       >
         <div class="flex flex-col items-center justify-center">

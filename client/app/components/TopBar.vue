@@ -21,7 +21,7 @@ const themes = ref([
 
 <template>
   <div
-    class="border-border bg-elevated flex h-20 items-center justify-between border-b-[1px] px-8"
+    class="border-border bg-background flex h-20 items-center justify-between border-b-[1px] px-8"
   >
     <SearchBar />
     <div class="flex items-center">

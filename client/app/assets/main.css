@@ -5,16 +5,16 @@
   --app-font-family: "Montserrat", sans-serif;
   --app-primary: #01a53f;
   --app-foreground: #09090b;
-  --app-background: #fafafa;
-  --app-elevated: #ffffff;
-  --app-border: #dfdfdf;
+  --app-background: #ffffff;
+  --app-elevated: #f7f7f7;
+  --app-border: #e5e7e8;
 
   &.dark {
     --app-primary: #00bf49;
-    --app-foreground: #ffffff;
-    --app-background: #141414;
-    --app-elevated: #181818;
-    --app-border: #404040;
+    --app-foreground: #e9e1db;
+    --app-background: #0f0f0f;
+    --app-elevated: #141414;
+    --app-border: #2d2d2d;
   }
 }
 
