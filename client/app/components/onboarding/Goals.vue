@@ -67,18 +67,16 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     </div>
     <div class="mt-6 grid grid-cols-2 gap-6">
       <UButton
-        size="xl"
         variant="outline"
         color="neutral"
-        class="flex items-center justify-center font-bold"
+        class="flex items-center justify-center py-3 font-bold"
         @click="onboarding.previousStep"
       >
         <span>Go Back</span>
       </UButton>
       <UButton
-        size="xl"
         color="neutral"
-        class="flex items-center justify-center font-bold"
+        class="flex items-center justify-center py-3 font-bold"
         type="submit"
       >
         <span>Next Step: Diet</span>

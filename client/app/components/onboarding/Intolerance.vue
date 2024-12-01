@@ -18,6 +18,7 @@ const buttons = ref([
 ]);
 
 const intolerances = ref<string[]>([]);
+const { fetchWeek } = usePlannerStore();
 function handleToggle(name: string, value: boolean) {
   if (value) {
     if (!intolerances.value.includes(name)) {
@@ -30,7 +31,10 @@ function handleToggle(name: string, value: boolean) {
 
 async function handleCreateUser() {
   onboarding.setIntolerances(intolerances.value);
-  if (await createUser(onboarding.data)) onboarding.end();
+  if (await createUser(onboarding.data)) {
+    onboarding.end();
+    await fetchWeek();
+  }
 }
 </script>
 

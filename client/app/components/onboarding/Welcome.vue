@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { user } = useUserSession();
 const { signOut } = useUserStore();
 const { end, nextStep } = useOnboardingStore();
 
@@ -14,7 +15,7 @@ async function handleSignOut() {
       <UIcon name="lucide:leaf" class="text-primary mr-1" />
     </span>
     <div class="mt-2 mb-6">
-      <h2 class="text-2xl font-semibold">Welcome</h2>
+      <h2 class="text-2xl font-semibold">Welcome, {{ user?.firstName }}!</h2>
       <h2 class="text-muted mt-1">
         Tell us a little about yourself to personalize your meal planning
         experience.
