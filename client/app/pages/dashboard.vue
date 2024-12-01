@@ -60,10 +60,15 @@ watch(
             @delete="handleDeleteItem"
           />
         </ul>
+        <div class="flex">
+          <AddButton />
+          <UButton variant="subtle" color="error" class="ml-2"
+            >Clear Day</UButton
+          >
+        </div>
       </div>
       <div class="col-span-1 xl:col-span-2">
         <NutritionInfo />
-        <pre>{{ items }}</pre>
       </div>
     </div>
     <UModal v-model:open="onboarding.open" prevent-close>

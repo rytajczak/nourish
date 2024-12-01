@@ -6,7 +6,8 @@ export default defineAppConfig({
     },
     card: {
       slots: {
-        root: "shadow-md bg-elevated",
+        header: "p-0 sm:px-0 mx-6 py-6",
+        root: "shadow-lg dark:shadow-xl p-0 sm:p-0",
       },
     },
     skeleton: {
