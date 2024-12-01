@@ -15,10 +15,10 @@ import (
 )
 
 type Service interface {
-	CreateUser(ctx context.Context, info CreateUserRequest) (map[string]any, error)
-	GetMe(ctx context.Context, email string) (map[string]any, error)
-	UpdateProfile(ctx context.Context, email string, info *UpdateUserPreferencesRequest) (*repository.UpdateUserProfileRow, error)
-	UpdateIntolerances(ctx context.Context, email string, intolerances []string) ([]string, error)
+	CreateUser(request CreateUserRequest, ctx context.Context) (map[string]any, error)
+	GetMe(email string, ctx context.Context) (*UserResponse, error)
+	UpdateProfile(email string, profile map[string]any, ctx context.Context) (map[string]any, error)
+	UpdateIntolerances(email string, intolerances []string, ctx context.Context) ([]string, error)
 }
 
 type UserService struct {
@@ -55,7 +55,7 @@ func NewUserService(host string, key string) Service {
 }
 
 // CreateUser creates a new user and connects them to their spoon account
-func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (map[string]any, error) {
+func (s *UserService) CreateUser(request CreateUserRequest, ctx context.Context) (map[string]any, error) {
 	req, _ := http.NewRequest("POST", s.url+"/users/connect", nil)
 	req.Header.Add("x-rapidapi-key", s.key)
 	req.Header.Add("x-rapidapi-host", s.host)
@@ -73,15 +73,15 @@ func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (m
 	json.Unmarshal(body, &response)
 
 	user, err := s.queries.CreateUser(ctx, repository.CreateUserParams{
-		Username: info.Username,
-		Email:    info.Email,
-		Provider: info.Provider,
-		Picture:  pgtype.Text{String: info.Picture, Valid: true},
-		Diet:     pgtype.Text{String: info.Diet, Valid: true},
-		Calories: pgtype.Int4{Int32: int32(info.Calories), Valid: true},
-		Protein:  pgtype.Int4{Int32: int32(info.Protein), Valid: true},
-		Carbs:    pgtype.Int4{Int32: int32(info.Carbs), Valid: true},
-		Fat:      pgtype.Int4{Int32: int32(info.Fat), Valid: true},
+		Username: request.Username,
+		Email:    request.Email,
+		Provider: request.Provider,
+		Picture:  pgtype.Text{String: request.Picture, Valid: true},
+		Diet:     pgtype.Text{String: request.Profile.Diet, Valid: true},
+		Calories: pgtype.Int4{Int32: int32(request.Profile.Calories), Valid: true},
+		Protein:  pgtype.Int4{Int32: int32(request.Profile.Protein), Valid: true},
+		Carbs:    pgtype.Int4{Int32: int32(request.Profile.Carbs), Valid: true},
+		Fat:      pgtype.Int4{Int32: int32(request.Profile.Carbs), Valid: true},
 	})
 
 	profile, err := s.queries.GetUserProfile(ctx, user.Email)
@@ -89,9 +89,16 @@ func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (m
 		return nil, err
 	}
 
-	intolerances, err := s.UpdateIntolerances(ctx, user.Email, info.Intolerances)
-	if err != nil {
-		return nil, err
+	intolerances := []string{}
+	if len(request.Intolerances) > 0 {
+		intolerances, err = s.UpdateIntolerances(user.Email, request.Intolerances, ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		if intolerances == nil {
+			intolerances = []string{}
+		}
 	}
 
 	_, err = s.queries.CreateSpoonCredential(ctx, repository.CreateSpoonCredentialParams{
@@ -101,42 +108,55 @@ func (s *UserService) CreateUser(ctx context.Context, info CreateUserRequest) (m
 		Hash:     response.Hash,
 	})
 
-	return map[string]any{"profile": profile, "intolerances": intolerances}, nil
+	spoonCredential, err := s.queries.GetUsernameAndHash(ctx, user.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	result := map[string]any{
+		"profile":         profile,
+		"intolerances":    intolerances,
+		"spoonCredential": spoonCredential,
+	}
+
+	return result, nil
 }
 
 // GetMe gets a user by their email
-func (s *UserService) GetMe(ctx context.Context, email string) (map[string]any, error) {
+func (s *UserService) GetMe(email string, ctx context.Context) (*UserResponse, error) {
+	user, err := s.queries.GetUserByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+
 	profile, err := s.queries.GetUserProfile(ctx, email)
 	if err != nil {
 		return nil, err
 	}
 
-	intolerances, err := s.queries.GetUserIntolerances(ctx, email)
+	spoonCredential, err := s.queries.GetUsernameAndHash(ctx, user.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	return map[string]any{"profile": profile, "intolerances": intolerances}, nil
-}
-
-// UpdateUserPreferences updates a user's preferences
-func (s *UserService) UpdateProfile(ctx context.Context, email string, info *UpdateUserPreferencesRequest) (*repository.UpdateUserProfileRow, error) {
-	updatedProfile, err := s.queries.UpdateUserProfile(ctx, repository.UpdateUserProfileParams{
-		Email:    email,
-		Diet:     pgtype.Text{String: info.Diet, Valid: true},
-		Calories: pgtype.Int4{Int32: int32(info.Calories), Valid: true},
-		Protein:  pgtype.Int4{Int32: int32(info.Protein), Valid: true},
-		Carbs:    pgtype.Int4{Int32: int32(info.Carbs), Valid: true},
-		Fat:      pgtype.Int4{Int32: int32(info.Fat), Valid: true},
-	})
-	if err != nil {
-		return nil, err
+	intolerances, _ := s.queries.GetUserIntolerances(ctx, email)
+	if intolerances == nil {
+		intolerances = []string{}
 	}
 
-	return &updatedProfile, nil
+	return &UserResponse{
+		Profile:         profile,
+		Intolerances:    intolerances,
+		SavedRecipes:    []int{},
+		SpoonCredential: spoonCredential,
+	}, nil
 }
 
-func (s *UserService) UpdateIntolerances(ctx context.Context, email string, intolerances []string) ([]string, error) {
+func (s *UserService) UpdateProfile(email string, profile map[string]any, ctx context.Context) (map[string]any, error) {
+	return nil, nil
+}
+
+func (s *UserService) UpdateIntolerances(email string, intolerances []string, ctx context.Context) ([]string, error) {
 	user, err := s.queries.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err

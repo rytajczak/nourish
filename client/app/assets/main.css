@@ -1,0 +1,37 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+:root {
+  --app-font-family: "Montserrat", sans-serif;
+  --app-primary: #01a53f;
+  --app-foreground: #09090b;
+  --app-background: #fffefd;
+  --app-elevated: #f7f7f7;
+  --app-border: #e0e0e0;
+
+  &.dark {
+    --app-primary: #00bf49;
+    --app-foreground: #e9e1db;
+    --app-background: #0f0f0f;
+    --app-elevated: #0e0e0e;
+    --app-border: #202020;
+  }
+}
+
+:root {
+  --font-family-sans: var(--app-font-family);
+  --ui-text: var(--app-foreground);
+  --ui-bg: var(--app-background);
+  --ui-bg-elevated: var(--app-elevated);
+  --ui-border: var(--app-border);
+  --ui-radius: var(--radius-md);
+}
+
+@theme {
+  --color-primary: var(--app-primary);
+  --color-foreground: var(--app-foreground);
+  --color-background: var(--app-background);
+  --color-muted: var(--ui-text-muted);
+  --color-border: var(--app-border);
+  --color-elevated: var(--app-elevated);
+}

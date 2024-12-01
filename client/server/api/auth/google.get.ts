@@ -1,16 +1,15 @@
-import { User } from "#auth-utils";
-
-const config = useRuntimeConfig();
-
 /**
  * @description Handles the Google OAuth login and redirects to the appropriate page.
  */
 export default defineOAuthGoogleEventHandler({
   async onSuccess(event, { user, tokens }) {
+    console.log(user);
     await setUserSession(event, {
       user: {
         email: user.email,
         username: user.name,
+        firstName: user.given_name,
+        lastName: user.family_name,
         provider: "google",
         picture: user.picture,
       },

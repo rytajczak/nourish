@@ -20,25 +20,22 @@ const themes = ref([
 </script>
 
 <template>
-  <div class="flex h-20 items-center justify-between border-b-[1px] px-8">
+  <div
+    class="border-border bg-background flex h-20 items-center justify-between border-b-[1px] px-8"
+  >
     <SearchBar />
     <div class="flex items-center">
-      <div class="border-r pr-2">
+      <div>
         <UPopover>
           <UButton
             color="neutral"
-            icon="solar:settings-outline"
+            icon="lucide:settings"
             size="lg"
             variant="link"
           />
         </UPopover>
         <UPopover class="relative right-24">
-          <UButton
-            color="neutral"
-            icon="solar:sun-2-outline"
-            size="lg"
-            variant="link"
-          />
+          <UButton color="neutral" icon="lucide:sun" size="lg" variant="link" />
           <template #content>
             <UCard>
               <URadioGroup
@@ -51,8 +48,9 @@ const themes = ref([
           </template>
         </UPopover>
       </div>
+      <USeparator orientation="vertical" class="mx-3 h-8" />
       <UPopover class="relative right-9">
-        <UAvatar size="lg" :src="user?.picture ?? ''" class="ms-4" />
+        <UAvatar size="lg" :src="user?.picture ?? ''" />
         <template #content>
           <UCard>
             <template #header>
@@ -62,7 +60,7 @@ const themes = ref([
                   <span class="text-sm font-semibold">{{
                     user?.username
                   }}</span>
-                  <span class="text-sm text-gray-600 dark:text-gray-500">{{
+                  <span class="text-sm text-[var(--ui-text-muted)]">{{
                     user?.email
                   }}</span>
                 </div>
@@ -75,7 +73,7 @@ const themes = ref([
                 variant="ghost"
                 class="p-0"
                 to="/profile"
-                icon="solar:user-circle-outline"
+                icon="lucide:circle-user-round"
                 >Profile</UButton
               >
               <UButton
@@ -83,9 +81,9 @@ const themes = ref([
                 color="neutral"
                 variant="ghost"
                 class="mt-4 p-0"
-                to="/recipes/custom"
-                icon="solar:document-text-outline"
-                >My Recipes</UButton
+                to="/recipes/saved"
+                icon="lucide:book-marked"
+                >Saved Recipes</UButton
               >
             </div>
             <template #footer>
@@ -94,7 +92,7 @@ const themes = ref([
                 color="neutral"
                 variant="ghost"
                 class="p-0"
-                icon="solar:logout-2-outline"
+                icon="lucide:log-out"
                 >Log Out</UButton
               >
             </template>

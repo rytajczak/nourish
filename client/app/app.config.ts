@@ -6,10 +6,21 @@ export default defineAppConfig({
     },
     card: {
       slots: {
-        root: "bg-[var(--ui-bg)] ring ring-[var(--ui-border)] divide-y divide-[var(--ui-border)] rounded-[calc(var(--ui-radius)*2)] shadow-sm",
-        header: "p-4 sm:px-6",
-        body: "p-4 sm:p-6",
-        footer: "p-4 sm:px-6",
+        root: "shadow-lg dark:shadow-xl p-0 sm:p-0 bg-white dark:bg-[#111111]",
+      },
+    },
+    skeleton: {
+      base: "bg-neutral-200 dark:bg-neutral-900",
+    },
+    navigationMenu: {
+      variants: {
+        orientation: {
+          vertical: {
+            root: "text-muted",
+            link: "py-3",
+            childList: "m-0 border-none",
+          },
+        },
       },
     },
   },

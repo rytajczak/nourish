@@ -1,4 +1,6 @@
-export interface Profile {
+import { parse, stringify } from "zipson/lib";
+
+interface Profile {
   diet: string;
   calories: number;
   protein: number;
@@ -11,23 +13,77 @@ export const useUserStore = defineStore(
   () => {
     const { clear } = useUserSession();
 
-    const profile = ref<Profile>({} as Profile);
-    const intolerances = ref<string[]>([]);
-    const dislikedIngredients = ref<string[]>([]);
-    const savedRecipes = ref<any[]>([]);
+    /**
+     * The user's profile
+     */
+    const profile = ref<Profile>({
+      diet: "none",
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+    });
 
-    async function loadUser(data: any) {
-      profile.value = data.profile;
-      intolerances.value = data.intolerances;
-      dislikedIngredients.value = data.dislikedIngredients;
-      savedRecipes.value = data.savedRecipes;
+    /**
+     * The user's intolerances
+     */
+    const intolerances = ref<string[]>([]);
+
+    /**
+     * The user's saved recipes
+     */
+    const savedRecipes = ref<number[]>([]);
+
+    /**
+     *
+     * @param data the data for creating a user
+     */
+    async function createUser(data: any) {
+      const response = await $fetch("/api/users", {
+        method: "POST",
+        body: data,
+      });
+      if (!response) return false;
+
+      profile.value = response.profile ?? ({} as Profile);
+      intolerances.value = response.intolerances ?? [];
+      savedRecipes.value = response.savedRecipes ?? [];
+      return true;
     }
 
-    async function logOut() {
+    /**
+     * Get the user's profile, intolerances, disliked ingredients, and saved recipes
+     * @returns Whether the user was successfully fetched
+     */
+    async function getUser() {
+      const response = await $fetch("/api/users/me");
+      if (!response) return false;
+
+      profile.value = response.profile;
+      intolerances.value = response.intolerances;
+      savedRecipes.value = response.savedRecipes;
+      return true;
+    }
+
+    async function updateProfile() {
+      await $fetch("/api/users/me/profile");
+    }
+
+    const saveRecipe = debounce((id: number) => {
+      savedRecipes.value.push(id);
+    }, 500);
+
+    const removeSavedRecipe = debounce((id: number) => {
+      savedRecipes.value = savedRecipes.value.filter((value) => value !== id);
+    }, 500);
+
+    /**
+     * Log out the user and clear the user session
+     */
+    async function signOut() {
       profile.value = {} as Profile;
       intolerances.value = [];
       savedRecipes.value = [];
-      dislikedIngredients.value = [];
       await clear();
       navigateTo("/");
     }
@@ -35,11 +91,22 @@ export const useUserStore = defineStore(
     return {
       profile,
       intolerances,
-      dislikedIngredients,
       savedRecipes,
-      loadUser,
-      logOut,
+      createUser,
+      getUser,
+      saveRecipe,
+      removeSavedRecipe,
+      updateProfile,
+      signOut,
     };
   },
-  { persist: true },
+  {
+    persist: {
+      storage: sessionStorage,
+      serializer: {
+        serialize: (value) => stringify(value),
+        deserialize: (value) => parse(value),
+      },
+    },
+  },
 );

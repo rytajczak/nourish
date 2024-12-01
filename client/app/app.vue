@@ -3,6 +3,10 @@ useHead({
   htmlAttrs: { lang: "en" },
   link: [{ rel: "icon", type: "image/png", href: "../public/favicon.ico" }],
 });
+
+defineShortcuts({
+  escape: () => {},
+});
 </script>
 
 <template>

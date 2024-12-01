@@ -15,28 +15,6 @@ type ApiServer struct {
 	svc Service
 }
 
-type CreateUserRequest struct {
-	Email        string   `json:"email"`
-	Username     string   `json:"username"`
-	Provider     string   `json:"provider"`
-	Picture      string   `json:"picture"`
-	Diet         string   `json:"diet"`
-	Calories     int      `json:"calories"`
-	Protein      int      `json:"protein"`
-	Carbs        int      `json:"carbs"`
-	Fat          int      `json:"fat"`
-	Intolerances []string `json:"intolerances"`
-}
-
-type UpdateUserPreferencesRequest struct {
-	Calories     int      `json:"calories"`
-	Protein      int      `json:"protein"`
-	Carbs        int      `json:"carbs"`
-	Fat          int      `json:"fat"`
-	Diet         string   `json:"diet"`
-	Intolerances []string `json:"intolerances"`
-}
-
 func NewApiServer(svc Service) *ApiServer {
 	return &ApiServer{svc: svc}
 }
@@ -77,28 +55,28 @@ func (s *ApiServer) VerifyIDToken(next http.HandlerFunc) http.HandlerFunc {
 	})
 }
 
-func (s *ApiServer) handleHealth(w http.ResponseWriter, r *http.Request) {
-	WriteJSON(w, http.StatusOK, map[string]string{"msg": "ok"})
+func (s *ApiServer) handlePing(w http.ResponseWriter, r *http.Request) {
+	WriteJSON(w, http.StatusOK, nil)
 }
 
-func (s *ApiServer) handleSignup(w http.ResponseWriter, r *http.Request) {
+func (s *ApiServer) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 	var body CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		WriteJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	user, err := s.svc.CreateUser(context.Background(), body)
+	user, err := s.svc.CreateUser(body, context.Background())
 	if err != nil {
 		WriteJSON(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	WriteJSON(w, http.StatusOK, user)
+	WriteJSON(w, http.StatusCreated, user)
 }
 
 func (s *ApiServer) handleGetMe(w http.ResponseWriter, r *http.Request) {
-	me, err := s.svc.GetMe(context.Background(), r.Header.Get("email"))
+	me, err := s.svc.GetMe(r.Header.Get("email"), context.Background())
 	if err != nil {
 		WriteJSON(w, http.StatusNotFound, err.Error())
 		return
@@ -107,14 +85,24 @@ func (s *ApiServer) handleGetMe(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, http.StatusOK, me)
 }
 
+func (s *ApiServer) handleUpdateProfile(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("all ive come to find is better than divine")
+}
+
+func (s *ApiServer) handleUpdateIntolerances(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("the lesson here, dont run from fear")
+}
+
 // Start API Server
 func (s *ApiServer) Start(listenAddr string) error {
 	m := http.NewServeMux()
 
-	m.HandleFunc("GET /v1/users/health", s.handleHealth)
+	m.HandleFunc("GET /v1/users/ping", s.handlePing)
 
-	m.HandleFunc("POST /v1/users/signup", s.VerifyIDToken(s.handleSignup))
+	m.HandleFunc("POST /v1/users", s.VerifyIDToken(s.handleCreateUser))
 	m.HandleFunc("GET /v1/users/me", s.VerifyIDToken(s.handleGetMe))
+	m.HandleFunc("PUT /v1/users/me/profile", s.VerifyIDToken(s.handleUpdateProfile))
+	m.HandleFunc("PUT /v1/users/me/intolerances", s.VerifyIDToken(s.handleUpdateIntolerances))
 
 	fmt.Println("Starting API Server on", listenAddr)
 	return http.ListenAndServe(listenAddr, m)

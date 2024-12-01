@@ -1,6 +1,9 @@
 export default defineNuxtConfig({
   future: { compatibilityVersion: 4 },
   compatibilityDate: "2024-04-03",
+
+  ssr: false,
+
   modules: [
     "nuxt-auth-utils",
     "@nuxt/ui",
@@ -8,18 +11,38 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@pinia/nuxt",
     "pinia-plugin-persistedstate/nuxt",
-    "@vueform/nuxt",
   ],
-  css: ["./app/assets/global.css"],
+
+  css: ["./app/assets/main.css"],
   app: { pageTransition: { name: "page", mode: "out-in" } },
-  ssr: false,
+
   runtimeConfig: {
+    spoonacularApiKey: "me at the red lobster",
+    spoonacularApiHost: "me at the red lobster",
     public: {
-      apiUrl:
-        process.env.NODE_ENV === "production"
-          ? "https://api.helpmemealprep.com"
-          : "http://api.localhost/v1",
+      apiUrl: "me at the red lobster",
     },
   },
+
+  icon: {
+    clientBundle: {
+      icons: [
+        "lucide:milk-off",
+        "lucide:egg-off",
+        "lucide:wheat-off",
+        "lucide:nut-off",
+        "lucide:fish-off",
+        "lucide:mouse-off",
+        "lucide:bean-off",
+        "lucide:wine-off",
+      ],
+      scan: true,
+    },
+  },
+
+  image: {
+    domains: ["img.spoonacular.com"],
+  },
+
   devtools: { enabled: true },
 });

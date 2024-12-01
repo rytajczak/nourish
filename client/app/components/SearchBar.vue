@@ -15,8 +15,11 @@ function search() {
     v-model="searchString"
     color="neutral"
     size="xl"
-    icon="i-heroicons-magnifying-glass"
+    icon="lucide:search"
     placeholder="What would you like to cook?"
     @keydown.enter="search"
+    :ui="{
+      base: 'bg-elevated',
+    }"
   />
 </template>

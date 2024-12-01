@@ -1,22 +1,36 @@
 <script setup lang="ts">
+import type { Item } from "~~/types/types";
+import { dropOrSwap } from "@formkit/drag-and-drop";
+import { useDragAndDrop } from "@formkit/drag-and-drop/vue";
+
 definePageMeta({
   middleware: "auth",
 });
-const { user } = useUserStore();
-const dates = [
-  "2024-11-15",
-  "2024-11-16",
-  "2024-11-17",
-  "2024-11-18",
-  "2024-11-19",
-  "2024-11-20",
-  "2024-11-21",
-  "2024-11-22",
-  "2024-11-23",
-  "2024-11-24",
-  "2024-11-25",
-];
-const selectedDate = ref(new Date().toISOString().split("T")[0]);
+
+const planner = usePlannerStore();
+const onboarding = useOnboardingStore();
+const showing = ref("all");
+
+const [parent, items] = useDragAndDrop<Item>([], {
+  onDragend: (event) => {
+    console.log(event.values);
+  },
+  plugins: [dropOrSwap()],
+});
+
+async function handleDeleteItem(id: number) {
+  items.value = items.value.filter((item) => item.id !== id);
+  await planner.deleteItem(id);
+}
+
+onMounted(async () => {
+  await planner.fetchWeek();
+  items.value = planner.selectedDay?.items ?? [];
+});
+watch(
+  () => planner.selectedDate,
+  () => (items.value = planner.selectedDay?.items ?? []),
+);
 </script>
 
 <template>
@@ -24,31 +38,61 @@ const selectedDate = ref(new Date().toISOString().split("T")[0]);
     <div class="mb-6 flex items-center">
       <h1 class="text-3xl font-semibold">Dashboard</h1>
       <USeparator orientation="vertical" class="h-8 px-4" />
-      <UButton variant="subtle">Generate Plan</UButton>
+      <GenerateButton />
     </div>
-    <div class="flex">
-      <div class="mr-4 flex-2">
-        <UCard class="px-8">
+    <div class="grid grid-cols-1 xl:grid-cols-5 xl:gap-8">
+      <div class="col-span-3">
+        <DaySelector />
+        <div class="my-6 flex items-center justify-between">
+          <h2 class="text-xl font-semibold">Meals to prepare</h2>
+          <USelect
+            v-model="showing"
+            color="neutral"
+            :items="['all', 'breakfast', 'lunch', 'dinner']"
+            class="w-32"
+          />
+        </div>
+        <ul ref="parent">
+          <PrepCard
+            v-for="item in items"
+            :key="item.id"
+            v-bind="item"
+            @delete="handleDeleteItem"
+          />
+        </ul>
+        <div v-if="planner.status === 'pending'">
+          <USkeleton class="mb-6 h-48" />
+          <USkeleton class="mb-6 h-48" />
+          <USkeleton class="mb-6 h-48" />
+        </div>
+        <div class="flex">
+          <AddButton />
+          <UButton variant="subtle" color="error" class="ml-2">
+            Clear Day
+          </UButton>
+        </div>
+      </div>
+      <div class="col-span-1 xl:col-span-2">
+        <NutritionInfo />
+      </div>
+    </div>
+    <UModal v-model:open="onboarding.open" prevent-close>
+      <template #content>
+        <UCard :ui="{ header: 'p-0 sm:p-0 border-none' }">
           <template #header>
-            <h2 class="text-xl font-semibold">Select a date</h2>
+            <UProgress
+              color="neutral"
+              size="lg"
+              v-model="onboarding.progress"
+              :ui="{ base: 'rounded-none rounded-t-xl' }"
+            />
           </template>
-          <!-- <UCarousel
-            v-slot="{ item }"
-            :items="dates"
-            :ui="{
-              item: 'basis-1/7',
-            }"
-            arrows
-          >
-            <div class="max-w-24 text-center">{{ item }}</div>
-          </UCarousel> -->
+          <OnboardingWelcome v-if="onboarding.step == 0" />
+          <OnboardingGoals v-if="onboarding.step == 1" />
+          <OnboardingDiet v-if="onboarding.step == 2" />
+          <OnboardingIntolerance v-if="onboarding.step == 3" />
         </UCard>
-        <h2 class="mt-6 text-xl font-semibold">Meals to prepare</h2>
-      </div>
-      <div class="ml-4 flex-1">
-        <h2 class="mb-4 text-xl font-semibold">Statistics</h2>
-        <UCard>Today's nutrition</UCard>
-      </div>
-    </div>
+      </template>
+    </UModal>
   </div>
 </template>
