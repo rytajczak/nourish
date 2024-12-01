@@ -34,3 +34,48 @@ export function debounce(func: Function, delay: number) {
     timer = setTimeout(() => func.apply(this, args), delay);
   };
 }
+
+/**
+ * holy ass
+ * @param label
+ * @param actualValue
+ * @param dailyValue
+ * @param color
+ * @returns
+ */
+export function createDoughnutChartProps(
+  label: string,
+  dataValues: number[],
+  color: string,
+) {
+  return {
+    chartData: {
+      labels: [`${label} (g)`, "Daily (g)"],
+      datasets: [
+        {
+          label: "",
+          data: dataValues,
+          backgroundColor: [color, "#82828244"],
+          borderColor: "#00000000",
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        legend: {
+          display: false,
+        },
+      },
+      interaction: {
+        mode: null,
+        intersect: false,
+      },
+      hover: {
+        mode: null,
+        intersect: false,
+      },
+      responsive: true,
+      maintainAspectRatio: true,
+    },
+  };
+}
