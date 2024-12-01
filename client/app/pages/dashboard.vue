@@ -60,6 +60,11 @@ watch(
             @delete="handleDeleteItem"
           />
         </ul>
+        <div v-if="planner.status === 'pending'">
+          <USkeleton class="mb-6 h-48" />
+          <USkeleton class="mb-6 h-48" />
+          <USkeleton class="mb-6 h-48" />
+        </div>
         <div class="flex">
           <AddButton />
           <UButton variant="subtle" color="error" class="ml-2">
@@ -74,11 +79,14 @@ watch(
     <UModal v-model:open="onboarding.open" prevent-close>
       <template #content>
         <UCard :ui="{ header: 'p-0 sm:p-0 border-none' }">
-          <UProgress
-            color="neutral"
-            v-model="onboarding.progress"
-            class="mb-6"
-          />
+          <template #header>
+            <UProgress
+              color="neutral"
+              size="lg"
+              v-model="onboarding.progress"
+              :ui="{ base: 'rounded-none rounded-t-xl' }"
+            />
+          </template>
           <OnboardingWelcome v-if="onboarding.step == 0" />
           <OnboardingGoals v-if="onboarding.step == 1" />
           <OnboardingDiet v-if="onboarding.step == 2" />
