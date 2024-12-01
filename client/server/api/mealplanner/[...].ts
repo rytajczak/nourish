@@ -1,4 +1,4 @@
-import { getSpoonUrl } from "~~/server/utils/bff";
+import { getSpoonUrl, spoonHeaders } from "~~/server/utils/bff";
 
 export default defineEventHandler(async (event) => {
   const { secure } = await requireUserSession(event);
