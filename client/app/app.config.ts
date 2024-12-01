@@ -6,12 +6,11 @@ export default defineAppConfig({
     },
     card: {
       slots: {
-        header: "p-0 sm:px-0 mx-6 py-6",
-        root: "shadow-lg dark:shadow-xl p-0 sm:p-0",
+        root: "shadow-lg dark:shadow-xl p-0 sm:p-0 bg-white dark:bg-[#111111]",
       },
     },
     skeleton: {
-      base: "bg-neutral-200 dark:bg-neutral-800",
+      base: "bg-neutral-200 dark:bg-neutral-900",
     },
     navigationMenu: {
       variants: {
