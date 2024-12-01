@@ -7,14 +7,14 @@
   --app-foreground: #09090b;
   --app-background: #fffefd;
   --app-elevated: #f7f7f7;
-  --app-border: #ebebed;
+  --app-border: #e0e0e0;
 
   &.dark {
     --app-primary: #00bf49;
     --app-foreground: #e9e1db;
     --app-background: #0f0f0f;
-    --app-elevated: #141414;
-    --app-border: #2d2d2d;
+    --app-elevated: #0e0e0e;
+    --app-border: #202020;
   }
 }
 
