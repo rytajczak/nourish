@@ -5,9 +5,9 @@
   --app-font-family: "Montserrat", sans-serif;
   --app-primary: #01a53f;
   --app-foreground: #09090b;
-  --app-background: #ffffff;
+  --app-background: #fffefd;
   --app-elevated: #f7f7f7;
-  --app-border: #e5e7e8;
+  --app-border: #ebebed;
 
   &.dark {
     --app-primary: #00bf49;

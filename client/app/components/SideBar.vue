@@ -24,43 +24,48 @@ const { signOut } = useUserStore();
           variant="ghost"
           to="/dashboard"
           icon="lucide:layout-dashboard"
-          >dashboard</UButton
         >
+          dashboard
+        </UButton>
         <UButton
           size="lg"
           color="neutral"
           variant="ghost"
           to="/recipes/saved"
           icon="lucide:book-marked"
-          >Saved Recipes</UButton
         >
+          Saved Recipes
+        </UButton>
         <UButton
           size="lg"
           color="neutral"
           variant="ghost"
           to="/grocery-list"
           icon="lucide:shopping-basket"
-          >Grocery List</UButton
         >
-        <span class="mt-8 mb-2 text-sm text-gray-700 dark:text-gray-400"
-          >Settings</span
-        >
+          Grocery List
+        </UButton>
+        <span class="mt-8 mb-2 text-sm text-gray-700 dark:text-gray-400">
+          Settings
+        </span>
         <UButton
           size="lg"
           color="neutral"
           variant="ghost"
           to="/profile"
           icon="lucide:circle-user-round"
-          >Profile</UButton
         >
+          Profile
+        </UButton>
         <UButton
           size="lg"
           color="neutral"
           variant="ghost"
           icon="lucide:log-out"
           @click="signOut"
-          >Log Out</UButton
         >
+          Log Out
+        </UButton>
       </div>
     </div>
   </aside>

@@ -62,9 +62,9 @@ watch(
         </ul>
         <div class="flex">
           <AddButton />
-          <UButton variant="subtle" color="error" class="ml-2"
-            >Clear Day</UButton
-          >
+          <UButton variant="subtle" color="error" class="ml-2">
+            Clear Day
+          </UButton>
         </div>
       </div>
       <div class="col-span-1 xl:col-span-2">

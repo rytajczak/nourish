@@ -33,7 +33,14 @@ async function handleSave() {
   >
     <template #header>
       <div class="relative">
-        <img :src="props.image" :alt="props.title" class="w-full rounded-lg" />
+        <img
+          :src="
+            props.image ??
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNNLEL-qmmLeFR1nxJuepFOgPYfnwHR56vcw&s'
+          "
+          :alt="props.title"
+          class="w-full rounded-lg"
+        />
         <div class="absolute bottom-2 left-3">
           <span
             class="flex items-center rounded-2xl bg-white/70 px-2 py-1 text-sm shadow-xl backdrop-blur-md dark:bg-[#191919]/70"

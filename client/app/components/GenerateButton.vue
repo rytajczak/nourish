@@ -27,11 +27,13 @@ async function handleGenerateDay() {
         >
           <div class="flex w-full flex-col items-center justify-center">
             <span class="text-lg font-semibold">Selected day</span>
-            <span class="text-muted text-sm">{{
-              planner.selectedDate.toLocaleDateString("en-US", {
-                weekday: "long",
-              })
-            }}</span>
+            <span class="text-muted text-sm">
+              {{
+                planner.selectedDate.toLocaleDateString("en-US", {
+                  weekday: "long",
+                })
+              }}
+            </span>
           </div>
         </UButton>
         <USeparator orientation="vertical" class="h-24 px-4">or</USeparator>
@@ -43,8 +45,8 @@ async function handleGenerateDay() {
         >
           <div class="flex w-full flex-col items-center justify-center">
             <span class="text-lg font-semibold">This week</span>
-            <span class="text-muted text-sm"
-              >{{
+            <span class="text-muted text-sm">
+              {{
                 planner.weekStartDate.toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
@@ -56,8 +58,8 @@ async function handleGenerateDay() {
                   month: "short",
                   day: "numeric",
                 })
-              }}</span
-            >
+              }}
+            </span>
           </div>
         </UButton>
       </div>
