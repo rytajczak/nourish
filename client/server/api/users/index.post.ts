@@ -1,4 +1,4 @@
-import { getApiUrl } from "~~/server/utils/bff";
+import { getApiUrl, UserResourceResponse } from "~~/server/utils/bff";
 
 export default defineEventHandler(async (event) => {
   try {
