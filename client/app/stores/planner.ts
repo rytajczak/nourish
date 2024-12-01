@@ -1,4 +1,4 @@
-import type { Day, Recipe, Entry, RecipeValue } from "~~/types/types";
+import type { Day, Recipe, RecipeValue } from "~~/types/types";
 
 export const usePlannerStore = defineStore("planner", () => {
   /**
@@ -14,19 +14,16 @@ export const usePlannerStore = defineStore("planner", () => {
   /**
    * The currently selected Date
    */
-  const selectedDay = ref<Date>(new Date());
+  const selectedDate = ref<Date>(new Date());
 
   /**
    * Info regarding the currently selected day
    */
-  const selectedDayInfo = computed(() => {
-    const weekday = selectedDay.value.toLocaleDateString("en-US", {
+  const selectedDay = computed(() => {
+    const weekday = selectedDate.value.toLocaleDateString("en-US", {
       weekday: "long",
     });
-    const result = days.value.find((day) => {
-      return day.day === weekday;
-    });
-    return result;
+    return days.value.find((day) => day.day === weekday);
   });
 
   /**
@@ -54,15 +51,14 @@ export const usePlannerStore = defineStore("planner", () => {
       status.value = "error";
       return;
     }
-
     days.value = week.days;
 
+    // Check for any recipes
     const recipeIds = [
       ...new Set(
         week.days.flatMap((day) => day.items.map((item) => item.value.id)),
       ),
     ];
-
     const csv = recipeIds.join(",");
     const recipes = await $fetch("/api/recipes/info-bulk", {
       query: { ids: csv },
@@ -93,35 +89,53 @@ export const usePlannerStore = defineStore("planner", () => {
     diet: string,
     exclude: string[],
   ) {
+    status.value = "pending";
+    // Generate recipes
     const csv = exclude.join(",");
-    await clearDay();
-    const response = await $fetch<{ meals: RecipeValue[] }>(
+    const day = await $fetch<{ meals: RecipeValue[] }>(
       `/api/recipes/mealplans/generate`,
       {
         query: { timeFrame: "day", targetCalories, diet, exclude: csv },
       },
     );
 
-    const date = dateToTimestamp(selectedDay.value);
-    const body = response.meals.map((recipe, index) => {
+    // Format generated recipes to entries
+    const date = dateToTimestamp(selectedDate.value);
+    const body = day.meals.map((recipe, index) => {
       return {
         date,
         slot: index + 1,
         position: index,
         type: "RECIPE",
         value: recipe,
-      } as Entry;
+      };
     });
 
-    console.log(body);
+    // Update planner
+    await clearDay();
+    await $fetch(`/api/mealplanner/me/items`, {
+      method: "POST",
+      body,
+    });
+
+    await fetchWeek();
   }
 
-  async function addEntry() {}
+  async function addItem() {}
 
-  async function deleteEntry() {}
+  async function deleteItem(id: number) {
+    if (selectedDay.value && selectedDay.value.items) {
+      selectedDay.value.items = selectedDay.value.items.filter(
+        (item) => item.id !== id,
+      );
+    }
+    await $fetch(`/api/mealplanner/me/items/${id}`, {
+      method: "DELETE",
+    });
+  }
 
   async function clearDay() {
-    const date = dateToString(selectedDay.value);
+    const date = dateToString(selectedDate.value);
     await $fetch(`/api/mealplanner/me/day/${date}`, {
       method: "DELETE",
     });
@@ -132,15 +146,15 @@ export const usePlannerStore = defineStore("planner", () => {
   return {
     days,
     recipeMap,
+    selectedDate,
     selectedDay,
-    selectedDayInfo,
 
     // actions
     fetchWeek,
     generateDay,
     generateWeek,
-    addEntry,
-    deleteEntry,
+    addItem,
+    deleteItem,
     clearDay,
 
     // helpers

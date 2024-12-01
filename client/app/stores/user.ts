@@ -32,7 +32,7 @@ export const useUserStore = defineStore(
     /**
      * The user's saved recipes
      */
-    const savedRecipes = ref<any[]>([]);
+    const savedRecipes = ref<number[]>([]);
 
     /**
      *
@@ -45,9 +45,9 @@ export const useUserStore = defineStore(
       });
       if (!response) return false;
 
-      profile.value = response.profile;
-      intolerances.value = response.intolerances;
-      savedRecipes.value = response.savedRecipes;
+      profile.value = response.profile ?? ({} as Profile);
+      intolerances.value = response.intolerances ?? [];
+      savedRecipes.value = response.savedRecipes ?? [];
       return true;
     }
 
@@ -69,9 +69,13 @@ export const useUserStore = defineStore(
       await $fetch("/api/users/me/profile");
     }
 
-    const saveRecipe = debounce(() => {
-      console.log("hello");
-    }, 300);
+    const saveRecipe = debounce((id: number) => {
+      savedRecipes.value.push(id);
+    }, 500);
+
+    const removeSavedRecipe = debounce((id: number) => {
+      savedRecipes.value = savedRecipes.value.filter((value) => value !== id);
+    }, 500);
 
     /**
      * Log out the user and clear the user session
@@ -91,6 +95,7 @@ export const useUserStore = defineStore(
       createUser,
       getUser,
       saveRecipe,
+      removeSavedRecipe,
       updateProfile,
       signOut,
     };
