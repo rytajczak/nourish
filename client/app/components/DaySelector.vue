@@ -15,8 +15,8 @@ onMounted(async () => {
   <UCard :ui="{ body: 'px-3 sm:px-3' }">
     <template #header>
       <div class="flex items-center justify-center">
-        <span class="text-xl font-semibold"
-          >{{
+        <span class="text-xl font-semibold">
+          {{
             days[0]?.toLocaleDateString("en-US", {
               month: "long",
               day: "numeric",
@@ -28,14 +28,14 @@ onMounted(async () => {
               month: "long",
               day: "numeric",
             })
-          }}</span
-        >
+          }}
+        </span>
       </div>
     </template>
     <div class="flex items-center justify-center">
       <UCard
         v-for="day in days"
-        class="bg-elevated mx-3 hidden flex-1 cursor-pointer transition-all duration-150 hover:scale-105 lg:block"
+        class="mx-3 hidden flex-1 cursor-pointer transition-all duration-150 hover:scale-105 lg:block"
         :class="{
           'bg-black text-white dark:bg-white dark:text-black':
             planner.selectedDate.getDate() == day.getDate(),
@@ -44,15 +44,16 @@ onMounted(async () => {
         @click="planner.selectedDate = day"
       >
         <div class="flex flex-col items-center justify-center">
-          <span class="text-xl font-semibold">{{
-            day.toLocaleDateString("en-US", { day: "numeric" })
-          }}</span>
+          <span class="text-xl font-semibold">
+            {{ day.toLocaleDateString("en-US", { day: "numeric" }) }}
+          </span>
           <span
             :class="{
               'text-neutral': planner.selectedDate.getDate() == day.getDate(),
             }"
-            >{{ day.toLocaleDateString("en-US", { weekday: "short" }) }}</span
           >
+            {{ day.toLocaleDateString("en-US", { weekday: "short" }) }}
+          </span>
         </div>
       </UCard>
       <div class="flex items-center justify-center lg:hidden">

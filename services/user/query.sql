@@ -42,7 +42,5 @@ RETURNING *;
 DELETE FROM users_intolerance WHERE user_id = $1
 RETURNING *;
 
--- name: CreateRecipe :one
-INSERT INTO liked_recipe (spoon_id)
-VALUES $1
-ON CONFLICT (spoon_id) DO NOTHING;
+-- name: DeleteSavedRecipes :exec
+DELETE FROM users_saved_recipe

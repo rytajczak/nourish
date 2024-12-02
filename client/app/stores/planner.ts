@@ -1,4 +1,4 @@
-import type { Day, Recipe, RecipeValue } from "~~/types/types";
+import type { Day, Item, Recipe, RecipeValue } from "~~/types/types";
 
 export const usePlannerStore = defineStore("planner", () => {
   /**
@@ -91,7 +91,8 @@ export const usePlannerStore = defineStore("planner", () => {
   ) {
     status.value = "pending";
     // Generate recipes
-    const csv = exclude.join(",");
+    const csv = exclude.length > 0 ? exclude.join(",") : "";
+    console.log(diet);
     const day = await $fetch<{ meals: RecipeValue[] }>(
       `/api/recipes/mealplans/generate`,
       {
@@ -104,8 +105,8 @@ export const usePlannerStore = defineStore("planner", () => {
     const body = day.meals.map((recipe, index) => {
       return {
         date,
-        slot: index + 1,
-        position: index,
+        slot: 1,
+        position: index + 1,
         type: "RECIPE",
         value: recipe,
       };
@@ -121,9 +122,24 @@ export const usePlannerStore = defineStore("planner", () => {
     await fetchWeek();
   }
 
-  async function addItem() {}
+  async function addItem(item: any) {
+    status.value = "pending";
+    const body = {
+      date: dateToTimestamp(selectedDate.value),
+      slot: 1,
+      position: item.position,
+      type: "RECIPE",
+      value: item.value,
+    };
+    await $fetch(`/api/mealplanner/me/items`, {
+      method: "POST",
+      body,
+    });
+    await fetchWeek();
+  }
 
   async function deleteItem(id: number) {
+    status.value = "pending";
     if (selectedDay.value && selectedDay.value.items) {
       selectedDay.value.items = selectedDay.value.items.filter(
         (item) => item.id !== id,
@@ -132,13 +148,16 @@ export const usePlannerStore = defineStore("planner", () => {
     await $fetch(`/api/mealplanner/me/items/${id}`, {
       method: "DELETE",
     });
+    await fetchWeek();
   }
 
   async function clearDay() {
+    status.value = "pending";
     const date = dateToString(selectedDate.value);
     await $fetch(`/api/mealplanner/me/day/${date}`, {
       method: "DELETE",
     });
+    await fetchWeek();
   }
 
   const status = ref<"idle" | "pending" | "success" | "error">("idle");

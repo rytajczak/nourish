@@ -39,6 +39,7 @@ export const useUserStore = defineStore(
      * @param data the data for creating a user
      */
     async function createUser(data: any) {
+      console.log(data);
       const response = await $fetch("/api/users", {
         method: "POST",
         body: data,
@@ -97,6 +98,7 @@ export const useUserStore = defineStore(
       saveRecipe,
       removeSavedRecipe,
       updateProfile,
+      open,
       signOut,
     };
   },

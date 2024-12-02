@@ -38,8 +38,8 @@ async function handleSave() {
             props.image ??
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNNLEL-qmmLeFR1nxJuepFOgPYfnwHR56vcw&s'
           "
-          :alt="props.title"
-          class="w-full rounded-lg"
+          :alt="`${props.title} (no image provided)`"
+          class="h-48 w-full rounded-lg"
         />
         <div class="absolute bottom-2 left-3">
           <span
@@ -52,9 +52,9 @@ async function handleSave() {
       </div>
     </template>
     <div class="space-between flex">
-      <span class="mr-4 line-clamp-2 min-h-[3rem] flex-3 font-semibold">{{
-        props.title
-      }}</span>
+      <span class="mr-4 line-clamp-2 min-h-[3rem] flex-3 font-semibold">
+        {{ props.title }}
+      </span>
       <div class="flex flex-1 items-start justify-end">
         <UButton
           color="secondary"
@@ -69,27 +69,27 @@ async function handleSave() {
     <div class="mt-2 flex flex-wrap justify-between">
       <div class="flex flex-col items-center text-sm font-semibold">
         <span class="text-muted">Calories</span>
-        <span class="text-orange-500 dark:text-orange-400">{{
-          Math.round(calories?.amount!)
-        }}</span>
+        <span class="text-orange-500 dark:text-orange-400">
+          {{ Math.round(calories?.amount!) }}
+        </span>
       </div>
       <div class="flex flex-col items-center text-sm font-semibold">
         <span class="text-muted">Protein</span>
-        <span class="text-purple-500 dark:text-purple-400">{{
-          Math.round(protein?.amount!)
-        }}</span>
+        <span class="text-purple-500 dark:text-purple-400">
+          {{ Math.round(protein?.amount!) }}
+        </span>
       </div>
       <div class="flex flex-col items-center text-sm font-semibold">
         <span class="text-muted">Carbs</span>
-        <span class="text-teal-500 dark:text-teal-400">{{
-          Math.round(carbs?.amount!)
-        }}</span>
+        <span class="text-teal-500 dark:text-teal-400">
+          {{ Math.round(carbs?.amount!) }}
+        </span>
       </div>
       <div class="flex flex-col items-center text-sm font-semibold">
         <span class="text-muted">Fat</span>
-        <span class="text-green-500 dark:text-green-400">{{
-          Math.round(fat?.amount!)
-        }}</span>
+        <span class="text-green-500 dark:text-green-400">
+          {{ Math.round(fat?.amount!) }}
+        </span>
       </div>
     </div>
   </UCard>

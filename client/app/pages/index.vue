@@ -5,35 +5,31 @@ definePageMeta({
 </script>
 
 <template>
-  <div class="mt-8 mx-auto">
+  <div class="relative flex h-dvh w-dvw items-center justify-center">
     <div class="flex flex-col">
-      <h1 class="text-4xl">A MEAL PREP TOOL FOR THE BUSY</h1>
-      <p class="mt-4 dark:text-gray-400">no bullshit. no bloat.</p>
-      <p class="dark:text-gray-400">because your health is important</p>
-      <div class="mt-4">
-        <span class="flex items-center">
-          <Icon name="lucide:log-in" class="me-2" />
-          login
-        </span>
-        <div class="mt-2">
-          <UButton
-            to="/api/auth/google"
-            icon="fe:google"
-            color="neutral"
-            variant="soft"
-            external
-            class="px-8"
-          />
-          <UButton
-            to="/api/auth/github"
-            icon="fe:github"
-            color="neutral"
-            variant="soft"
-            external
-            class="ms-2 px-8"
-          />
-        </div>
+      <h1 class="text-5xl font-bold">A Meal Prep Tool for the Busy.</h1>
+      <p class="text-muted text-lg">
+        because time is important and so is your health
+      </p>
+      <div class="mt-8 flex justify-center">
+        <UButton
+          to="/api/auth/google"
+          icon="fe:google"
+          color="neutral"
+          variant="subtle"
+          external
+          size="xl"
+          class="px-8"
+        >
+          Sign in with google
+        </UButton>
       </div>
+    </div>
+    <div class="absolute top-0 left-0">
+      <NuxtLink class="flex items-center px-6 py-[24px] text-2xl font-bold">
+        <Icon name="lucide:leaf" class="text-primary mr-2" />
+        Nourish
+      </NuxtLink>
     </div>
   </div>
 </template>

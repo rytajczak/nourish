@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Item } from "~~/types/types";
-import { dropOrSwap } from "@formkit/drag-and-drop";
+import type { Item, Recipe } from "~~/types/types";
+import { animations } from "@formkit/drag-and-drop";
 import { useDragAndDrop } from "@formkit/drag-and-drop/vue";
 
 definePageMeta({
@@ -12,25 +12,64 @@ const onboarding = useOnboardingStore();
 const showing = ref("all");
 
 const [parent, items] = useDragAndDrop<Item>([], {
-  onDragend: (event) => {
-    console.log(event.values);
+  group: "items",
+  onSort(data) {
+    //@ts-ignore
+    planner.selectedDay.items = data.values;
   },
-  plugins: [dropOrSwap()],
+  plugins: [animations()],
 });
+
+async function handleAddItem(id: number) {
+  const response = await $fetch<Recipe>(`/api/recipes/${id}/info`);
+  planner.recipeMap?.set(id, response);
+  const highestPosition = items.value.reduce(
+    (max, obj) => (obj.position > max ? obj.position : max),
+    0,
+  );
+  const item = {
+    slot: 1,
+    position: highestPosition,
+    type: "RECIPE",
+    value: {
+      servings: 1,
+      id,
+      title: response.title,
+      imageType: response.imageType,
+    },
+  } as Item;
+  await planner.addItem(item);
+  items.value = planner.selectedDay?.items ?? [];
+}
 
 async function handleDeleteItem(id: number) {
   items.value = items.value.filter((item) => item.id !== id);
   await planner.deleteItem(id);
+  items.value = planner.selectedDay?.items ?? [];
+}
+
+async function handleClearDay() {
+  await planner.clearDay();
+  items.value = planner.selectedDay?.items ?? [];
 }
 
 onMounted(async () => {
-  await planner.fetchWeek();
-  items.value = planner.selectedDay?.items ?? [];
+  try {
+    await planner.fetchWeek();
+    items.value = planner.selectedDay?.items ?? [];
+  } catch (error) {
+    console.warn("user probably not onboarded");
+    planner.status = "idle";
+  }
 });
 watch(
   () => planner.selectedDate,
   () => (items.value = planner.selectedDay?.items ?? []),
 );
+
+async function handleRefetch() {
+  items.value = planner.selectedDay?.items ?? [];
+}
 </script>
 
 <template>
@@ -38,10 +77,10 @@ watch(
     <div class="mb-6 flex items-center">
       <h1 class="text-3xl font-semibold">Dashboard</h1>
       <USeparator orientation="vertical" class="h-8 px-4" />
-      <GenerateButton />
+      <GenerateButton @refetch="handleRefetch" />
     </div>
     <div class="grid grid-cols-1 xl:grid-cols-5 xl:gap-8">
-      <div class="col-span-3">
+      <div class="col-span-3 mb-8">
         <DaySelector />
         <div class="my-6 flex items-center justify-between">
           <h2 class="text-xl font-semibold">Meals to prepare</h2>
@@ -60,14 +99,26 @@ watch(
             @delete="handleDeleteItem"
           />
         </ul>
-        <div v-if="planner.status === 'pending'">
-          <USkeleton class="mb-6 h-48" />
-          <USkeleton class="mb-6 h-48" />
-          <USkeleton class="mb-6 h-48" />
+        <UCard
+          v-if="planner.status === 'success' && items.length == 0"
+          class="mb-6"
+        >
+          <span class="text-muted flex justify-center">no items for today</span>
+        </UCard>
+        <div
+          v-if="planner.status === 'pending'"
+          class="mb-6 flex justify-center"
+        >
+          <UIcon name="svg-spinners:ring-resize" size="40" />
         </div>
         <div class="flex">
-          <AddButton />
-          <UButton variant="subtle" color="error" class="ml-2">
+          <AddButton @add="handleAddItem" />
+          <UButton
+            variant="subtle"
+            color="error"
+            class="ml-2"
+            @click="handleClearDay"
+          >
             Clear Day
           </UButton>
         </div>

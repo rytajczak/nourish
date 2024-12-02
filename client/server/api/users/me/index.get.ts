@@ -8,6 +8,8 @@ export default defineEventHandler(async (event) => {
       headers: { Authorization: `Bearer ${secure?.idToken}` },
     });
 
+    console.log(response);
+
     await setUserSession(event, {
       secure: {
         spoonName: response.spoonCredential.username,

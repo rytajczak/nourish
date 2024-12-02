@@ -3,12 +3,18 @@ definePageMeta({
   middleware: "queryprotection",
 });
 
+const { profile, intolerances } = useUserStore();
 const query = useState<string>("query");
+
+const csv = ref("");
+if (intolerances.length > 0) {
+  csv.value = intolerances.join(",");
+}
 const { data, status, execute } = await useFetch("/api/recipes/search", {
   lazy: true,
   immediate: false,
   watch: false,
-  query: { query },
+  query: { query, diet: profile.diet, intolerances: csv },
 });
 
 watch(query, async () => {

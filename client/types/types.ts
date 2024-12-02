@@ -60,7 +60,7 @@ export interface Recipe {
   aggregateLikes: number;
   analyzedInstructions: AnalyzedInstruction[];
   cheap: boolean;
-  cookingMinutes: number;
+  cookingMinutes?: number;
   creditsText: string;
   cuisines: string[];
   dairyFree: boolean;
@@ -113,7 +113,7 @@ export interface RecipeValue {
 }
 
 export interface Item {
-  id: number;
+  id?: number;
   slot: number;
   position: number;
   type: "INGREDIENTS" | "PRODUCT" | "MENU_ITEM" | "RECIPE";
@@ -124,8 +124,8 @@ export interface Day {
   date: number;
   day: string;
   items: Item[];
-  nutritionSummary: Nutrient[];
-  nutritionSummaryBreakfast: Nutrient[];
-  nutritionSummaryLunch: Nutrient[];
-  nutritionSummaryDinner: Nutrient[];
+  nutritionSummary: { nutrients: Nutrient[] };
+  nutritionSummaryBreakfast: { nutrients: Nutrient[] };
+  nutritionSummaryLunch: { nutrients: Nutrient[] };
+  nutritionSummaryDinner: { nutrients: Nutrient[] };
 }

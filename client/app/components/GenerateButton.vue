@@ -3,6 +3,7 @@ const { profile, intolerances } = useUserStore();
 const planner = usePlannerStore();
 
 const open = ref(false);
+const emit = defineEmits(["refetch"]);
 
 const weekEndDate = computed(() => {
   return new Date(planner.weekStartDate.getTime() + 6 * 24 * 60 * 60 * 1000);
@@ -11,6 +12,7 @@ const weekEndDate = computed(() => {
 async function handleGenerateDay() {
   await planner.generateDay(profile.calories, profile.diet, intolerances);
   open.value = false;
+  emit("refetch");
 }
 </script>
 
@@ -24,6 +26,7 @@ async function handleGenerateDay() {
           color="neutral"
           variant="outline"
           class="flex-1 py-8"
+          loading-auto
         >
           <div class="flex w-full flex-col items-center justify-center">
             <span class="text-lg font-semibold">Selected day</span>
