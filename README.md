@@ -1,6 +1,6 @@
 ## Capstone
 
-![logo](/public/logo.png)
+![logo](/images/logo.png)
 
 **URL:** _not public yet_
 
