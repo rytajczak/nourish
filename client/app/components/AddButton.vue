@@ -1,48 +1,65 @@
 <script setup lang="ts">
-const { profile, intolerances } = useUserStore();
-const planner = usePlannerStore();
+import type { Recipe } from "~~/types/types";
+const { savedRecipes } = useUserStore();
 
 const open = ref(false);
+const searchString = ref("");
 
-async function handleGenerateDay() {
-  await planner.generateDay(profile.calories, profile.diet, intolerances);
+const csv = ref("");
+if (savedRecipes.length > 0) {
+  csv.value = savedRecipes.join(",");
+}
+const { data: recipes, status } = await useFetch<Recipe[]>(
+  `/api/recipes/info-bulk`,
+  {
+    lazy: true,
+    query: { ids: csv },
+  },
+);
+
+const emit = defineEmits(["add"]);
+function handleAdd(id: number) {
+  emit("add", id);
   open.value = false;
 }
 </script>
 
 <template>
-  <UModal v-model:open="open" title="Select a time frame">
+  <USlideover v-model:open="open" title="Add a saved recipe">
     <UButton color="neutral">Add Recipe</UButton>
-    <template #body>
-      <div class="flex items-center">
-        <UButton
-          @click="handleGenerateDay"
-          color="neutral"
-          variant="outline"
-          class="flex-1 py-8"
-        >
-          <div class="flex w-full flex-col items-center justify-center">
-            <span class="text-lg font-semibold">Selected day</span>
-            <span class="text-muted text-sm">{{
-              planner.selectedDate.toLocaleDateString("en-US", {
-                weekday: "long",
-              })
-            }}</span>
-          </div>
-        </UButton>
-        <USeparator orientation="vertical" class="h-24 px-4">or</USeparator>
-        <UButton
-          @click=""
-          color="neutral"
-          variant="outline"
-          class="flex-1 py-8"
-        >
-          <div class="flex w-full flex-col items-center justify-center">
-            <span class="text-lg font-semibold">This week</span>
-            <span class="text-muted text-sm"></span>
-          </div>
-        </UButton>
-      </div>
+    <template #header>
+      <UInput
+        v-model="searchString"
+        color="neutral"
+        size="xl"
+        icon="lucide:search"
+        placeholder="Search Saved Recipes"
+        :ui="{
+          base: 'bg-elevated',
+        }"
+      />
     </template>
-  </UModal>
+    <template #body>
+      <UCard
+        v-for="recipe in recipes"
+        :ui="{ header: 'p-0 sm:p-0' }"
+        class="mb-6"
+      >
+        <template #header>
+          <img :src="recipe.image" alt="" class="rounded-xl" />
+        </template>
+        <span class="mr-4 line-clamp-2 min-h-[3rem] flex-3 font-semibold">
+          {{ recipe.title }}
+        </span>
+        <UButton
+          class="mt-4"
+          color="neutral"
+          loading-auto
+          @click="handleAdd(recipe.id)"
+        >
+          Add to Day
+        </UButton>
+      </UCard>
+    </template>
+  </USlideover>
 </template>

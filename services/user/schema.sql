@@ -27,9 +27,9 @@ CREATE TABLE intolerance (
     name VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE liked_recipe (
+CREATE TABLE saved_recipe (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    spoon_id INTEGER,
+    spoon_id INTEGER
 );
 
 CREATE TABLE users_intolerance (
@@ -38,9 +38,9 @@ CREATE TABLE users_intolerance (
     PRIMARY KEY (user_id, intolerance_id)
 );
 
-CREATE TABLE users_liked_recipe (
+CREATE TABLE users_saved_recipe (
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    recipe_id UUID REFERENCES liked_recipe(id) ON DELETE CASCADE,
+    recipe_id UUID REFERENCES saved_recipe(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, recipe_id)
 );
 

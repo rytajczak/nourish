@@ -57,12 +57,12 @@ const themes = ref([
               <div class="flex items-center">
                 <UAvatar size="xl" :src="user?.picture ?? ''" class="mr-2" />
                 <div class="flex flex-col">
-                  <span class="text-sm font-semibold">{{
-                    user?.username
-                  }}</span>
-                  <span class="text-sm text-[var(--ui-text-muted)]">{{
-                    user?.email
-                  }}</span>
+                  <span class="text-sm font-semibold">
+                    {{ user?.username }}
+                  </span>
+                  <span class="text-sm text-[var(--ui-text-muted)]">
+                    {{ user?.email }}
+                  </span>
                 </div>
               </div>
             </template>
@@ -74,8 +74,9 @@ const themes = ref([
                 class="p-0"
                 to="/profile"
                 icon="lucide:circle-user-round"
-                >Profile</UButton
               >
+                Profile
+              </UButton>
               <UButton
                 size="lg"
                 color="neutral"
@@ -83,18 +84,20 @@ const themes = ref([
                 class="mt-4 p-0"
                 to="/recipes/saved"
                 icon="lucide:book-marked"
-                >Saved Recipes</UButton
               >
+                Saved Recipes
+              </UButton>
             </div>
             <template #footer>
               <UButton
                 size="lg"
-                color="neutral"
+                color="error"
                 variant="ghost"
                 class="p-0"
                 icon="lucide:log-out"
-                >Log Out</UButton
               >
+                Log Out
+              </UButton>
             </template>
           </UCard>
         </template>

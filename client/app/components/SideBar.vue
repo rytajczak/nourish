@@ -1,5 +1,8 @@
 <script setup lang="ts">
 const { signOut } = useUserStore();
+const { user } = useUserSession();
+const { profile } = useUserStore();
+const open = ref(false);
 </script>
 
 <template>
@@ -25,7 +28,7 @@ const { signOut } = useUserStore();
           to="/dashboard"
           icon="lucide:layout-dashboard"
         >
-          dashboard
+          Dashboard
         </UButton>
         <UButton
           size="lg"
@@ -48,18 +51,40 @@ const { signOut } = useUserStore();
         <span class="mt-8 mb-2 text-sm text-gray-700 dark:text-gray-400">
           Settings
         </span>
+
+        <UModal v-model:open="open">
+          <UButton
+            size="lg"
+            color="neutral"
+            variant="ghost"
+            icon="lucide:circle-user-round"
+            class="hover:cursor-pointer"
+          >
+            Profile
+          </UButton>
+          <template #content>
+            <UCard>
+              <template #header>
+                <div class="flex">
+                  <div>
+                    <img :src="user?.picture" alt="" class="rounded-full" />
+                  </div>
+                  <div class="mt-4 ml-8">
+                    <h2 class="text-lg font-bold">{{ user?.firstName }}</h2>
+                    <span>{{ user?.email }}</span>
+                    <p class="mt-4">
+                      <span class="font-bold">Diet:</span>
+                      {{ profile.diet }}
+                    </p>
+                  </div>
+                </div>
+              </template>
+            </UCard>
+          </template>
+        </UModal>
         <UButton
           size="lg"
-          color="neutral"
-          variant="ghost"
-          to="/profile"
-          icon="lucide:circle-user-round"
-        >
-          Profile
-        </UButton>
-        <UButton
-          size="lg"
-          color="neutral"
+          color="error"
           variant="ghost"
           icon="lucide:log-out"
           @click="signOut"
