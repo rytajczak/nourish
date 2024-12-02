@@ -24,6 +24,8 @@ export const useUserStore = defineStore(
       fat: 0,
     });
 
+    const diet = computed(() => profile.value.diet);
+
     /**
      * The user's intolerances
      */
@@ -91,6 +93,7 @@ export const useUserStore = defineStore(
 
     return {
       profile,
+      diet,
       intolerances,
       savedRecipes,
       createUser,

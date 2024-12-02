@@ -1,24 +1,29 @@
 <script setup lang="ts">
-const { profile, intolerances } = useUserStore();
+const { profile, diet, intolerances } = useUserStore();
+const { data } = useOnboardingStore();
 const planner = usePlannerStore();
 
 const open = ref(false);
 const emit = defineEmits(["refetch"]);
 
-const weekEndDate = computed(() => {
-  return new Date(planner.weekStartDate.getTime() + 6 * 24 * 60 * 60 * 1000);
-});
-
 async function handleGenerateDay() {
-  await planner.generateDay(profile.calories, profile.diet, intolerances);
+  await planner.generateDay(profile.calories, diet, intolerances);
   open.value = false;
   emit("refetch");
 }
 </script>
 
 <template>
-  <UModal v-model:open="open" title="Select a time frame">
-    <UButton color="neutral" variant="solid">Generate Meals</UButton>
+  <UButton
+    color="neutral"
+    variant="solid"
+    @click="handleGenerateDay"
+    loading-auto
+  >
+    Generate Meals
+    {{ diet }}
+  </UButton>
+  <!-- <UModal v-model:open="open" title="Select a time frame">
     <template #body>
       <div class="flex items-center">
         <UButton
@@ -67,5 +72,5 @@ async function handleGenerateDay() {
         </UButton>
       </div>
     </template>
-  </UModal>
+  </UModal> -->
 </template>

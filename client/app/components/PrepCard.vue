@@ -100,7 +100,33 @@ const equipment = getUniqueEquipmentNames(recipe?.analyzedInstructions ?? []);
             </h2>
             <div>
               <div class="flex">
-                <UButton variant="ghost" color="neutral" icon="lucide:info" />
+                <UModal>
+                  <UButton variant="ghost" color="neutral" icon="lucide:info" />
+                  <template #content>
+                    <UCard>
+                      <template #header>
+                        <h2 class="text-lg font-bold">Instructions</h2>
+                      </template>
+                      <ol>
+                        <li v-for="instruction in recipe?.analyzedInstructions">
+                          <ol>
+                            <li
+                              v-for="(step, index) in instruction.steps"
+                              class="mb-2"
+                            >
+                              <span>
+                                <span class="text-lg font-bold">
+                                  {{ index + 1 }}.
+                                </span>
+                                {{ step.step }}
+                              </span>
+                            </li>
+                          </ol>
+                        </li>
+                      </ol>
+                    </UCard>
+                  </template>
+                </UModal>
                 <UButton
                   variant="ghost"
                   color="secondary"
@@ -155,7 +181,9 @@ const equipment = getUniqueEquipmentNames(recipe?.analyzedInstructions ?? []);
               </div>
             </div>
             <div class="flex flex-col items-end">
-              <span class="text-muted">{{ recipe?.servings }} servings</span>
+              <span class="text-muted">
+                makes {{ recipe?.servings }} servings
+              </span>
               <span class="flex items-center text-lg font-semibold">
                 <UIcon name="lucide:dollar-sign" />
                 <span>

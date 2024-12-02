@@ -89,10 +89,10 @@ export const usePlannerStore = defineStore("planner", () => {
     diet: string,
     exclude: string[],
   ) {
+    console.log(`diet: ${diet}`);
     status.value = "pending";
     // Generate recipes
     const csv = exclude.length > 0 ? exclude.join(",") : "";
-    console.log(diet);
     const day = await $fetch<{ meals: RecipeValue[] }>(
       `/api/recipes/mealplans/generate`,
       {

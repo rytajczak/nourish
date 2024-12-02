@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const onboarding = useOnboardingStore();
+const { profile } = useUserStore();
 
 const items = ref([
   {
@@ -49,6 +50,7 @@ const diet = ref("none");
 
 function handleNextStep() {
   onboarding.setDiet(diet.value);
+  profile.diet = diet.value;
   onboarding.nextStep();
 }
 </script>

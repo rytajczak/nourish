@@ -43,7 +43,6 @@ async function handleAddItem(id: number) {
 }
 
 async function handleDeleteItem(id: number) {
-  items.value = items.value.filter((item) => item.id !== id);
   await planner.deleteItem(id);
   items.value = planner.selectedDay?.items ?? [];
 }
