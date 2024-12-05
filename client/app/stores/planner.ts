@@ -1,4 +1,4 @@
-import type { Day, Item, Recipe, RecipeValue } from "~~/types/types";
+import type { Day, Recipe, RecipeValue } from "~~/types/types";
 
 export const usePlannerStore = defineStore("planner", () => {
   /**
@@ -77,26 +77,20 @@ export const usePlannerStore = defineStore("planner", () => {
   }
 
   /**
-   * Generate breakfast, lunch, and dinner for the current week
-   */
-  async function generateWeek() {}
-
-  /**
    * Generate breakfast, lunch, and dinner for the currently selected date
    */
-  async function generateDay(
-    targetCalories: number,
-    diet: string,
-    exclude: string[],
-  ) {
-    console.log(`diet: ${diet}`);
-    status.value = "pending";
-    // Generate recipes
-    const csv = exclude.length > 0 ? exclude.join(",") : "";
+  async function generateDay() {
+    const { profile, intolerances } = useUserStore();
+    const csv = intolerances.length > 0 ? intolerances.join(",") : "";
     const day = await $fetch<{ meals: RecipeValue[] }>(
       `/api/recipes/mealplans/generate`,
       {
-        query: { timeFrame: "day", targetCalories, diet, exclude: csv },
+        query: {
+          timeFrame: "day",
+          targetCalories: profile?.calories,
+          diet: profile?.diet,
+          exclude: csv,
+        },
       },
     );
 
@@ -123,7 +117,6 @@ export const usePlannerStore = defineStore("planner", () => {
   }
 
   async function addItem(item: any) {
-    status.value = "pending";
     const body = {
       date: dateToTimestamp(selectedDate.value),
       slot: 1,
@@ -135,11 +128,9 @@ export const usePlannerStore = defineStore("planner", () => {
       method: "POST",
       body,
     });
-    await fetchWeek();
   }
 
   async function deleteItem(id: number) {
-    status.value = "pending";
     if (selectedDay.value && selectedDay.value.items) {
       selectedDay.value.items = selectedDay.value.items.filter(
         (item) => item.id !== id,
@@ -148,16 +139,13 @@ export const usePlannerStore = defineStore("planner", () => {
     await $fetch(`/api/mealplanner/me/items/${id}`, {
       method: "DELETE",
     });
-    await fetchWeek();
   }
 
   async function clearDay() {
-    status.value = "pending";
     const date = dateToString(selectedDate.value);
     await $fetch(`/api/mealplanner/me/day/${date}`, {
       method: "DELETE",
     });
-    await fetchWeek();
   }
 
   const status = ref<"idle" | "pending" | "success" | "error">("idle");
@@ -171,7 +159,6 @@ export const usePlannerStore = defineStore("planner", () => {
     // actions
     fetchWeek,
     generateDay,
-    generateWeek,
     addItem,
     deleteItem,
     clearDay,

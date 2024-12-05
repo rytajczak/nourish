@@ -2,6 +2,7 @@
 import type { Item, Recipe } from "~~/types/types";
 import { animations } from "@formkit/drag-and-drop";
 import { useDragAndDrop } from "@formkit/drag-and-drop/vue";
+import DaySelector from "~/components/DaySelector.vue";
 
 definePageMeta({
   middleware: "auth",
@@ -38,18 +39,18 @@ async function handleAddItem(id: number) {
       imageType: response.imageType,
     },
   } as Item;
+  items.value.push(item);
   await planner.addItem(item);
-  items.value = planner.selectedDay?.items ?? [];
 }
 
 async function handleDeleteItem(id: number) {
+  items.value = items.value.filter((item) => item.id !== id);
   await planner.deleteItem(id);
-  items.value = planner.selectedDay?.items ?? [];
 }
 
 async function handleClearDay() {
+  items.value = [];
   await planner.clearDay();
-  items.value = planner.selectedDay?.items ?? [];
 }
 
 onMounted(async () => {

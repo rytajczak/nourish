@@ -16,15 +16,7 @@ export const useUserStore = defineStore(
     /**
      * The user's profile
      */
-    const profile = ref<Profile>({
-      diet: "none",
-      calories: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-    });
-
-    const diet = computed(() => profile.value.diet);
+    const profile = ref<Profile>();
 
     /**
      * The user's intolerances
@@ -93,7 +85,6 @@ export const useUserStore = defineStore(
 
     return {
       profile,
-      diet,
       intolerances,
       savedRecipes,
       createUser,
