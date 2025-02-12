@@ -2,7 +2,7 @@
 
 ![logo](/images/logo.png)
 
-**URL:** _not public yet_
+**URL:** _not public because I cant afford the API payments_
 
 ## Overview
 
