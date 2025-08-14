@@ -2,7 +2,7 @@
 
 #### Notice
 
-This project was developed as a learning experience to explore the full software development lifecycle, from conception to deployment. Due to the high cost associated with maintaining a live demo using the Spoonacular API on a school project/hackathon plan, this application is effectively read-only and is not intended for public use or continuous maintenance.
+This project was developed as a learning experience to explore the full software development lifecycle, from conception to deployment. Due to the high cost associated with maintaining a live demo using the Spoonacular API, this application is effectively read-only and is not intended for public use or continuous maintenance.
 
 ![logo](/images/logo.png)
 
