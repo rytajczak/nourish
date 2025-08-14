@@ -1,8 +1,12 @@
-## Capstone
+## Nourish
+
+#### Notice
+
+This project was developed as a learning experience to explore the full software development lifecycle, from conception to deployment. Due to the high cost associated with maintaining a live demo using the Spoonacular API on a school project/hackathon plan, this application is effectively read-only and is not intended for public use or continuous maintenance.
 
 ![logo](/images/logo.png)
 
-**URL:** _not public because I cant afford the API payments_
+**URL:** _not public as the spoonacular api is rather expensive_
 
 ## Overview
 
@@ -23,7 +27,7 @@ Nourish is a full-featured meal planning web application designed to streamline 
 
 ![image.png](/images/infra.png)
 
-deployment is done via a digital ocean droplet (because I dislike serverless). The actual reason for deploying to a VPC instead of any serverless solutions is that I gain much more control over the stack. To me, serverless feels like too much magic, and that magic runs the risk of inconsistent pricing. While yes, running this app serverless would likely be dirt cheap, what happens at a much larges scale? What happens if my API Gateway gets hit with a DDoS attack? I run the risk of paying an exuberant price for all those network calls.
+deployment is done via a digital ocean droplet. The reason for deploying to a VPS instead of any serverless solutions is that I gain much more control over the stack. To me, serverless feels like too much magic, and that magic runs the risk of inconsistent pricing. While yes, running this app serverless would likely be dirt cheap, what happens at a much larges scale? What happens if my API Gateway gets hit with a DDoS attack? I run the risk of paying an exuberant price for all those network calls.
 
 **Authentication**
 
